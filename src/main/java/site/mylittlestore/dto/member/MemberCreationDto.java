@@ -7,7 +7,6 @@ import site.mylittlestore.domain.Store;
 
 import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class MemberCreationDto {
 

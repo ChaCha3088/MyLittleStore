@@ -18,6 +18,7 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
+@Table(name = "STORES")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Store extends BaseEntity {
 
@@ -62,9 +63,9 @@ public class Store extends BaseEntity {
 
     public StoreTable createStoreTable() {
         StoreTable storeTable = StoreTable.builder()
+                .store(this)
                 .build();
         this.storeTables.add(storeTable);
-        storeTable.setStore(this);
 
         return storeTable;
     }

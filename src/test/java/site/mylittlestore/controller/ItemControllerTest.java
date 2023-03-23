@@ -15,7 +15,7 @@ import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
-import site.mylittlestore.dto.order.OrderDto;
+import site.mylittlestore.dto.store.StoreTableCreationDto;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
 import site.mylittlestore.enumstorage.status.ItemStatus;
 import site.mylittlestore.exception.item.NoSuchItemException;
@@ -23,6 +23,7 @@ import site.mylittlestore.repository.item.ItemRepository;
 import site.mylittlestore.service.ItemService;
 import site.mylittlestore.service.MemberService;
 import site.mylittlestore.service.StoreService;
+import site.mylittlestore.service.StoreTableService;
 
 import java.util.Optional;
 
@@ -44,7 +45,7 @@ public class ItemControllerTest {
     private MemberService memberService;
 
     @Autowired
-    private StoreService storeService;
+    private StoreTableService storeTableService;
 
     @Autowired
     private ItemRepository itemRepository;
@@ -82,7 +83,7 @@ public class ItemControllerTest {
                 .build());
 
         //테이블 추가
-        Long newOrderId = storeService.createStoreTable(OrderDto.builder()
+        Long newOrderId = storeTableService.createStoreTable(StoreTableCreationDto.builder()
                 .storeId(newStoreId)
                 .build());
 

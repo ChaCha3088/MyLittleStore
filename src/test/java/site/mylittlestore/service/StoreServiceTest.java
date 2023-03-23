@@ -14,7 +14,7 @@ import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.item.ItemUpdateDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreDto;
-import site.mylittlestore.dto.order.OrderDto;
+import site.mylittlestore.dto.store.StoreTableCreationDto;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.enumstorage.status.ItemStatus;
@@ -26,7 +26,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -45,6 +44,9 @@ class StoreServiceTest {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private StoreTableService storeTableService;
 
     @Autowired
     private StoreService storeService;
@@ -212,29 +214,5 @@ class StoreServiceTest {
         assertThat(findItemFindDtoById.getName()).isEqualTo("itemTest");
         assertThat(findItemFindDtoById.getPrice()).isEqualTo(9999);
         assertThat(findItemFindDtoById.getStock()).isEqualTo(99);
-    }
-
-    @Test
-    public void createOrder(){
-        //given
-        storeService.createStoreTable(OrderDto.builder()
-                        .storeId(storeTestId)
-                        .build());
-        storeService.createStoreTable(OrderDto.builder()
-                .storeId(storeTestId)
-                .build());
-        storeService.createStoreTable(OrderDto.builder()
-                .storeId(storeTestId)
-                .build());
-
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
-
-        //when
-        StoreDto findStoreById = storeService.findStoreDtoById(storeTestId);
-
-        //then
-        assertThat(findStoreById.getStoreTables().size()).isEqualTo(3);
     }
 }

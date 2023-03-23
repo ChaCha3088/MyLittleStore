@@ -18,7 +18,7 @@ import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
-import site.mylittlestore.dto.order.OrderDto;
+import site.mylittlestore.dto.store.StoreTableCreationDto;
 import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
 import site.mylittlestore.exception.item.NotEnoughStockException;
@@ -46,6 +46,8 @@ class OrderServiceTest {
     private OrderItemService orderItemService;
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private StoreTableService storeTableService;
     @Autowired
     private StoreService storeService;
 
@@ -87,7 +89,7 @@ class OrderServiceTest {
                 .stock(100)
                 .build());
 
-        Long newOrderId = storeService.createStoreTable(OrderDto.builder()
+        Long newOrderId = storeTableService.createStoreTable(StoreTableCreationDto.builder()
                 .storeId(newStoreId)
                 .build());
 

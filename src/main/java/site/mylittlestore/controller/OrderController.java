@@ -5,15 +5,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import site.mylittlestore.dto.order.OrderDto;
+import site.mylittlestore.dto.store.StoreTableCreationDto;
 import site.mylittlestore.service.StoreService;
 import site.mylittlestore.service.OrderService;
+import site.mylittlestore.service.StoreTableService;
 
 @Controller
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final StoreService storeService;
+    private final StoreTableService storeTableService;
 
     private final OrderService orderService;
 
@@ -36,7 +37,7 @@ public class OrderController {
 
     @GetMapping("/members/{memberId}/stores/{storeId}/orders/new")
     public String createOrder(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId) {
-        Long savedOrderId = storeService.createStoreTable(OrderDto.builder()
+        Long savedOrderId = storeTableService.createStoreTable(StoreTableCreationDto.builder()
                 .storeId(storeId)
                 .build());
 

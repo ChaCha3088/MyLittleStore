@@ -38,16 +38,8 @@ public class StoreTable extends BaseEntity {
     private StoreTableStatus storeTableStatus;
 
     @Builder
-    protected StoreTable(Store store, Long xCoordinate, Long yCoordinate) {
+    protected StoreTable(Store store) {
         this.store = store;
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
         this.storeTableStatus = StoreTableStatus.EMPTY;
-    }
-
-
-    //==연관관계 메소드==//
-    public void setStore(Store store) {
-        this.store = store;
     }
 }
