@@ -71,6 +71,10 @@ public class Item extends BaseEntity {
         this.stock = newStock;
     }
 
+    public void deleteItem() {
+        this.itemStatus = ItemStatus.DELETED;
+    }
+
     //==연관관계 메소드==//
     public void setStore(Store store) {
         this.store = store;

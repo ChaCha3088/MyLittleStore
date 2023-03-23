@@ -3,6 +3,7 @@ package site.mylittlestore.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
 import site.mylittlestore.exception.item.NoSuchItemException;
@@ -30,8 +31,14 @@ public class ItemService {
         return itemRepository.findAllItemDtoByStoreId(storeId);
     }
 
+    @Transactional
     public void deleteItemById(Long id) {
-        itemRepository.deleteById(id);
+        Item item = itemRepository.findById(id).orElseThrow(() -> new NoSuchItemException(ItemErrorMessage.NO_SUCH_ITEM.getMessage()));
+
+        item.deleteItem();
+
+        //저장
+        itemRepository.save(item);
     }
 
     //StoreService에서 이미 만듦

@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
+import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
@@ -20,6 +21,7 @@ import site.mylittlestore.repository.item.ItemRepository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -141,8 +143,8 @@ class ItemServiceTest {
                 .isInstanceOf(NoSuchItemException.class)
                 .hasMessageContaining(ItemErrorMessage.NO_SUCH_ITEM.getMessage());
 
-        itemRepository.findById(itemTestId).ifPresent(item -> {
-            assertThat(item.getItemStatus()).isEqualTo(ItemStatus.DELETED);
-        });
+        Optional<Item> findById = itemRepository.findById(itemTestId);
+
+        assertThat(findById.get().getItemStatus()).isEqualTo(ItemStatus.DELETED);
     }
 }
