@@ -40,6 +40,12 @@
         <div class="col">
             <button class="w-100 btn btn-primary btn-lg"
                     onclick="location.href='editForm.html'"
+                    th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/items/{itemId}/delete(memberId = ${memberId}, storeId = ${storeId}, itemId = ${itemFindDto.id})}'|"
+                    type="button">삭제</button>
+        </div>
+        <div class="col">
+            <button class="w-100 btn btn-primary btn-lg"
+                    onclick="location.href='editForm.html'"
                     th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/items/{itemId}/update(memberId = ${memberId}, storeId = ${storeId}, itemId = ${itemFindDto.id})}'|"
                     type="button">수정</button>
         </div>
