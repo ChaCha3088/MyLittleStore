@@ -101,7 +101,7 @@ public class ItemController {
         return "redirect:/members/"+memberId+"/stores/"+storeId+"/items/"+updatedItemId;
     }
 
-    @PutMapping("/members/{memberId}/stores/{storeId}/items/{itemId}/delete")
+    @GetMapping("/members/{memberId}/stores/{storeId}/items/{itemId}/delete")
     public String deleteItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("itemId") Long itemId) {
         itemService.deleteItemById(itemId);
 

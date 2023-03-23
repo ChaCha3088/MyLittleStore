@@ -208,7 +208,7 @@ public class ItemControllerTest {
                 .andExpect(view().name("redirect:/members/"+memberTestId+"/stores/"+storeTestId+"/items/"+5));
 
         //when
-        mockMvc.perform(put("/members/{memberId}/stores/{storeId}/items/{itemId}/delete", memberTestId, storeTestId, 5))
+        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/items/{itemId}/delete", memberTestId, storeTestId, 5))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/members/"+memberTestId+"/stores/"+storeTestId+"/items"));
 
