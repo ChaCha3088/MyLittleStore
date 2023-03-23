@@ -10,16 +10,24 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
+import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.dto.order.OrderDto;
+import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
+import site.mylittlestore.enumstorage.status.ItemStatus;
+import site.mylittlestore.exception.item.NoSuchItemException;
+import site.mylittlestore.repository.item.ItemRepository;
 import site.mylittlestore.service.ItemService;
 import site.mylittlestore.service.MemberService;
 import site.mylittlestore.service.StoreService;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -37,6 +45,9 @@ public class ItemControllerTest {
 
     @Autowired
     private StoreService storeService;
+
+    @Autowired
+    private ItemRepository itemRepository;
 
     @Autowired
     private ItemService itemService;
@@ -170,7 +181,7 @@ public class ItemControllerTest {
                 .andExpect(view().name("redirect:/members/"+memberTestId+"/stores/"+storeTestId+"/items/"+4));
 
         //when
-        mockMvc.perform(post("/members/{memberId}/stores/{storeId}/items/{itemId}/update", memberTestId, storeTestId, 4)
+        mockMvc.perform(put("/members/{memberId}/stores/{storeId}/items/{itemId}/update", memberTestId, storeTestId, 4)
                         .param("name", "newItemTest")
                         .param("price", "9999")
                         .param("stock", "9"))
@@ -183,5 +194,29 @@ public class ItemControllerTest {
         assertThat(findItemDtoById.getName()).isEqualTo("newItemTest");
         assertThat(findItemDtoById.getPrice()).isEqualTo(9999);
         assertThat(findItemDtoById.getStock()).isEqualTo(9);
+    }
+
+    @Test
+    void deleteItem() throws Exception {
+        //given
+        //상품 추가
+        mockMvc.perform(post("/members/{memberId}/stores/{storeId}/items/new", memberTestId, storeTestId)
+                        .param("name", "itemTest")
+                        .param("price", "1000")
+                        .param("stock", "10"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/members/"+memberTestId+"/stores/"+storeTestId+"/items/"+5));
+
+        //when
+        mockMvc.perform(put("/members/{memberId}/stores/{storeId}/items/{itemId}/delete", memberTestId, storeTestId, 5))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/members/"+memberTestId+"/stores/"+storeTestId+"/items"));
+
+        //then
+        assertThatThrownBy(() -> itemService.findItemDtoById(5L))
+                .isInstanceOf(NoSuchItemException.class)
+                .hasMessage(ItemErrorMessage.NO_SUCH_ITEM.getMessage());
+        Optional<Item> findById = itemRepository.findById(5L);
+        assertThat(findById.get().getItemStatus()).isEqualTo(ItemStatus.DELETED);
     }
 }

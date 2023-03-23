@@ -7,6 +7,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.item.ItemUpdateDto;
@@ -80,7 +81,7 @@ public class ItemController {
         return "items/itemUpdateForm";
     }
 
-    @PostMapping("/members/{memberId}/stores/{storeId}/items/{itemId}/update")
+    @PutMapping("/members/{memberId}/stores/{storeId}/items/{itemId}/update")
     public String updateItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("itemId") Long itemId, @Valid ItemUpdateForm itemUpdateForm, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
@@ -98,5 +99,12 @@ public class ItemController {
                 .build());
 
         return "redirect:/members/"+memberId+"/stores/"+storeId+"/items/"+updatedItemId;
+    }
+
+    @PutMapping("/members/{memberId}/stores/{storeId}/items/{itemId}/delete")
+    public String deleteItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("itemId") Long itemId) {
+        itemService.deleteItemById(itemId);
+
+        return "redirect:/members/"+memberId+"/stores/"+storeId+"/items";
     }
 }
