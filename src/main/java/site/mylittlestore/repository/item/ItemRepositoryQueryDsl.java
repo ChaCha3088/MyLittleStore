@@ -10,4 +10,6 @@ public interface ItemRepositoryQueryDsl {
     Optional<ItemFindDto> findItemDtoById(Long id);
 
     List<ItemFindDto> findAllItemDtoByStoreId(Long storeId);
+
+    void deleteById(Long id);
 }

@@ -22,5 +22,5 @@ public interface ItemRepository extends JpaRepository<Item, Long>, ItemRepositor
 
     Optional<Item> findItemByIdAndStoreId(Long id, Long storeId);
 
-
+    void deleteById(Long id);
 }

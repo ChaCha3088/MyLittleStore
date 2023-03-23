@@ -30,6 +30,10 @@ public class ItemService {
         return itemRepository.findAllItemDtoByStoreId(storeId);
     }
 
+    public void deleteItemById(Long id) {
+        itemRepository.deleteById(id);
+    }
+
     //StoreService에서 이미 만듦
 
 //    @Transactional
