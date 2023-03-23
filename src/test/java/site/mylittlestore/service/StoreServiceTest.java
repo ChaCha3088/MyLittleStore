@@ -8,19 +8,25 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
+import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.item.ItemUpdateDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreDto;
 import site.mylittlestore.dto.order.OrderDto;
+import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
+import site.mylittlestore.enumstorage.status.ItemStatus;
+import site.mylittlestore.exception.item.NoSuchItemException;
 import site.mylittlestore.exception.store.NoSuchStoreException;
+import site.mylittlestore.repository.item.ItemRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -30,6 +36,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class StoreServiceTest {
+
+    @Autowired
+    private ItemRepository itemRepository;
+
     @Autowired
     private ItemService itemService;
 
@@ -142,10 +152,15 @@ class StoreServiceTest {
         em.clear();
 
         //when
-        Long findNewItemTestId = itemService.findItemDtoById(newItemTestId).getId();
+        Item itemById = itemRepository.findById(newItemTestId)
+                .orElseThrow(() -> new NoSuchItemException(ItemErrorMessage.NO_SUCH_ITEM.getMessage()));
 
         //then
-        assertThat(findNewItemTestId).isEqualTo(newItemTestId);
+        assertThat(itemById.getImage()).isEqualTo("");
+        assertThat(itemById.getName()).isEqualTo("newItemTest");
+        assertThat(itemById.getPrice()).isEqualTo(9999);
+        assertThat(itemById.getStock()).isEqualTo(99);
+        assertThat(itemById.getItemStatus()).isEqualTo(ItemStatus.ONSALE);
     }
 
     @Test

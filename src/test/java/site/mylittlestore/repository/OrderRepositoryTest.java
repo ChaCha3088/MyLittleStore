@@ -101,7 +101,7 @@ class OrderRepositoryTest {
 
         //검증
         assertThat(orderById.orElseThrow(()
-                -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_STORE_TABLE.getMessage())).getId())
+                -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage())).getId())
                 .isEqualTo(orderTestId);
     }
 }

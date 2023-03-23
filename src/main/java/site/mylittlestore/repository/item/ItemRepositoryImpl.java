@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.item.QItemFindDto;
+import site.mylittlestore.enumstorage.status.ItemStatus;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -31,7 +32,7 @@ public class ItemRepositoryImpl implements ItemRepositoryQueryDsl {
                                 item.image
                         ))
                         .from(item)
-                        .where(item.id.eq(id))
+                        .where(item.id.eq(id), item.itemStatus.eq(ItemStatus.ONSALE))
                         .fetchOne()
         );
     }
@@ -50,7 +51,7 @@ public class ItemRepositoryImpl implements ItemRepositoryQueryDsl {
                         item.image
                 ))
                 .from(item)
-                .where(item.store.id.eq(storeId))
+                .where(item.store.id.eq(storeId), item.itemStatus.eq(ItemStatus.ONSALE))
                 .orderBy(item.id.asc())
                 .fetch();
     }

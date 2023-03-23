@@ -46,6 +46,7 @@ public class Item extends BaseEntity {
     private String image;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private ItemStatus itemStatus;
 
     @Builder
