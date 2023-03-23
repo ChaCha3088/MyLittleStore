@@ -55,4 +55,15 @@ public class ItemRepositoryImpl implements ItemRepositoryQueryDsl {
                 .orderBy(item.id.asc())
                 .fetch();
     }
+
+    @Override
+    public void deleteById(Long id) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        queryFactory
+                .update(item)
+                .where(item.id.eq(id))
+                .set(item.itemStatus, ItemStatus.DELETED)
+                .execute();
+    }
 }

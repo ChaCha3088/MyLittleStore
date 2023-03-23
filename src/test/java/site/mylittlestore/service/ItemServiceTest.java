@@ -13,7 +13,9 @@ import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreDto;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
+import site.mylittlestore.enumstorage.status.ItemStatus;
 import site.mylittlestore.exception.item.NoSuchItemException;
+import site.mylittlestore.repository.item.ItemRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,6 +29,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class ItemServiceTest {
+
+    @Autowired
+    private ItemRepository itemRepository;
 
     @Autowired
     private ItemService itemService;
@@ -119,6 +124,25 @@ class ItemServiceTest {
         assertThat(findAllByStoreId.size()).isEqualTo(2);
         findAllByStoreId.forEach(itemDto -> {
             assertThat(itemDto.getStoreId()).isEqualTo(storeTestId);
+        });
+    }
+
+    @Test
+    void deleteItemById() {
+        //when
+        itemService.deleteItemById(itemTestId);
+
+        //영속성 컨텍스트 초기화
+        em.flush();
+        em.clear();
+
+        //then
+        assertThatThrownBy(() -> itemService.findItemDtoById(itemTestId))
+                .isInstanceOf(NoSuchItemException.class)
+                .hasMessageContaining(ItemErrorMessage.NO_SUCH_ITEM.getMessage());
+
+        itemRepository.findById(itemTestId).ifPresent(item -> {
+            assertThat(item.getItemStatus()).isEqualTo(ItemStatus.DELETED);
         });
     }
 }
