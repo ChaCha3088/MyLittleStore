@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+
+<body>
+
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader" />
+
+    <div class="py-5 text-center">
+        <h2>주문 정보</h2>
+    </div>
+
+    <div>
+        <label for="name">상품명</label>
+        <input type="text" id="name" name="name" class="form-control" value="상품명" th:value="${orderItemDtoWithItemFindDto.getItemFindDto.name}" readonly>
+    </div>
+
+    <div>
+        <label for="price">가격</label>
+        <input type="text" id="price" name="price" class="form-control" value="가격" th:value="${orderItemDtoWithItemFindDto.price}" readonly>
+    </div>
+
+    <div>
+        <label for="count">수량</label>
+        <input type="text" id="count" name="count" class="form-control" value="수량" th:value="${orderItemDtoWithItemFindDto.count}" readonly>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="row">
+
+        <div class="col">
+            <button class="w-100 btn btn-primary btn-lg"
+                    th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}/delete(memberId = ${memberId}, storeId = ${storeId}, orderId = ${orderItemDtoWithItemFindDto.orderId}, orderItemId = ${orderItemDtoWithItemFindDto.id})}'|"
+                    type="button">삭제</button>
+        </div>
+
+        <div class="col">
+            <button class="w-100 btn btn-primary btn-lg"
+                    th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}/update(memberId = ${memberId}, storeId = ${storeId}, orderId = ${orderItemDtoWithItemFindDto.orderId}, orderItemId = ${orderItemDtoWithItemFindDto.id})}'|"
+                    type="button">수정</button>
+        </div>
+
+        <div class="col">
+            <button class="w-100 btn btn-secondary btn-lg"
+                    th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/orders/{orderId}(memberId = ${memberId}, storeId = ${storeId}, orderId = ${orderItemDtoWithItemFindDto.orderId})}'|"
+                    type="button">목록</button>
+        </div>
+    </div>
+
+    <div th:replace="fragments/footer :: footer" />
+
+</div> <!-- /container -->
+
+</body>
+</html>
