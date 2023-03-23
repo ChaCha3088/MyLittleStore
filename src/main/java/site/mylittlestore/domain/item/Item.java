@@ -5,6 +5,7 @@ import site.mylittlestore.domain.Store;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.entity.BaseEntity;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
+import site.mylittlestore.enumstorage.status.ItemStatus;
 import site.mylittlestore.exception.item.NotEnoughStockException;
 
 import javax.persistence.*;
@@ -44,13 +45,17 @@ public class Item extends BaseEntity {
     @NotNull
     private String image;
 
+    @NotNull
+    private ItemStatus itemStatus;
+
     @Builder
-    protected Item(Store store, String name, int price, int stock, String image) {
+    protected Item(Store store, String name, int price, int stock) {
         this.store = store;
         this.name = name;
         this.price = price;
         this.stock = stock;
         this.image = "";
+        this.itemStatus = ItemStatus.ONSALE;
     }
 
     public void updateName(String newName) {
