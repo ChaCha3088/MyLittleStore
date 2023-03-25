@@ -2,6 +2,8 @@ package site.mylittlestore.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import site.mylittlestore.dto.storetable.StoreTableFindDto;
+import site.mylittlestore.dto.storetable.StoreTableFindDtoWithOrderFindDto;
 import site.mylittlestore.entity.BaseEntity;
 import site.mylittlestore.enumstorage.status.StoreTableStatus;
 
@@ -38,16 +40,37 @@ public class StoreTable extends BaseEntity {
     private StoreTableStatus storeTableStatus;
 
     @Builder
-    protected StoreTable(Store store, Long xCoordinate, Long yCoordinate) {
+    protected StoreTable(Store store) {
         this.store = store;
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
         this.storeTableStatus = StoreTableStatus.EMPTY;
     }
 
+    //-- 연관 관계 메소드 --//
+    public void setOrder(Order order) {
+        this.order = order;
+        this.storeTableStatus = StoreTableStatus.USING;
+    }
 
-    //==연관관계 메소드==//
-    public void setStore(Store store) {
-        this.store = store;
+    //-- DTO 생성 메소드 --//
+    public StoreTableFindDto toStoreTableFindDto() {
+        return StoreTableFindDto.builder()
+                .id(id)
+                .storeId(store.getId())
+                .orderId(order != null ? order.getId() : null)
+                .xCoordinate(xCoordinate)
+                .yCoordinate(yCoordinate)
+                .storeTableStatus(storeTableStatus.toString())
+                .build();
+    }
+
+    public StoreTableFindDtoWithOrderFindDto toStoreTableFindDtoWithOrderFindDto() {
+        return StoreTableFindDtoWithOrderFindDto.builder()
+                .id(id)
+                .storeId(store.getId())
+                .orderDtoWithOrderItemId(order != null ? order.toOrderDtoWithOrderItemId() : null)
+                .xCoordinate(xCoordinate)
+                .yCoordinate(yCoordinate)
+                .storeTableStatus(storeTableStatus.toString())
+                .build();
     }
 }

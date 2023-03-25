@@ -70,26 +70,6 @@ class OrderControllerTest {
     }
 
     @Test
-    void orderList() throws Exception {
-        //given
-        //order 생성
-        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/orders/new", memberTestId, storeTestId));
-        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/orders/new", memberTestId, storeTestId));
-
-        //when
-        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/orders", memberTestId, storeTestId))
-                .andExpect(status().isOk())
-                .andExpect(view().name("orders/orderList"))
-                .andExpect(model().attributeExists("memberId"))
-                .andExpect(model().attributeExists("storeId"))
-                .andExpect(model().attributeExists("OrderDtoWithOrderItemDtoList"));
-
-        //then
-        List<OrderDtoWithOrderItemDto> findAllOrderDtoWithOrderItemIdByStoreId = orderService.findAllOrderDtoWithOrderItemIdByStoreId(storeTestId);
-        assertThat(findAllOrderDtoWithOrderItemIdByStoreId.size()).isEqualTo(2);
-    }
-
-    @Test
     void orderInfo() throws Exception {
         //given
         //order 생성
@@ -102,16 +82,4 @@ class OrderControllerTest {
                 .andExpect(model().attributeExists("memberId"))
                 .andExpect(model().attributeExists("OrderDtoWithOrderItemDto"));
     }
-
-    @Test
-    void createOrder() throws Exception {
-        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/orders/new", memberTestId, storeTestId))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/members/" + memberTestId + "/stores/"+ storeTestId + "/orders/6"));
-
-        OrderDtoWithOrderItemDto findOrderDtoById = orderService.findOrderDtoById(6L);
-        assertThat(findOrderDtoById.getStoreId()).isEqualTo(storeTestId);
-        assertThat(findOrderDtoById.getOrderNumber()).isEqualTo(1);
-    }
-
 }

@@ -164,7 +164,7 @@ public class MemberService {
     }
 
     /**
-     * 가게 열기 / 닫기
+     * 가게 열기 / 닫기 토글
      */
     @Transactional
     public Long changeStoreStatus(StoreUpdateDto storeUpdateDto) throws NoSuchMemberException, IsNotMembersStoreException {

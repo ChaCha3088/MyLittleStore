@@ -10,7 +10,7 @@ import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemUpdateDto;
 import site.mylittlestore.dto.store.StoreDto;
 import site.mylittlestore.dto.store.StoreOnlyDto;
-import site.mylittlestore.dto.order.OrderDto;
+import site.mylittlestore.dto.store.StoreTableCreationDto;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.exception.item.DuplicateItemException;
@@ -96,28 +96,6 @@ public class StoreService {
         Item savedItem = itemRepository.save(findItemByIdAndStoreId);
 
         return savedItem.getId();
-    }
-
-    @Transactional
-    public Long createStoreTable(OrderDto orderDto) throws NoSuchStoreException {
-        //db에 가게가 없으면, 예외 발생
-        Store findStore = findById(orderDto.getStoreId());
-
-        //테이블 생성
-        StoreTable createdStoreTable = findStore.createStoreTable();
-
-        //저장
-        Store savedStore = storeRepository.save(findStore);
-        StoreTable savedStoreTable = storeTableRepository.save(createdStoreTable);
-
-//        잔여 테이블이 있으면 테이블 생성 -> 이거는 테이블 사용 로직인 듯
-//        if (tableNumbers - currentTableNumbers > 0) {
-//            orderDto.createTable(new Order(orderDto));
-//        } else {
-//            throw new IllegalStateException("테이블이 가득 찼습니다.");
-//        }
-
-        return savedStoreTable.getId();
     }
 
     private void validateDuplicateItemWithItemName(String name) throws DuplicateItemException {

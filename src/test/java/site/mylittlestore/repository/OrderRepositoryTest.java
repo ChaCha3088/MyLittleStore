@@ -12,7 +12,7 @@ import site.mylittlestore.domain.Order;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreDto;
-import site.mylittlestore.dto.order.OrderDto;
+import site.mylittlestore.dto.store.StoreTableCreationDto;
 import site.mylittlestore.enumstorage.errormessage.OrderErrorMessage;
 import site.mylittlestore.exception.store.NoSuchOrderException;
 import site.mylittlestore.repository.item.ItemRepository;
@@ -21,6 +21,7 @@ import site.mylittlestore.repository.store.StoreRepository;
 import site.mylittlestore.repository.order.OrderRepository;
 import site.mylittlestore.service.MemberService;
 import site.mylittlestore.service.StoreService;
+import site.mylittlestore.service.StoreTableService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -37,6 +38,8 @@ class OrderRepositoryTest {
     MemberRepository memberRepository;
     @Autowired
     StoreRepository storeRepository;
+    @Autowired
+    StoreTableService storeTableService;
     @Autowired
     ItemRepository itemRepository;
     @Autowired
@@ -84,9 +87,7 @@ class OrderRepositoryTest {
                 .stock(100)
                 .build());
 
-        Long newOrderId = storeService.createStoreTable(OrderDto.builder()
-                .storeId(newStoreId)
-                .build());
+        Long newOrderId = storeTableService.createStoreTable(newStoreId);
 
         memberTestId = newMemberId;
         storeTestId = newStoreId;

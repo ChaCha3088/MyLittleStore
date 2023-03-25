@@ -1,6 +1,7 @@
 package site.mylittlestore.service;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,9 @@ import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
-import site.mylittlestore.dto.order.OrderDto;
+import site.mylittlestore.dto.store.StoreTableCreationDto;
+import site.mylittlestore.dto.storetable.StoreTableFindDtoWithOrderFindDto;
+import site.mylittlestore.enumstorage.status.OrderStatus;
 import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
 import site.mylittlestore.exception.item.NotEnoughStockException;
@@ -47,6 +50,8 @@ class OrderServiceTest {
     @Autowired
     private MemberService memberService;
     @Autowired
+    private StoreTableService storeTableService;
+    @Autowired
     private StoreService storeService;
 
     @PersistenceContext
@@ -55,6 +60,7 @@ class OrderServiceTest {
     private Long memberTestId;
     private Long storeTestId;
     private Long itemTestId;
+    private Long storeTableTestId;
     private Long orderTestId;
 
     @BeforeAll
@@ -87,23 +93,32 @@ class OrderServiceTest {
                 .stock(100)
                 .build());
 
-        Long newOrderId = storeService.createStoreTable(OrderDto.builder()
-                .storeId(newStoreId)
+        //가게 열기
+        memberService.changeStoreStatus(StoreUpdateDto.builder()
+                .id(newStoreId)
+                .memberId(newMemberId)
                 .build());
+
+        //테이블 생성
+        Long createdStoreTableId = storeTableService.createStoreTable(newStoreId);
+
+        //주문 생성
+        Long createdOrderId = orderService.createOrder(newStoreId, createdStoreTableId);
 
         memberTestId = newMemberId;
         storeTestId = newStoreId;
         itemTestId = newItemId;
-        orderTestId = newOrderId;
+        storeTableTestId = createdStoreTableId;
+        orderTestId = createdOrderId;
     }
 
     @Test
-    void findOrderById(){
+    void findOrderById() {
         //when
         OrderDtoWithOrderItemId findOrderWithOrderItemIdById = orderService.findOrderDtoWithOrderItemIdById(orderTestId);
 
         //then
-        assertThat(findOrderWithOrderItemIdById.getOrderNumber()).isEqualTo(1);
+        assertThat(findOrderWithOrderItemIdById.getOrderStatus()).isEqualTo(OrderStatus.EMPTY);
     }
 
     @Test
@@ -138,49 +153,10 @@ class OrderServiceTest {
         OrderDtoWithOrderItemDto OrderDtoWithOrderItemDtoById = orderService.findOrderDtoById(orderTestId);
 
         //then
-        assertThat(OrderDtoWithOrderItemDtoById.getOrderNumber()).isEqualTo(1);
-        assertThat(OrderDtoWithOrderItemDtoById.getOrderItemDtoWithItemFindDtoList().size()).isEqualTo(1);
-        assertThat(OrderDtoWithOrderItemDtoById.getOrderItemDtoWithItemFindDtoList().get(0).getPrice()).isEqualTo(10000);
-        assertThat(OrderDtoWithOrderItemDtoById.getOrderItemDtoWithItemFindDtoList().get(0).getItemFindDto().getName()).isEqualTo("itemTest");
-    }
-
-    @Test
-    void findAllOrderByStoreId() {
-        //given
-        //가게 열기
-        memberService.changeStoreStatus(StoreUpdateDto.builder()
-                .id(storeTestId)
-                .memberId(memberTestId)
-                .build());
-
-        //when
-        orderService.createOrderItem(OrderItemFindDto.builder()
-                .storeId(storeTestId)
-                .orderId(orderTestId)
-                .itemId(itemTestId)
-                .price(10000)
-                .count(1)
-                .build());
-
-        orderService.createOrderItem(OrderItemFindDto.builder()
-                .storeId(storeTestId)
-                .orderId(orderTestId)
-                .itemId(itemTestId)
-                .price(9999)
-                .count(1)
-                .build());
-
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
-
-        //when
-        List<OrderDtoWithOrderItemDto> findAllOrderDtoByStoreId = orderService.findAllOrderDtoWithOrderItemIdByStoreId(storeTestId);
-
-        //then
-        assertThat(findAllOrderDtoByStoreId.size()).isEqualTo(1);
-        assertThat(findAllOrderDtoByStoreId.get(0).getOrderNumber()).isEqualTo(1);
-        assertThat(findAllOrderDtoByStoreId.get(0).getOrderItemDtoWithItemFindDtoList().size()).isEqualTo(2);
+        assertThat(OrderDtoWithOrderItemDtoById.getOrderStatus()).isEqualTo(OrderStatus.USING);
+        assertThat(OrderDtoWithOrderItemDtoById.getOrderItemDtoWithItemFindDtos().size()).isEqualTo(1);
+        assertThat(OrderDtoWithOrderItemDtoById.getOrderItemDtoWithItemFindDtos().get(0).getPrice()).isEqualTo(10000);
+        assertThat(OrderDtoWithOrderItemDtoById.getOrderItemDtoWithItemFindDtos().get(0).getItemFindDto().getName()).isEqualTo("itemTest");
     }
 
     @Test
@@ -225,6 +201,25 @@ class OrderServiceTest {
         //상품 재고 어떻게 되는지도 확인
         ItemFindDto itemFindDto = itemService.findItemDtoById(itemTestId);
         assertThat(itemFindDto.getStock()).isEqualTo(94);
+    }
+    
+    @Test
+    @DisplayName("주문 생성")
+    void createOrder() {
+        //when
+        //테이블 생성
+        Long createdStoreTableId = storeTableService.createStoreTable(storeTestId);
+
+        //주문 생성
+        Long createdOrderId = orderService.createOrder(storeTestId, createdStoreTableId);
+
+        //영속성 컨텍스트 초기화
+        em.flush();
+        em.clear();
+        
+        //then
+        StoreTableFindDtoWithOrderFindDto storeTableFindDtoWithOrderFindDtoByStoreId = storeTableService.findStoreTableFindDtoWithOrderFindDtoByStoreId(storeTableTestId, storeTestId);
+        assertThat(storeTableFindDtoWithOrderFindDtoByStoreId.getOrderDtoWithOrderItemId().getOrderStatus()).isEqualTo(OrderStatus.USING.toString());
     }
 
     @Test

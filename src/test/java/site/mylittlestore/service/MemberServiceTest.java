@@ -2,6 +2,7 @@ package site.mylittlestore.service;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ class MemberServiceTest {
     private MemberRepository memberRepository;
 
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
 
     private Long memberTestId;
 
@@ -406,7 +407,8 @@ class MemberServiceTest {
     }
 
     @Test
-    public void changeStoreStatus() {
+    @DisplayName("가게 상태 변경(CLOSE -> OPEN)")
+    public void changeStoreStatusCloseToOpen() {
         //given
         memberService.changeStoreStatus(StoreUpdateDto.builder()
                 .id(storeTestId)
@@ -422,6 +424,42 @@ class MemberServiceTest {
 
         //then
         assertThat(findStoreById.getStoreStatus()).isEqualTo(StoreStatus.OPEN);
+    }
+
+    @Test
+    @DisplayName("가게 상태 변경(OPEN -> CLOSE)")
+    public void changeStoreStatusOpenToClose() {
+        //given
+        memberService.changeStoreStatus(StoreUpdateDto.builder()
+                .id(storeTestId)
+                .memberId(memberTestId)
+                .build());
+
+        //영속성 컨텍스트 초기화
+        em.flush();
+        em.clear();
+
+        //when
+        StoreDto findStoreById1 = storeService.findStoreDtoById(storeTestId);
+
+        //then
+        assertThat(findStoreById1.getStoreStatus()).isEqualTo(StoreStatus.OPEN);
+
+        //given
+        memberService.changeStoreStatus(StoreUpdateDto.builder()
+                .id(storeTestId)
+                .memberId(memberTestId)
+                .build());
+
+        //영속성 컨텍스트 초기화
+        em.flush();
+        em.clear();
+
+        //when
+        StoreDto findStoreById2 = storeService.findStoreDtoById(storeTestId);
+
+        //then
+        assertThat(findStoreById2.getStoreStatus()).isEqualTo(StoreStatus.CLOSE);
     }
 
     @Test

@@ -17,11 +17,11 @@
                     <th>테이블 상태</th>
                 </tr>
                 </thead>
-                <tbody th:each="StoreTableDtoWithOrderItemDto : ${StoreTableDtoWithOrderItemDtoList}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/orders/{orderId}(memberId = ${memberId}, storeId = ${StoreTableDtoWithOrderItemDto.id}, orderId = ${StoreTableDtoWithOrderItemDto.id})}'|">
-                    <td th:text="${StoreTableDtoWithOrderItemDto.orderNumber}"></td>
-                    <td th:text="${StoreTableDtoWithOrderItemDto.orderItemDtoWithItemFindDtoList.size()}"></td>
-                    <td th:text="${StoreTableDtoWithOrderItemDto.startTime}"></td>
-                    <td th:text="${StoreTableDtoWithOrderItemDto.tableStatus}"></td>
+                <tbody th:each="StoreTableDtoWithOrderId : ${StoreTableDtoWithOrderIdList}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/orders/{orderId}(memberId = ${memberId}, storeId = ${StoreTableDtoWithOrderItemDto.id}, orderId = ${StoreTableDtoWithOrderItemDto.id})}'|">
+                    <td th:text="${StoreTableDtoWithOrderId.orderNumber}"></td>
+                    <td th:text="${StoreTableDtoWithOrderId.orderItemDtoWithItemFindDtoList.size()}"></td>
+                    <td th:text="${StoreTableDtoWithOrderId.startTime}"></td>
+                    <td th:text="${StoreTableDtoWithOrderId.tableStatus}"></td>
                 </tbody>
 
             </table>
@@ -30,7 +30,7 @@
 
     <div class="jumbotron">
         <button class="w-100 btn btn-primary btn-sm"
-                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/orders/new(memberId = ${memberId}, storeId = ${storeId})}'|"
+                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/new(memberId = ${memberId}, storeId = ${storeId})}'|"
                 type="button">테이블 등록
         </button>
     </div>

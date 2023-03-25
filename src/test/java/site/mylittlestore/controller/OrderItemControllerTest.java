@@ -16,7 +16,7 @@ import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.orderitem.OrderItemFindDto;
 import site.mylittlestore.dto.store.StoreDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
-import site.mylittlestore.dto.order.OrderDto;
+import site.mylittlestore.dto.store.StoreTableCreationDto;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.service.*;
@@ -36,6 +36,9 @@ public class OrderItemControllerTest {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private StoreTableService storeTableService;
 
     @Autowired
     private StoreService storeService;
@@ -81,9 +84,7 @@ public class OrderItemControllerTest {
                 .build());
 
         //테이블 추가
-        Long newOrderId = storeService.createStoreTable(OrderDto.builder()
-                .storeId(newStoreId)
-                .build());
+        Long newOrderId = storeTableService.createStoreTable(storeTestId);
 
         //상품 추가
         Long newItemId1 = storeService.createItem(ItemCreationDto.builder()
