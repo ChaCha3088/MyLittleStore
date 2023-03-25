@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import site.mylittlestore.domain.Order;
 import site.mylittlestore.domain.StoreTable;
+import site.mylittlestore.enumstorage.status.StoreTableStatus;
 import site.mylittlestore.repository.order.OrderRepositoryQueryDsl;
 
 import javax.persistence.EntityManager;
@@ -34,6 +35,19 @@ public class StoreTableRepositoryImpl implements StoreTableRepositoryQueryDsl {
 //    }
 
     @Override
+    public Optional<StoreTable> findByIdWhereStoreTableStatusIsNotDeleted(Long id) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return Optional.ofNullable(queryFactory
+                .select(storeTable)
+                .from(storeTable)
+                .where(storeTable.id.eq(id))
+                .where(storeTable.storeTableStatus.ne(StoreTableStatus.DELETED))
+                .fetchOne());
+    }
+
+
+    @Override
     public Optional<StoreTable> findStoreTableWithStoreByIdAndStoreId(Long id, Long storeId) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
@@ -56,8 +70,23 @@ public class StoreTableRepositoryImpl implements StoreTableRepositoryQueryDsl {
                 .join(storeTable.store, store).fetchJoin()
                 .join(storeTable.order, order).fetchJoin()
                 .where(storeTable.id.eq(id).and(storeTable.store.id.eq(storeId)))
+                .where(storeTable.storeTableStatus.ne(StoreTableStatus.DELETED))
                 .fetchOne());
     }
+
+    @Override
+    public List<StoreTable> findAllStoreTableByStoreIdWhereStoreTableStatusIsNotDeleted(Long storeId) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return queryFactory
+                .select(storeTable)
+                .from(storeTable)
+                .where(storeTable.store.id.eq(storeId))
+                .where(storeTable.storeTableStatus.ne(StoreTableStatus.DELETED))
+                .orderBy(storeTable.id.asc())
+                .fetch();
+    }
+
     @Override
     public List<StoreTable> findAllStoreTableWithOrderByStoreId(Long storeId) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
@@ -68,6 +97,7 @@ public class StoreTableRepositoryImpl implements StoreTableRepositoryQueryDsl {
                 .from(storeTable)
                 .join(storeTable.order, order).fetchJoin()
                 .where(storeTable.store.id.eq(storeId))
+                .where(storeTable.storeTableStatus.ne(StoreTableStatus.DELETED))
                 .orderBy(storeTable.id.asc())
                 .fetch();
     }

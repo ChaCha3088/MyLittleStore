@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Store;
 import site.mylittlestore.domain.StoreTable;
-import site.mylittlestore.dto.store.StoreTableCreationDto;
 import site.mylittlestore.dto.storetable.StoreTableFindDto;
 import site.mylittlestore.dto.storetable.StoreTableFindDtoWithOrderFindDto;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
@@ -16,7 +15,6 @@ import site.mylittlestore.repository.store.StoreRepository;
 import site.mylittlestore.repository.storetable.StoreTableRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,7 +27,8 @@ public class StoreTableService {
     private final StoreTableRepository storeTableRepository;
 
     public StoreTableFindDto findStoreTableFindDtoById(Long storeTableId) throws NoSuchStoreTableException {
-        StoreTable findStoreTable = storeTableRepository.findById(storeTableId).orElseThrow(() -> new NoSuchStoreTableException(StoreTableErrorMessage.NO_SUCH_STORE_TABLE.getMessage()));
+        StoreTable findStoreTable = storeTableRepository.findByIdWhereStoreTableStatusIsNotDeleted(storeTableId)
+                .orElseThrow(() -> new NoSuchStoreTableException(StoreTableErrorMessage.NO_SUCH_STORE_TABLE.getMessage()));
         return findStoreTable.toStoreTableFindDto();
     }
 
@@ -44,7 +43,7 @@ public class StoreTableService {
 
     public List<StoreTableFindDto> findAllStoreTableFindDtoByStoreId(Long storeId) {
         //가게에 속한 테이블만 찾아야지.
-        List<StoreTable> allStoreTableByStoreId = storeTableRepository.findAllStoreTableByStoreId(storeId);
+        List<StoreTable> allStoreTableByStoreId = storeTableRepository.findAllStoreTableByStoreIdWhereStoreTableStatusIsNotDeleted(storeId);
 
         //Dto로 변환
         return allStoreTableByStoreId.stream()
