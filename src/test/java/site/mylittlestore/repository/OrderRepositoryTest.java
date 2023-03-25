@@ -87,9 +87,7 @@ class OrderRepositoryTest {
                 .stock(100)
                 .build());
 
-        Long newOrderId = storeTableService.createStoreTable(StoreTableCreationDto.builder()
-                .storeId(newStoreId)
-                .build());
+        Long newOrderId = storeTableService.createStoreTable(newStoreId);
 
         memberTestId = newMemberId;
         storeTestId = newStoreId;

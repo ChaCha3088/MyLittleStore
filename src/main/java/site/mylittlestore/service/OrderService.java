@@ -7,27 +7,29 @@ import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.OrderItem;
 import site.mylittlestore.domain.Store;
 import site.mylittlestore.domain.Order;
+import site.mylittlestore.domain.StoreTable;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.orderitem.OrderItemFindDto;
 import site.mylittlestore.dto.orderitem.OrderItemUpdateDto;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemDto;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
-import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
+import site.mylittlestore.enumstorage.errormessage.*;
+import site.mylittlestore.enumstorage.status.OrderStatus;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.dto.orderitem.OrderItemCreationDto;
-import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
-import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
-import site.mylittlestore.enumstorage.errormessage.OrderErrorMessage;
 import site.mylittlestore.exception.item.NoSuchItemException;
 import site.mylittlestore.exception.item.NotEnoughStockException;
 import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.exception.store.NoSuchStoreException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
 import site.mylittlestore.exception.store.StoreClosedException;
+import site.mylittlestore.exception.storetable.NoSuchStoreTableException;
+import site.mylittlestore.exception.storetable.OrderAlreadyExistException;
 import site.mylittlestore.repository.item.ItemRepository;
 import site.mylittlestore.repository.orderitem.OrderItemRepository;
 import site.mylittlestore.repository.store.StoreRepository;
 import site.mylittlestore.repository.order.OrderRepository;
+import site.mylittlestore.repository.storetable.StoreTableRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +43,18 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
     private final StoreRepository storeRepository;
+    private final StoreTableRepository storeTableRepository;
     private final OrderItemRepository orderItemRepository;
+
+    public OrderDtoWithOrderItemId findOrderDtoWithOrderItemIdById(Long orderId) throws NoSuchOrderException {
+        Optional<Order> findOrderById = orderRepository.findById(orderId);
+
+        //주문이 없으면 예외 발생
+        //Dto로 변환
+        return findOrderById.orElseThrow(()
+                -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()))
+                .toOrderDtoWithOrderItemId();
+    }
 
     public OrderDtoWithOrderItemDto findOrderDtoById(Long orderId) throws NoSuchOrderException {
         Optional<Order> findOrderById = orderRepository.findOrderAndOrderItemsByIdOrderByTime(orderId);
@@ -55,31 +68,6 @@ public class OrderService {
                 .toOrderDtoWithOrderItemDto();
     }
 
-    public OrderDtoWithOrderItemId findOrderDtoWithOrderItemIdById(Long orderId) throws NoSuchOrderException {
-        Optional<Order> findOrderById = orderRepository.findById(orderId);
-        List<Long> findAllOrderItemIdByOrderId = orderItemRepository.findAllOrderItemIdByOrderId(orderId);
-
-        //테이블이 없으면 예외 발생
-        //Dto로 변환
-        return findOrderById.orElseThrow(()
-                -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()))
-                .toOrderDtoWithOrderItemId(findAllOrderItemIdByOrderId);
-    }
-
-    public List<OrderDtoWithOrderItemDto> findAllOrderDtoWithOrderItemIdByStoreId(Long storeId) {
-        //가게에 속한 테이블만 찾아야지.
-        List<Order> findOrderByStoreId = orderRepository.findAllOrderByStoreIdOrderByOrderNumber(storeId);
-
-        if (findOrderByStoreId.isEmpty()) {
-            findOrderByStoreId = orderRepository.findAllByStoreId(storeId);
-        }
-
-        //Dto로 변환
-        return findOrderByStoreId.stream()
-                .map(m -> m.toOrderDtoWithOrderItemDto())
-                .collect(Collectors.toList());
-    }
-
     public List<OrderItemFindDto> findAllOrderItemByOrderId(Long orderId) {
         //테이블에 속한 주문 상품만 찾아야지.
         List<OrderItem> findOrderItemByOrderId = orderItemRepository.findAllOrderItemByOrderIdOrderByTime(orderId);
@@ -88,6 +76,39 @@ public class OrderService {
         return findOrderItemByOrderId.stream()
                 .map(m -> m.toOrderItemDto())
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Long createOrder(Long storeId, Long storeTableId) throws NoSuchStoreException, StoreClosedException {
+        Optional<StoreTable> storeTableWithStoreByIdAndStoreId = storeTableRepository.findStoreTableWithStoreByIdAndStoreId(storeTableId, storeId);
+
+        //테이블이 없으면 예외 발생
+        StoreTable storeTable = storeTableWithStoreByIdAndStoreId.orElseThrow(()
+                -> new NoSuchStoreTableException(StoreTableErrorMessage.NO_SUCH_STORE_TABLE.getMessage()));
+
+        Order order = storeTable.getOrder();
+        Store store = storeTable.getStore();
+
+        //테이블에 주문이 이미 존재하는지 확인
+        if (order != null) {
+            throw new OrderAlreadyExistException(StoreTableErrorMessage.ORDER_ALREADY_EXIST.getMessage());
+        }
+
+        //가게가 열린 상태인지 확인
+        if (store.getStoreStatus().equals(StoreStatus.CLOSE)) {
+            throw new StoreClosedException(StoreErrorMessage.STORE_IS_CLOSED.getMessage());
+        }
+
+        //이제 테이블에 주문이 없다면, 주문 생성
+        Order createOrder = Order.builder()
+                .store(store)
+                .storeTable(storeTable)
+                .build();
+
+        //주문 저장
+        Order savedOrder = orderRepository.save(createOrder);
+
+        return savedOrder.getId();
     }
 
     @Transactional

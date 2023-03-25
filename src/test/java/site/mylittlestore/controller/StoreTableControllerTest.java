@@ -12,22 +12,21 @@ import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreDto;
-import site.mylittlestore.dto.order.OrderDtoWithOrderItemDto;
+import site.mylittlestore.dto.storetable.StoreTableFindDto;
+import site.mylittlestore.dto.storetable.StoreTableFindDtoWithOrderFindDto;
 import site.mylittlestore.service.MemberService;
-import site.mylittlestore.service.OrderService;
-
-import java.util.List;
+import site.mylittlestore.service.StoreTableService;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-class OrderControllerTest {
+public class StoreTableControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,7 +35,7 @@ class OrderControllerTest {
     private MemberService memberService;
 
     @Autowired
-    private OrderService orderService;
+    private StoreTableService storeTableService;
 
     private Long memberTestId;
 
@@ -70,16 +69,16 @@ class OrderControllerTest {
     }
 
     @Test
-    void orderInfo() throws Exception {
-        //given
-        //order 생성
-        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/orders/new", memberTestId, storeTestId));
+    void createStoreTable() throws Exception {
+        String redirectedUrl = mockMvc.perform(get("/members/{memberId}/stores/{storeId}/storeTables/new", memberTestId, storeTestId))
+                .andExpect(status().is3xxRedirection())
+                .andReturn().getResponse().getRedirectedUrl();
 
-        //then
-        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/orders/{orderId}", memberTestId, storeTestId, 3L))
-                .andExpect(status().isOk())
-                .andExpect(view().name("orders/orderInfo"))
-                .andExpect(model().attributeExists("memberId"))
-                .andExpect(model().attributeExists("OrderDtoWithOrderItemDto"));
+        String[] split = redirectedUrl.split("/");
+        Long storeTableId = Long.parseLong(split[split.length - 1]);
+
+        StoreTableFindDto storeTableFindDtoById = storeTableService.findStoreTableFindDtoById(storeTableId);
+        assertThat(storeTableFindDtoById.getStoreId()).isEqualTo(storeTestId);
+        assertThat(storeTableFindDtoById.getStoreTableStatus()).isEqualTo("EMPTY");
     }
 }

@@ -14,19 +14,23 @@ public class OrderDtoWithOrderItemDto {
 
     private Long id;
     private Long storeId;
-    private int orderNumber;
-    private List<OrderItemDtoWithItemFindDto> orderItemDtoWithItemFindDtoList;
+    private Long paymentId;
+    private Long storeTableId;
+    private List<OrderItemDtoWithItemFindDto> orderItemDtoWithItemFindDtos;
     private LocalDateTime startTime;
-    private OrderStatus orderStatus;
+    private LocalDateTime endTime;
+    private String orderStatus;
 
     @Builder
     @QueryProjection
-    public OrderDtoWithOrderItemDto(Long id, Long storeId, int orderNumber, List<OrderItemDtoWithItemFindDto> orderItemDtoWithItemFindDtoList, LocalDateTime startTime, OrderStatus orderStatus) {
+    public OrderDtoWithOrderItemDto(Long id, Long storeId, Long paymentId, Long storeTableId, List<OrderItemDtoWithItemFindDto> orderItemDtoWithItemFindDtos, LocalDateTime startTime, LocalDateTime endTime, String orderStatus) {
         this.id = id;
         this.storeId = storeId;
-        this.orderNumber = orderNumber;
-        this.orderItemDtoWithItemFindDtoList = orderItemDtoWithItemFindDtoList;
+        this.paymentId = paymentId;
+        this.storeTableId = storeTableId;
+        this.orderItemDtoWithItemFindDtos = orderItemDtoWithItemFindDtos;
         this.startTime = startTime;
+        this.endTime = endTime;
         this.orderStatus = orderStatus;
     }
 }

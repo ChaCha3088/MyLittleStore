@@ -10,7 +10,4 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
 
     List<Order> findAllByStoreId(Long storeId);
     Optional<Order> findOrderAndOrderItemsByIdOrderByTime(Long orderId);
-
-    //가게에 속한 테이블만 찾아야지.
-    List<Order> findAllOrderByStoreIdOrderByOrderNumber(Long storeId);
 }

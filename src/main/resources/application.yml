@@ -18,6 +18,7 @@ spring:
 #        org.hibernate.type:
 #          descriptor:
 #            sql: trace
+    open-in-view: false
 # p6spy
 logging:
   level:

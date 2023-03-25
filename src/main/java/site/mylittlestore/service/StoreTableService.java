@@ -6,10 +6,18 @@ import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Store;
 import site.mylittlestore.domain.StoreTable;
 import site.mylittlestore.dto.store.StoreTableCreationDto;
+import site.mylittlestore.dto.storetable.StoreTableFindDto;
+import site.mylittlestore.dto.storetable.StoreTableFindDtoWithOrderFindDto;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
+import site.mylittlestore.enumstorage.errormessage.StoreTableErrorMessage;
 import site.mylittlestore.exception.store.NoSuchStoreException;
+import site.mylittlestore.exception.storetable.NoSuchStoreTableException;
 import site.mylittlestore.repository.store.StoreRepository;
 import site.mylittlestore.repository.storetable.StoreTableRepository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -20,10 +28,44 @@ public class StoreTableService {
 
     private final StoreTableRepository storeTableRepository;
 
+    public StoreTableFindDto findStoreTableFindDtoById(Long storeTableId) throws NoSuchStoreTableException {
+        StoreTable findStoreTable = storeTableRepository.findById(storeTableId).orElseThrow(() -> new NoSuchStoreTableException(StoreTableErrorMessage.NO_SUCH_STORE_TABLE.getMessage()));
+        return findStoreTable.toStoreTableFindDto();
+    }
+
+    public StoreTableFindDtoWithOrderFindDto findStoreTableFindDtoWithOrderFindDtoByStoreId(Long storeTableId, Long storeId) {
+        //가게에 속한 테이블만 찾아야지.
+        StoreTable storeTableWithStoreAndOrderByIdAndStoreId = storeTableRepository.findStoreTableWithStoreAndOrderByIdAndStoreId(storeTableId, storeId)
+                .orElseThrow(() -> new NoSuchStoreTableException(StoreTableErrorMessage.NO_SUCH_STORE_TABLE.getMessage()));
+
+        //Dto로 변환
+        return storeTableWithStoreAndOrderByIdAndStoreId.toStoreTableFindDtoWithOrderFindDto();
+    }
+
+    public List<StoreTableFindDto> findAllStoreTableFindDtoByStoreId(Long storeId) {
+        //가게에 속한 테이블만 찾아야지.
+        List<StoreTable> allStoreTableByStoreId = storeTableRepository.findAllStoreTableByStoreId(storeId);
+
+        //Dto로 변환
+        return allStoreTableByStoreId.stream()
+                .map(m -> m.toStoreTableFindDto())
+                .collect(Collectors.toList());
+    }
+
+    public List<StoreTableFindDtoWithOrderFindDto> findAllStoreTableFindDtoWithOrderFindDtoByStoreId(Long storeId) {
+        //가게에 속한 테이블만 찾아야지.
+        List<StoreTable> storeTableWithOrderByStoreId = storeTableRepository.findAllStoreTableWithOrderByStoreId(storeId);
+
+        //Dto로 변환
+        return storeTableWithOrderByStoreId.stream()
+                .map(m -> m.toStoreTableFindDtoWithOrderFindDto())
+                .collect(Collectors.toList());
+    }
+
     @Transactional
-    public Long createStoreTable(StoreTableCreationDto storeTableDto) throws NoSuchStoreException {
+    public Long createStoreTable(Long storeId) throws NoSuchStoreException {
         //db에 가게가 없으면, 예외 발생
-         Store findStore = findById(storeTableDto.getStoreId());
+         Store findStore = findById(storeId);
 
         //테이블 생성
         StoreTable createdStoreTable = findStore.createStoreTable();

@@ -84,9 +84,7 @@ public class OrderItemControllerTest {
                 .build());
 
         //테이블 추가
-        Long newOrderId = storeTableService.createStoreTable(StoreTableCreationDto.builder()
-                .storeId(newStoreId)
-                .build());
+        Long newOrderId = storeTableService.createStoreTable(storeTestId);
 
         //상품 추가
         Long newItemId1 = storeService.createItem(ItemCreationDto.builder()

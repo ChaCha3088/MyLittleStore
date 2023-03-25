@@ -61,9 +61,13 @@ public class Order extends BaseEntity {
         this.orderItems = new ArrayList<>();
         this.startTime = LocalDateTime.now();
         this.orderStatus = OrderStatus.EMPTY;
+
+        storeTable.setOrder(this);
     }
 
     public OrderItem createOrderItem(OrderItemCreationDto orderItemCreationDto) throws NotEnoughStockException {
+        this.orderStatus = OrderStatus.USING;
+
         OrderItem createdOrderItem = OrderItem.builder()
                 .order(this)
                 .item(orderItemCreationDto.getItem())
@@ -82,21 +86,27 @@ public class Order extends BaseEntity {
         return OrderDtoWithOrderItemDto.builder()
                 .id(id)
                 .storeId(store.getId())
-                .orderItemDtoWithItemFindDtoList(orderItems.stream()
+                .paymentId(payment != null ? payment.getId() : null)
+                .storeTableId(storeTable.getId())
+                .orderItemDtoWithItemFindDtos(orderItems.stream()
                         .map(OrderItem::toOrderItemDtoWithItemFindDto)
                         .collect(Collectors.toList()))
                 .startTime(startTime)
-                .orderStatus(orderStatus)
+                .orderStatus(orderStatus.toString())
                 .build();
     }
 
-    public OrderDtoWithOrderItemId toOrderDtoWithOrderItemId(List<Long> findAllOrderItemIdByOrderId) {
+    public OrderDtoWithOrderItemId toOrderDtoWithOrderItemId() {
         return OrderDtoWithOrderItemId.builder()
                 .id(id)
                 .storeId(store.getId())
-                .orderItemIdList(findAllOrderItemIdByOrderId)
+                .paymentId(payment != null ? payment.getId() : null)
+                .storeTableId(storeTable.getId())
+                .orderItemIds(orderItems.stream()
+                        .map(OrderItem::getId)
+                        .collect(Collectors.toList()))
                 .startTime(startTime)
-                .orderStatus(orderStatus)
+                .orderStatus(orderStatus.toString())
                 .build();
     }
 }
