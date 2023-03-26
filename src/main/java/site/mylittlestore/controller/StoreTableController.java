@@ -5,7 +5,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import site.mylittlestore.dto.store.StoreTableCreationDto;
 import site.mylittlestore.dto.storetable.StoreTableFindDto;
 import site.mylittlestore.service.StoreTableService;
 
@@ -21,7 +20,7 @@ public class StoreTableController {
         model.addAttribute("storeId", storeId);
         model.addAttribute("StoreTableDtoWithOrderIdList", storeTableService.findAllStoreTableFindDtoWithOrderFindDtoByStoreId(storeId));
 
-        return "storeTables/StoreTableList";
+        return "storeTables/storeTableList";
     }
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}")
@@ -37,7 +36,7 @@ public class StoreTableController {
         model.addAttribute("storeId", storeId);
         model.addAttribute("storeTableId", storeTableId);
         model.addAttribute("storeTableFindDto", storeTableFindDtoById);
-        return "storeTables/StoreTableInfo";
+        return "storeTables/storeTableInfo";
     }
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/new")

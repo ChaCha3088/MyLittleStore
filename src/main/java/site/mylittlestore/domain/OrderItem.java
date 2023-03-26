@@ -106,33 +106,39 @@ public class OrderItem extends BaseEntity {
     public OrderItemFindDto toOrderItemDto() {
         return OrderItemFindDto.builder()
                 .id(id)
+                .storeId(store.getId())
                 .orderId(order.getId())
                 .itemId(item.getId())
                 .price(price)
                 .count(count)
                 .time(time)
+                .orderItemStatus(orderItemStatus.toString())
                 .build();
     }
 
     public OrderItemDtoWithItemFindDto toOrderItemDtoWithItemFindDto() {
         return OrderItemDtoWithItemFindDto.builder()
                 .id(id)
+                .storeId(store.getId())
                 .orderId(order.getId())
-                .itemFindDto(item.toItemDto())
+                .itemFindDto(item.toItemFindDto())
                 .price(price)
                 .count(count)
                 .time(time)
+                .orderItemStatus(orderItemStatus.toString())
                 .build();
     }
 
     public OrderItemDtoWithItemName toOrderItemDtoWithItemName() {
         return OrderItemDtoWithItemName.builder()
                 .id(id)
+                .storeId(store.getId())
                 .orderId(order.getId())
                 .itemName(item.getName())
                 .price(price)
                 .count(count)
                 .time(time)
+                .orderItemStatus(orderItemStatus.toString())
                 .build();
     }
 }

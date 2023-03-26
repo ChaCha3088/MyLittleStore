@@ -1,22 +1,17 @@
 package site.mylittlestore.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import site.mylittlestore.domain.OrderItem;
 import site.mylittlestore.domain.Store;
 import site.mylittlestore.domain.Order;
 import site.mylittlestore.domain.StoreTable;
 import site.mylittlestore.domain.item.Item;
-import site.mylittlestore.dto.orderitem.OrderItemFindDto;
-import site.mylittlestore.dto.orderitem.OrderItemUpdateDto;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemDto;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
 import site.mylittlestore.enumstorage.errormessage.*;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.item.NoSuchItemException;
-import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.exception.store.NoSuchStoreException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
 import site.mylittlestore.exception.store.StoreClosedException;
@@ -28,9 +23,7 @@ import site.mylittlestore.repository.store.StoreRepository;
 import site.mylittlestore.repository.order.OrderRepository;
 import site.mylittlestore.repository.storetable.StoreTableRepository;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -54,15 +47,12 @@ public class OrderService {
     }
 
     public OrderDtoWithOrderItemDto findOrderDtoById(Long orderId) throws NoSuchOrderException {
-        Optional<Order> findOrderById = orderRepository.findOrderWithOrderItemsByIdOrderByTime(orderId);
+        //주문이 없으면 예외 발생
+        Order order = orderRepository.findOrderWithOrderItemsAndItemByIdOrderByTime(orderId)
+                .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
 
-        findOrderById = findOrderById.or(() -> orderRepository.findById(orderId));
-
-        //테이블이 없으면 예외 발생
         //Dto로 변환
-        return findOrderById.orElseThrow(()
-                -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()))
-                .toOrderDtoWithOrderItemDto();
+        return order.toOrderDtoWithOrderItemDto();
     }
 
     @Transactional

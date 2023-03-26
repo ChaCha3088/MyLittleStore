@@ -13,20 +13,23 @@ import java.time.LocalDateTime;
 public class OrderItemDtoWithItemName {
 
     private Long id;
+    private Long storeId;
     private Long orderId;
     private String itemName;
     private int price;
     private int count;
     private LocalDateTime time;
+    private String orderItemStatus;
 
     @Builder
     @QueryProjection
-    public OrderItemDtoWithItemName(Long id, Long orderId, String itemName, int price, int count, LocalDateTime time) {
+    public OrderItemDtoWithItemName(Long id, Long storeId, Long orderId, String itemName, int price, int count, LocalDateTime time, String orderItemStatus) {
         this.id = id;
         this.orderId = orderId;
         this.itemName = itemName;
         this.price = price;
         this.count = count;
         this.time = time;
+        this.orderItemStatus = orderItemStatus;
     }
 }

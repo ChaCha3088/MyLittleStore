@@ -92,7 +92,7 @@ public class Item extends BaseEntity {
     }
 
     //==DTO==//
-    public ItemFindDto toItemDto() {
+    public ItemFindDto toItemFindDto() {
         return ItemFindDto.builder()
                 .id(id)
                 .storeId(store.getId())

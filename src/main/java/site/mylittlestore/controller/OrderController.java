@@ -13,8 +13,8 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping("/members/{memberId}/stores/{storeId}/orders/{orderId}")
-    public String orderInfo(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("orderId") Long orderId, Model model) {
+    @GetMapping("/members/{memberId}/stores/{storeId}/storeTable/{storeTableId}/orders/{orderId}")
+    public String orderInfo(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, Model model) {
         model.addAttribute("memberId", memberId);
         model.addAttribute("OrderDtoWithOrderItemDto", orderService.findOrderDtoById(orderId));
 

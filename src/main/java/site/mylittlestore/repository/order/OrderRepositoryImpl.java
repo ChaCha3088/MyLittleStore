@@ -33,14 +33,16 @@ public class OrderRepositoryImpl implements OrderRepositoryQueryDsl {
 
 
     @Override
-    public Optional<Order> findOrderWithOrderItemsByIdOrderByTime(Long orderId) {
+    public Optional<Order> findOrderWithOrderItemsAndItemByIdOrderByTime(Long orderId) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return Optional.ofNullable(queryFactory
                 .select(order)
                 .from(order)
-                .join(order.orderItems, orderItem).fetchJoin()
-                .where(order.id.eq(orderId))
+                .leftJoin(order.orderItems, orderItem).fetchJoin()
+                .leftJoin(orderItem.item, item).fetchJoin()
+                .where(order.id.eq(orderId)
+                        .and(order.orderStatus.eq(OrderStatus.USING)))
                 .orderBy(orderItem.time.asc())
                 .fetchOne());
     }
