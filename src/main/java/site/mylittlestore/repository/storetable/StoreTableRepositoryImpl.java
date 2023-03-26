@@ -41,8 +41,8 @@ public class StoreTableRepositoryImpl implements StoreTableRepositoryQueryDsl {
         return Optional.ofNullable(queryFactory
                 .select(storeTable)
                 .from(storeTable)
-                .where(storeTable.id.eq(id))
-                .where(storeTable.storeTableStatus.ne(StoreTableStatus.DELETED))
+                .where(storeTable.id.eq(id)
+                        .and(storeTable.storeTableStatus.ne(StoreTableStatus.DELETED)))
                 .fetchOne());
     }
 
@@ -56,7 +56,9 @@ public class StoreTableRepositoryImpl implements StoreTableRepositoryQueryDsl {
                 .from(storeTable)
                 .join(storeTable.store, store).fetchJoin()
 //                        .join(storeTable.order, order).fetchJoin()
-                .where(storeTable.id.eq(id).and(storeTable.store.id.eq(storeId)))
+                .where(storeTable.id.eq(id)
+                        .and(storeTable.store.id.eq(storeId))
+                        .and(storeTable.storeTableStatus.ne(StoreTableStatus.DELETED)))
                 .fetchOne());
     }
 
@@ -69,8 +71,9 @@ public class StoreTableRepositoryImpl implements StoreTableRepositoryQueryDsl {
                 .from(storeTable)
                 .join(storeTable.store, store).fetchJoin()
                 .join(storeTable.order, order).fetchJoin()
-                .where(storeTable.id.eq(id).and(storeTable.store.id.eq(storeId)))
-                .where(storeTable.storeTableStatus.ne(StoreTableStatus.DELETED))
+                .where(storeTable.id.eq(id)
+                        .and(storeTable.store.id.eq(storeId))
+                        .and(storeTable.storeTableStatus.ne(StoreTableStatus.DELETED)))
                 .fetchOne());
     }
 
