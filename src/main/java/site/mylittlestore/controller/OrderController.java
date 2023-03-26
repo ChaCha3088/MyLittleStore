@@ -20,4 +20,11 @@ public class OrderController {
 
         return "orders/orderInfo";
     }
+
+    @GetMapping("/members/{memberId}/stores/{storeId}/storeTable/{storeTableId}/orders/new")
+    public String createOrder(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, Model model) {
+        Long createdOrderId = orderService.createOrder(storeId, storeTableId);
+
+        return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTable/" + storeTableId + "/orders/" + createdOrderId;
+    }
 }

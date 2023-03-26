@@ -1,6 +1,7 @@
 package site.mylittlestore.controller;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.member.MemberCreationDto;
+import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
 import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.enumstorage.status.OrderStatus;
 import site.mylittlestore.service.MemberService;
 import site.mylittlestore.service.OrderService;
 
@@ -78,5 +81,20 @@ class OrderControllerTest {
                 .andExpect(view().name("orders/orderInfo"))
                 .andExpect(model().attributeExists("memberId"))
                 .andExpect(model().attributeExists("OrderDtoWithOrderItemDto"));
+    }
+
+    @Test
+    @DisplayName("주문 생성")
+    void createOrder() throws Exception {
+        //주문 상세로 리디렉션
+        String redirectedUrl = mockMvc.perform(get("/members/{memberId}/stores/{storeId}/orders/new", memberTestId, storeTestId))
+                .andExpect(status().is3xxRedirection())
+                .andReturn().getResponse().getRedirectedUrl();
+
+        String[] split = redirectedUrl.split("/");
+        Long orderId = Long.parseLong(split[split.length - 1]);
+
+        OrderDtoWithOrderItemId orderDtoWithOrderItemIdById = orderService.findOrderDtoWithOrderItemIdById(orderId);
+        assertThat(orderDtoWithOrderItemIdById.getOrderStatus()).isEqualTo(OrderStatus.USING.toString());
     }
 }
