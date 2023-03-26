@@ -2,12 +2,11 @@ package site.mylittlestore.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import site.mylittlestore.dto.order.OrderDtoWithOrderItemDto;
+import site.mylittlestore.dto.order.OrderDtoWithOrderItemDtoWithItemFindDto;
+import site.mylittlestore.dto.order.OrderDtoWithOrderItemDtoWithItemNameDto;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
-import site.mylittlestore.dto.orderitem.OrderItemEntityCreationDto;
 import site.mylittlestore.enumstorage.status.OrderStatus;
 import site.mylittlestore.entity.BaseEntity;
-import site.mylittlestore.exception.item.NotEnoughStockException;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -66,8 +65,22 @@ public class Order extends BaseEntity {
     }
 
     //==DTO==//
-    public OrderDtoWithOrderItemDto toOrderDtoWithOrderItemDto() {
-        return OrderDtoWithOrderItemDto.builder()
+    public OrderDtoWithOrderItemDtoWithItemNameDto toOrderDtoWithOrderItemDtoWithItemNameDto() {
+        return OrderDtoWithOrderItemDtoWithItemNameDto.builder()
+                .id(id)
+                .storeId(store.getId())
+                .paymentId(payment != null ? payment.getId() : null)
+                .storeTableId(storeTable.getId())
+                .orderItemDtoWithItemNameDtos(orderItems.stream()
+                        .map(OrderItem::toOrderItemDtoWithItemNameDto)
+                        .collect(Collectors.toList()))
+                .startTime(startTime)
+                .orderStatus(orderStatus.toString())
+                .build();
+    }
+
+    public OrderDtoWithOrderItemDtoWithItemFindDto toOrderDtoWithOrderItemDtoWithItemFindDto() {
+        return OrderDtoWithOrderItemDtoWithItemFindDto.builder()
                 .id(id)
                 .storeId(store.getId())
                 .paymentId(payment != null ? payment.getId() : null)

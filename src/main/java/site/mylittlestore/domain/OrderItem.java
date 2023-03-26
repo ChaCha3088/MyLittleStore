@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.orderitem.OrderItemDtoWithItemFindDto;
+import site.mylittlestore.dto.orderitem.OrderItemDtoWithItemNameDto;
 import site.mylittlestore.dto.orderitem.OrderItemFindDto;
-import site.mylittlestore.dto.orderitem.OrderItemDtoWithItemName;
 import site.mylittlestore.entity.BaseEntity;
 import site.mylittlestore.enumstorage.status.OrderItemStatus;
 import site.mylittlestore.exception.item.NotEnoughStockException;
@@ -129,8 +129,8 @@ public class OrderItem extends BaseEntity {
                 .build();
     }
 
-    public OrderItemDtoWithItemName toOrderItemDtoWithItemName() {
-        return OrderItemDtoWithItemName.builder()
+    public OrderItemDtoWithItemNameDto toOrderItemDtoWithItemNameDto() {
+        return OrderItemDtoWithItemNameDto.builder()
                 .id(id)
                 .storeId(store.getId())
                 .orderId(order.getId())

@@ -53,11 +53,11 @@ public class OrderItemService {
         return findOrderItemById.orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage())).toOrderItemDtoWithItemFindDto();
     }
 
-    public List<OrderItemDtoWithItemName> findAllOrderItemDtoWithItemNameByOrderIdOrderByTime(Long orderId) {
+    public List<OrderItemDtoWithItemNameDto> findAllOrderItemDtoWithItemNameByOrderIdOrderByTime(Long orderId) {
         List<OrderItem> findOrderItemByOrderId = orderItemRepository.findAllOrderItemByOrderIdOrderByTime(orderId);
 
         //Dto로 변환
-        return findOrderItemByOrderId.stream().map(OrderItem::toOrderItemDtoWithItemName).collect(Collectors.toList());
+        return findOrderItemByOrderId.stream().map(OrderItem::toOrderItemDtoWithItemNameDto).collect(Collectors.toList());
     }
 
     public List<OrderItemFindDto> findAllOrderItemByOrderId(Long orderId) {

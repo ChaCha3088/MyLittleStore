@@ -12,11 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreDto;
-import site.mylittlestore.dto.order.OrderDtoWithOrderItemDto;
 import site.mylittlestore.service.MemberService;
 import site.mylittlestore.service.OrderService;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;

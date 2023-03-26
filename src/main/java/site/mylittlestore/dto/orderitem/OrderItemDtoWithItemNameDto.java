@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class OrderItemDtoWithItemName {
+public class OrderItemDtoWithItemNameDto {
 
     private Long id;
     private Long storeId;
@@ -23,8 +23,9 @@ public class OrderItemDtoWithItemName {
 
     @Builder
     @QueryProjection
-    public OrderItemDtoWithItemName(Long id, Long storeId, Long orderId, String itemName, int price, int count, LocalDateTime time, String orderItemStatus) {
+    public OrderItemDtoWithItemNameDto(Long id, Long storeId, Long orderId, String itemName, int price, int count, LocalDateTime time, String orderItemStatus) {
         this.id = id;
+        this.storeId = storeId;
         this.orderId = orderId;
         this.itemName = itemName;
         this.price = price;

@@ -7,7 +7,8 @@ import site.mylittlestore.domain.Store;
 import site.mylittlestore.domain.Order;
 import site.mylittlestore.domain.StoreTable;
 import site.mylittlestore.domain.item.Item;
-import site.mylittlestore.dto.order.OrderDtoWithOrderItemDto;
+import site.mylittlestore.dto.order.OrderDtoWithOrderItemDtoWithItemFindDto;
+import site.mylittlestore.dto.order.OrderDtoWithOrderItemDtoWithItemNameDto;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
 import site.mylittlestore.enumstorage.errormessage.*;
 import site.mylittlestore.enumstorage.status.StoreStatus;
@@ -46,13 +47,22 @@ public class OrderService {
                 .toOrderDtoWithOrderItemId();
     }
 
-    public OrderDtoWithOrderItemDto findOrderDtoById(Long orderId) throws NoSuchOrderException {
+    public OrderDtoWithOrderItemDtoWithItemNameDto findOrderDtoWithOrderItemDtoWithItemNameDtoById(Long orderId) throws NoSuchOrderException {
         //주문이 없으면 예외 발생
         Order order = orderRepository.findOrderWithOrderItemsAndItemByIdOrderByTime(orderId)
                 .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
 
         //Dto로 변환
-        return order.toOrderDtoWithOrderItemDto();
+        return order.toOrderDtoWithOrderItemDtoWithItemNameDto();
+    }
+
+    public OrderDtoWithOrderItemDtoWithItemFindDto findOrderDtoWithOrderItemDtoWithItemFindDtoById(Long orderId) throws NoSuchOrderException {
+        //주문이 없으면 예외 발생
+        Order order = orderRepository.findOrderWithOrderItemsAndItemByIdOrderByTime(orderId)
+                .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
+
+        //Dto로 변환
+        return order.toOrderDtoWithOrderItemDtoWithItemFindDto();
     }
 
     @Transactional

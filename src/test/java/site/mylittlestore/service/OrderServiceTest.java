@@ -8,28 +8,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.item.ItemCreationDto;
-import site.mylittlestore.dto.item.ItemFindDto;
+import site.mylittlestore.dto.order.OrderDtoWithOrderItemDtoWithItemFindDto;
 import site.mylittlestore.dto.orderitem.*;
-import site.mylittlestore.dto.order.OrderDtoWithOrderItemDto;
+import site.mylittlestore.dto.order.OrderDtoWithOrderItemDtoWithItemNameDto;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
-import site.mylittlestore.dto.store.StoreTableCreationDto;
 import site.mylittlestore.dto.storetable.StoreTableFindDtoWithOrderFindDto;
 import site.mylittlestore.enumstorage.status.OrderStatus;
-import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
-import site.mylittlestore.exception.item.NotEnoughStockException;
-import site.mylittlestore.exception.store.StoreClosedException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -148,13 +141,13 @@ class OrderServiceTest {
         em.clear();
 
         //when
-        OrderDtoWithOrderItemDto OrderDtoWithOrderItemDtoById = orderService.findOrderDtoById(orderTestId);
+        OrderDtoWithOrderItemDtoWithItemFindDto orderDtoWithOrderItemDtoWithItemFindDtoById = orderService.findOrderDtoWithOrderItemDtoWithItemFindDtoById(orderTestId);
 
         //then
-        assertThat(OrderDtoWithOrderItemDtoById.getOrderStatus()).isEqualTo(OrderStatus.USING);
-        assertThat(OrderDtoWithOrderItemDtoById.getOrderItemDtoWithItemFindDtos().size()).isEqualTo(1);
-        assertThat(OrderDtoWithOrderItemDtoById.getOrderItemDtoWithItemFindDtos().get(0).getPrice()).isEqualTo(10000);
-        assertThat(OrderDtoWithOrderItemDtoById.getOrderItemDtoWithItemFindDtos().get(0).getItemFindDto().getName()).isEqualTo("itemTest");
+        assertThat(orderDtoWithOrderItemDtoWithItemFindDtoById.getOrderStatus()).isEqualTo(OrderStatus.USING);
+        assertThat(orderDtoWithOrderItemDtoWithItemFindDtoById.getOrderItemDtoWithItemFindDtos().size()).isEqualTo(1);
+        assertThat(orderDtoWithOrderItemDtoWithItemFindDtoById.getOrderItemDtoWithItemFindDtos().get(0).getPrice()).isEqualTo(10000);
+        assertThat(orderDtoWithOrderItemDtoWithItemFindDtoById.getOrderItemDtoWithItemFindDtos().get(0).getItemFindDto().getName()).isEqualTo("itemTest");
     }
     
     @Test
