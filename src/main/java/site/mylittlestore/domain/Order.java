@@ -25,7 +25,7 @@ import static javax.persistence.FetchType.LAZY;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order extends BaseEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ORDER_ID")
     private Long id;
 
@@ -60,7 +60,7 @@ public class Order extends BaseEntity {
         this.storeTable = storeTable;
         this.orderItems = new ArrayList<>();
         this.startTime = LocalDateTime.now();
-        this.orderStatus = OrderStatus.EMPTY;
+        this.orderStatus = OrderStatus.USING;
 
         storeTable.setOrder(this);
     }

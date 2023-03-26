@@ -10,6 +10,8 @@ import java.util.Optional;
 
 import static site.mylittlestore.domain.QOrder.order;
 import static site.mylittlestore.domain.QOrderItem.orderItem;
+import static site.mylittlestore.domain.QStore.store;
+import static site.mylittlestore.domain.item.QItem.item;
 
 @RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepositoryQueryDsl {
@@ -17,13 +19,28 @@ public class OrderRepositoryImpl implements OrderRepositoryQueryDsl {
     private final EntityManager em;
 
     @Override
-    public Optional<Order> findOrderAndOrderItemsByIdOrderByTime(Long orderId) {
+    public Optional<Order> findOrderWithOrderItemsByIdOrderByTime(Long orderId) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return Optional.ofNullable(queryFactory
                 .select(order)
                 .from(order)
                 .join(order.orderItems, orderItem).fetchJoin()
+                .where(order.id.eq(orderId))
+                .orderBy(orderItem.time.asc())
+                .fetchOne());
+    }
+
+    @Override
+    public Optional<Order> findOrderWithStoreAndOrderItemsByIdOrderByTime(Long orderId) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return Optional.ofNullable(queryFactory
+                .select(order)
+                .from(order)
+                .join(order.store, store).fetchJoin()
+                .leftJoin(order.orderItems, orderItem).fetchJoin()
+                .leftJoin(orderItem.item, item).fetchJoin()
                 .where(order.id.eq(orderId))
                 .orderBy(orderItem.time.asc())
                 .fetchOne());

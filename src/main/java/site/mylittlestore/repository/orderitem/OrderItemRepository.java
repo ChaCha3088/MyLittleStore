@@ -10,11 +10,11 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long>, Ord
 //    Optional<OrderItem> findOrderItemByOrderIdAndItemId(Long orderId, Long itemId);
     Optional<OrderItem> findByIdWithItem(Long id);
 
+    Optional<OrderItem> findOrderItemByOrderIdAndItemId(Long orderId, Long itemId);
+    Optional<OrderItem> findOrderItemByOrderIdAndItemIdAndPrice(Long orderId, Long itemId, int price);
     List<OrderItem> findAllOrderItemByOrderIdOrderByTime(Long orderId);
 
     List<Long> findAllOrderItemIdByOrderId(Long orderId);
 
-    Optional<OrderItem> findOrderItemByOrderIdAndItemIdAndPrice(Long orderId, Long itemId, int price);
 
-    Optional<OrderItem> findOrderItemByOrderIdAndItemId(Long orderId, Long itemId);
 }

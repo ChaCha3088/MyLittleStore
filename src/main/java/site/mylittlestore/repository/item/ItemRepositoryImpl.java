@@ -2,6 +2,7 @@ package site.mylittlestore.repository.item;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.item.QItemFindDto;
@@ -36,6 +37,22 @@ public class ItemRepositoryImpl implements ItemRepositoryQueryDsl {
                         .fetchOne()
         );
     }
+
+    @Override
+    public Optional<Item> findItemByIdAndStoreId(Long id, Long storeId) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return Optional.ofNullable(
+                queryFactory
+                        .select(item)
+                        .from(item)
+                        .where(item.id.eq(id)
+                                .and(item.store.id.eq(storeId))
+                                .and(item.itemStatus.eq(ItemStatus.ONSALE)))
+                        .fetchOne()
+        );
+    }
+
 
     @Override
     public List<ItemFindDto> findAllItemDtoByStoreId(Long storeId) {

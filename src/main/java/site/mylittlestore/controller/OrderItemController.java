@@ -87,13 +87,7 @@ public class OrderItemController {
             return "orderItems/orderItemCreationForm";
         }
 
-        Long createdOrderItemId = orderService.createOrderItem(OrderItemFindDto.builder()
-                .storeId(storeId)
-                .orderId(orderId)
-                .itemId(orderItemCreationForm.getItemId())
-                .price(orderItemCreationForm.getPrice())
-                .count(orderItemCreationForm.getCount())
-                .build());
+        Long createdOrderItemId = orderItemService.createOrderItem(orderId, orderItemCreationForm.getItemId(), orderItemCreationForm.getPrice(), orderItemCreationForm.getCount());
 
         return "redirect:/members/" + memberId + "/stores/" + storeId + "/orders/" + orderId + "/orderItems/" + createdOrderItemId;
     }

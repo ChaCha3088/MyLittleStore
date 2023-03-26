@@ -14,11 +14,8 @@ import site.mylittlestore.dto.orderitem.OrderItemUpdateDto;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemDto;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
 import site.mylittlestore.enumstorage.errormessage.*;
-import site.mylittlestore.enumstorage.status.OrderStatus;
 import site.mylittlestore.enumstorage.status.StoreStatus;
-import site.mylittlestore.dto.orderitem.OrderItemCreationDto;
 import site.mylittlestore.exception.item.NoSuchItemException;
-import site.mylittlestore.exception.item.NotEnoughStockException;
 import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.exception.store.NoSuchStoreException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
@@ -57,7 +54,7 @@ public class OrderService {
     }
 
     public OrderDtoWithOrderItemDto findOrderDtoById(Long orderId) throws NoSuchOrderException {
-        Optional<Order> findOrderById = orderRepository.findOrderAndOrderItemsByIdOrderByTime(orderId);
+        Optional<Order> findOrderById = orderRepository.findOrderWithOrderItemsByIdOrderByTime(orderId);
 
         findOrderById = findOrderById.or(() -> orderRepository.findById(orderId));
 
@@ -109,54 +106,6 @@ public class OrderService {
         Order savedOrder = orderRepository.save(createOrder);
 
         return savedOrder.getId();
-    }
-
-    @Transactional
-    public Long createOrderItem(OrderItemFindDto orderItemFindDto) throws NoSuchStoreException, StoreClosedException, NoSuchOrderException, NotEnoughStockException {
-        Store findStoreByStoreId = findStoreByStoreId(orderItemFindDto.getStoreId());
-
-        //가게가 열린 상태인지 확인
-        if (findStoreByStoreId.getStoreStatus().equals(StoreStatus.CLOSE)) {
-            throw new StoreClosedException(StoreErrorMessage.STORE_IS_CLOSED.getMessage());
-        }
-
-        try {
-            //테이블에 상품 Id와 상품 가격이 같은 주문이 존재하는지 확인
-            OrderItem findOrderItemWithItemId = validateOrderItemExistenceWithItemIdAndPrice(orderItemFindDto.getOrderId(), orderItemFindDto.getItemId(), orderItemFindDto.getPrice());
-
-            //테이블에 상품이 이미 있다면,
-            //테이블에 있는 해당 상품의 수량을 늘려주고, 상품의 재고를 낮춰준다.
-            Item item = findOrderItemWithItemId.addCount(orderItemFindDto.getCount());
-
-            //저장
-            itemRepository.save(item);
-            OrderItem savedOrderItem = orderItemRepository.save(findOrderItemWithItemId);
-
-            return savedOrderItem.getId();
-
-        } catch (NoSuchOrderItemException e) {
-            //테이블에 상품이 없으면,
-
-            //테이블을 찾는다.
-            Order findOrder = findById(orderItemFindDto.getOrderId());
-
-            //상품을 찾는다.
-            Item findItem = findItemById(orderItemFindDto.getItemId());
-
-            //새로운 상품 추가
-            OrderItem createdOrderItem = findOrder.createOrderItem(OrderItemCreationDto.builder()
-                    .orderId(findOrder.getId())
-                    .item(findItem)
-                    .price(orderItemFindDto.getPrice())
-                    .count(orderItemFindDto.getCount())
-                    .build());
-
-            //저장
-            itemRepository.save(findItem);
-            OrderItem savedOrderItem = orderItemRepository.save(createdOrderItem);
-
-            return savedOrderItem.getId();
-        }
     }
 
     @Transactional
@@ -228,12 +177,7 @@ public class OrderService {
         return findItemById.orElseThrow(() -> new NoSuchItemException(ItemErrorMessage.NO_SUCH_ITEM.getMessage()));
     }
 
-    private OrderItem validateOrderItemExistenceWithItemIdAndPrice(Long orderId, Long itemId, int price) throws NoSuchOrderException, NoSuchOrderItemException {
-        //주문 상품에 테이블 Id, 상품 Id, 가격이 같은 상품이 존재하는지 확인
-        //해당 조건을 만족하는 상품이 없으면 예외 발생
-        return orderItemRepository.findOrderItemByOrderIdAndItemIdAndPrice(orderId, itemId, price)
-                .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
-    }
+
 
     private boolean validateDuplicateOrderItemWithItemName(Order order, String newItemName) throws IllegalStateException {
         //테이블 안에 이름이 같은 상품이 있는지 검증

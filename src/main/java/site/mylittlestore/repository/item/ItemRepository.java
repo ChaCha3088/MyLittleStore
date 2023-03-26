@@ -14,13 +14,13 @@ public interface ItemRepository extends JpaRepository<Item, Long>, ItemRepositor
 
     Optional<Item> findItemByName(@Param("newItemName") String newItemName);
 
+    Optional<Item> findItemByIdAndStoreId(Long id, Long storeId);
     List<ItemFindDto> findAllItemDtoByStoreId(Long storeId);
 
     Optional<Item> findItemByStoreIdAndName(Long storeId, String itemName);
 
     List<Item> findAllItemByStoreIdAndName(Long storeId, String itemName);
 
-    Optional<Item> findItemByIdAndStoreId(Long id, Long storeId);
 
     void deleteById(Long id);
 }

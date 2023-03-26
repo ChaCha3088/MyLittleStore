@@ -10,6 +10,7 @@ import site.mylittlestore.dto.orderitem.OrderItemDtoWithItemFindDto;
 import site.mylittlestore.dto.orderitem.OrderItemFindDto;
 import site.mylittlestore.dto.orderitem.OrderItemDtoWithItemName;
 import site.mylittlestore.entity.BaseEntity;
+import site.mylittlestore.enumstorage.status.OrderItemStatus;
 import site.mylittlestore.exception.item.NotEnoughStockException;
 
 import javax.persistence.*;
@@ -24,7 +25,7 @@ import static javax.persistence.FetchType.LAZY;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderItem extends BaseEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ORDER_ITEM_ID")
     private Long id;
 
@@ -53,21 +54,26 @@ public class OrderItem extends BaseEntity {
     @NotNull
     private LocalDateTime time;
 
+    @NotNull
+    private OrderItemStatus orderItemStatus;
+
     @Builder
-    protected OrderItem(Order order, Item item, int price, int count) throws NotEnoughStockException {
+    protected OrderItem(Store store, Order order, Item item, int price, int count) throws NotEnoughStockException {
+        this.store = store;
         this.order = order;
         this.item = item;
         this.price = price;
         this.count = count;
         this.time = LocalDateTime.now();
+        this.orderItemStatus = OrderItemStatus.ORDERED;
 
         //OrderItem 생성시 Item의 stock 감소
         this.item.decreaseStock(count);
     }
 
     public Item addCount(int count) throws NotEnoughStockException {
-        this.count += count;
         this.item.decreaseStock(count);
+        this.count += count;
 
         return this.item;
     }

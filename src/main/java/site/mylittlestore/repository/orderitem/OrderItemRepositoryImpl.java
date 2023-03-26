@@ -4,6 +4,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import site.mylittlestore.domain.OrderItem;
+import site.mylittlestore.enumstorage.status.OrderItemStatus;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -23,9 +24,41 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
                         .select(orderItem)
                         .from(orderItem)
                         .join(orderItem.item, item).fetchJoin()
-                        .where(orderItem.id.eq(id))
+                        .where(orderItem.id.eq(id)
+                                .and(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED)))
                         .fetchOne());
     }
+
+    @Override
+    public Optional<OrderItem> findOrderItemByOrderIdAndItemId(Long orderId, Long itemId) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return Optional.ofNullable(queryFactory
+                        .select(orderItem)
+                        .from(orderItem)
+                        .join(orderItem.item, item).fetchJoin()
+                        .where(orderItem.order.id.eq(orderId)
+                                .and(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED))
+                                .and(orderItem.item.id.eq(itemId)))
+                        .fetchOne());
+    }
+
+
+    @Override
+    public Optional<OrderItem> findOrderItemByOrderIdAndItemIdAndPrice(Long orderId, Long itemId, int price) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return Optional.ofNullable(queryFactory
+                        .select(orderItem)
+                        .from(orderItem)
+                        .join(orderItem.item, item).fetchJoin()
+                        .where(orderItem.order.id.eq(orderId)
+                                .and(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED))
+                                .and(orderItem.item.id.eq(itemId))
+                                .and(orderItem.price.eq(price)))
+                        .fetchOne());
+    }
+
 
 
     @Override
@@ -36,7 +69,8 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
                         .select(orderItem)
                         .from(orderItem)
                         .join(orderItem.item, item).fetchJoin()
-                        .where(orderItem.order.id.eq(orderId))
+                        .where(orderItem.order.id.eq(orderId)
+                                .and(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED)))
                         .orderBy(orderItem.time.asc())
                         .fetch();
     }
@@ -48,7 +82,8 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
         return queryFactory
                         .select(orderItem.id)
                         .from(orderItem)
-                        .where(orderItem.order.id.eq(orderId))
+                        .where(orderItem.order.id.eq(orderId)
+                                .and(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED)))
                         .fetch();
     }
 }
