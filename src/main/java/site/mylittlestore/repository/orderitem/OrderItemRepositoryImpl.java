@@ -16,6 +16,19 @@ import static site.mylittlestore.domain.item.QItem.item;
 @RequiredArgsConstructor
 public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
     private final EntityManager em;
+
+    @Override
+    public Optional<OrderItem> findOrderedById(Long id) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return Optional.ofNullable(queryFactory
+                        .select(orderItem)
+                        .from(orderItem)
+                        .where(orderItem.id.eq(id)
+                                .and(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED)))
+                        .fetchOne());
+    }
+
     @Override
     public Optional<OrderItem> findByIdWithItem(Long id) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
@@ -85,5 +98,16 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
                         .where(orderItem.order.id.eq(orderId)
                                 .and(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED)))
                         .fetch();
+    }
+
+    @Override
+    public void deleteByChangingStatus(Long id) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        queryFactory
+                .update(orderItem)
+                .where(orderItem.id.eq(id))
+                .set(orderItem.orderItemStatus, OrderItemStatus.DELETED)
+                .execute();
     }
 }

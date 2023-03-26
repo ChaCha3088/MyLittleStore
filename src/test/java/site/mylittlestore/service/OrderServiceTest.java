@@ -7,13 +7,12 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
-import site.mylittlestore.dto.orderitem.OrderItemDtoWithItemFindDto;
-import site.mylittlestore.dto.orderitem.OrderItemFindDto;
-import site.mylittlestore.dto.orderitem.OrderItemUpdateDto;
+import site.mylittlestore.dto.orderitem.*;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemDto;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
 import site.mylittlestore.dto.member.MemberCreationDto;
@@ -36,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-@Transactional
+@Sql(scripts = {"classpath:sql/test.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class OrderServiceTest {
@@ -137,7 +136,12 @@ class OrderServiceTest {
                 .memberId(memberTestId)
                 .build());
 
-        orderItemService.createOrderItem(orderTestId, itemTestId, 10000, 1);
+        orderItemService.createOrderItem(OrderItemCreationDto.builder()
+                .orderId(orderTestId)
+                .itemId(itemTestId)
+                .price(10000)
+                .count(1)
+                .build());
 
         //영속성 컨텍스트 초기화
         em.flush();
@@ -151,38 +155,6 @@ class OrderServiceTest {
         assertThat(OrderDtoWithOrderItemDtoById.getOrderItemDtoWithItemFindDtos().size()).isEqualTo(1);
         assertThat(OrderDtoWithOrderItemDtoById.getOrderItemDtoWithItemFindDtos().get(0).getPrice()).isEqualTo(10000);
         assertThat(OrderDtoWithOrderItemDtoById.getOrderItemDtoWithItemFindDtos().get(0).getItemFindDto().getName()).isEqualTo("itemTest");
-    }
-
-    @Test
-    void findAllOrderItemByOrderId() {
-        //given
-        //가게 열기
-        memberService.changeStoreStatus(StoreUpdateDto.builder()
-                .id(storeTestId)
-                .memberId(memberTestId)
-                .build());
-
-        Long createdOrderItemId1 = orderItemService.createOrderItem(orderTestId, itemTestId, 10000, 1);
-
-        Long createdOrderItemId2 = orderItemService.createOrderItem(orderTestId, itemTestId, 5000, 5);
-
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
-
-        //when
-        List<OrderItemFindDto> findAllOrderItemByOrderId = orderService.findAllOrderItemByOrderId(orderTestId);
-
-        //then
-        assertThat(findAllOrderItemByOrderId.size()).isEqualTo(2);
-
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
-
-        //상품 재고 어떻게 되는지도 확인
-        ItemFindDto itemFindDto = itemService.findItemDtoById(itemTestId);
-        assertThat(itemFindDto.getStock()).isEqualTo(94);
     }
     
     @Test
@@ -202,106 +174,5 @@ class OrderServiceTest {
         //then
         StoreTableFindDtoWithOrderFindDto storeTableFindDtoWithOrderFindDtoByStoreId = storeTableService.findStoreTableFindDtoWithOrderFindDtoByStoreId(storeTableTestId, storeTestId);
         assertThat(storeTableFindDtoWithOrderFindDtoByStoreId.getOrderDtoWithOrderItemId().getOrderStatus()).isEqualTo(OrderStatus.USING.toString());
-    }
-
-    @Test
-    void updateOrderItem() {
-        //given
-        //가게 열기
-        memberService.changeStoreStatus(StoreUpdateDto.builder()
-                .id(storeTestId)
-                .memberId(memberTestId)
-                .build());
-
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
-
-        //when
-        //주문 생성
-        Long createdOrderItemId = orderItemService.createOrderItem(orderTestId, itemTestId, 10000, 50);
-
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
-
-        //주문 수정(수량 줄이기)
-        Long savedOrderItemId1 = orderService.updateOrderItem(OrderItemUpdateDto.builder()
-                .storeId(storeTestId)
-                .orderId(orderTestId)
-                .itemId(itemTestId)
-                .price(9999)
-                .count(49)
-                .build());
-
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
-
-        //then
-        //수정된 주문 조회
-        OrderItemDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemByIdWithItemFindDto(savedOrderItemId1);
-        assertThat(findOrderItemById1.getPrice()).isEqualTo(9999);
-        assertThat(findOrderItemById1.getCount()).isEqualTo(49);
-
-        ItemFindDto findItemDtoById1 = itemService.findItemDtoById(itemTestId);
-        assertThat(findItemDtoById1.getStock()).isEqualTo(51);
-
-        //주문 수정(수량 늘리기)
-        Long savedOrderItemId2 = orderService.updateOrderItem(OrderItemUpdateDto.builder()
-                .storeId(storeTestId)
-                .orderId(orderTestId)
-                .itemId(itemTestId)
-                .price(9998)
-                .count(51)
-                .build());
-
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
-
-        //수정된 주문 조회
-        OrderItemDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemByIdWithItemFindDto(savedOrderItemId2);
-        assertThat(findOrderItemById2.getPrice()).isEqualTo(9998);
-        assertThat(findOrderItemById2.getCount()).isEqualTo(51);
-
-        ItemFindDto findItemDtoById2 = itemService.findItemDtoById(itemTestId);
-        assertThat(findItemDtoById2.getStock()).isEqualTo(49);
-    }
-
-    @Test
-    void deleteOrderItem() {
-        //가게 열기
-        memberService.changeStoreStatus(StoreUpdateDto.builder()
-                .id(storeTestId)
-                .memberId(memberTestId)
-                .build());
-
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
-
-        //when
-        //주문 생성
-        Long createdOrderItemId = orderItemService.createOrderItem(orderTestId, itemTestId, 10000, 50);
-
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
-
-        //주문 삭제
-        orderService.deleteOrderItem(createdOrderItemId);
-
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
-
-        //then
-        //주문 삭제 확인
-        assertThatThrownBy(() -> orderItemService.findOrderItemDtoById(createdOrderItemId)).isInstanceOf(NoSuchOrderItemException.class);
-
-        //재고 확인
-        ItemFindDto findItemDtoById = itemService.findItemDtoById(itemTestId);
-        assertThat(findItemDtoById.getStock()).isEqualTo(100);
     }
 }

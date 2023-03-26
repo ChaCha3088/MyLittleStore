@@ -1,16 +1,14 @@
 package site.mylittlestore.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Order;
 import site.mylittlestore.domain.OrderItem;
 import site.mylittlestore.domain.Store;
 import site.mylittlestore.domain.item.Item;
-import site.mylittlestore.dto.orderitem.OrderItemCreationDto;
-import site.mylittlestore.dto.orderitem.OrderItemFindDto;
-import site.mylittlestore.dto.orderitem.OrderItemDtoWithItemFindDto;
-import site.mylittlestore.dto.orderitem.OrderItemDtoWithItemName;
+import site.mylittlestore.dto.orderitem.*;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.OrderErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
@@ -44,7 +42,7 @@ public class OrderItemService {
     public OrderItemFindDto findOrderItemDtoById(Long orderItemId) {
         //주문이 없으면 예외 발생
         //Dto로 변환
-        return orderItemRepository.findById(orderItemId).orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage())).toOrderItemDto();
+        return orderItemRepository.findOrderedById(orderItemId).orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage())).toOrderItemDto();
     }
 
     public OrderItemDtoWithItemFindDto findOrderItemByIdWithItemFindDto(Long orderItemId) throws NoSuchOrderItemException {
@@ -62,11 +60,20 @@ public class OrderItemService {
         return findOrderItemByOrderId.stream().map(OrderItem::toOrderItemDtoWithItemName).collect(Collectors.toList());
     }
 
+    public List<OrderItemFindDto> findAllOrderItemByOrderId(Long orderId) {
+        //테이블에 속한 주문 상품만 찾아야지.
+        List<OrderItem> findOrderItemByOrderId = orderItemRepository.findAllOrderItemByOrderIdOrderByTime(orderId);
+
+        //Dto로 변환
+        return findOrderItemByOrderId.stream()
+                .map(m -> m.toOrderItemDto())
+                .collect(Collectors.toList());
+    }
+
     @Transactional
-    public Long createOrderItem(Long orderId, Long itemId, int price, int count) throws NoSuchStoreException, StoreClosedException, NoSuchOrderException, NotEnoughStockException {
+    public Long createOrderItem(OrderItemCreationDto orderItemCreationDto) throws NoSuchStoreException, StoreClosedException, NoSuchOrderException, NotEnoughStockException {
         //주문 Id로 주문을 찾는다.
-        Order order = orderRepository.findOrderWithStoreAndOrderItemsByIdOrderByTime(orderId)
-                .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
+        Order order = findOrder(orderItemCreationDto.getOrderId());
 
         Store store = order.getStore();
         List<OrderItem> orderItems = order.getOrderItems();
@@ -78,12 +85,12 @@ public class OrderItemService {
 
         try {
             //주문에 상품 Id와 상품 가격이 같은 주문이 존재하는지 확인
-            OrderItem orderItem = validateOrderItemExistenceWithItemIdAndPrice(orderItems, itemId, price);
+            OrderItem orderItem = validateOrderItemExistenceWithItemIdAndPrice(orderItems, orderItemCreationDto.getItemId(), orderItemCreationDto.getPrice());
 
             //주문에 상품이 이미 있다면,
 
             //주문에 있는 해당 상품의 수량을 늘려주고, 상품의 재고를 낮춰준다.
-            Item item = orderItem.addCount(count);
+            Item item = orderItem.addCount(orderItemCreationDto.getCount());
 
             //저장
             itemRepository.save(item);
@@ -95,7 +102,7 @@ public class OrderItemService {
             //주문에 상품이 없으면,
 
             //가게 Id와 상품 Id로 상품을 찾는다.
-            Item findItem = itemRepository.findItemByIdAndStoreId(itemId, store.getId())
+            Item findItem = itemRepository.findItemByIdAndStoreId(orderItemCreationDto.getItemId(), store.getId())
                     .orElseThrow(() -> new NoSuchItemException(ItemErrorMessage.NO_SUCH_ITEM.getMessage()));
 
             //새로운 주문 상품 추가
@@ -103,8 +110,8 @@ public class OrderItemService {
                     .store(store)
                     .order(order)
                     .item(findItem)
-                    .price(price)
-                    .count(count)
+                    .price(orderItemCreationDto.getPrice())
+                    .count(orderItemCreationDto.getCount())
                 .build();
 
             //저장
@@ -115,10 +122,90 @@ public class OrderItemService {
         }
     }
 
+    /**
+     * 주문 상품을 수정하기 위해서는 상품 Id, 상품 가격이 같아야 한다.
+     * 따라서 가격이 한번 정해지면, 수량만 변경 가능하다.
+     * @param orderItemDto
+     * @return
+     * @throws NoSuchStoreException
+     * @throws StoreClosedException
+     * @throws NoSuchOrderItemException
+     */
+    @Transactional
+    public Long updateOrderItemCount(OrderItemDto orderItemDto) throws NoSuchStoreException, StoreClosedException, NoSuchOrderItemException {
+        //주문 Id로 주문을 찾는다.
+        Order order = findOrder(orderItemDto.getOrderId());
+
+        Store store = order.getStore();
+        List<OrderItem> orderItems = order.getOrderItems();
+
+        //가게가 열린 상태인지 확인
+        if (store.getStoreStatus().equals(StoreStatus.CLOSE)) {
+            throw new StoreClosedException(StoreErrorMessage.STORE_IS_CLOSED.getMessage());
+        }
+
+        //주문에 상품 Id와 가격이 같은 주문 상품이 존재하는지 확인
+        OrderItem orderItem = validateOrderItemExistenceWithOrderItemIdAndItemIdAndPrice(orderItems, orderItemDto.getId(), orderItemDto.getItemId(), orderItemDto.getPrice());
+
+        Optional<Integer> price = Optional.ofNullable(orderItemDto.getPrice());
+        Optional<Integer> count = Optional.ofNullable(orderItemDto.getCount());
+
+        price.ifPresent(orderItem::updatePrice);
+        count.ifPresent(orderItem::updateCount);
+
+        //저장
+        OrderItem savedOrderItem = orderItemRepository.save(orderItem);
+
+        return savedOrderItem.getId();
+    }
+
+    /**
+     * 주문 상품을 삭제하기 위해서는 상품 Id, 상품 가격이 같아야 한다.
+     * @param orderItemDto
+     * @throws EmptyResultDataAccessException
+     */
+    @Transactional
+    public void deleteOrderItem(OrderItemDto orderItemDto) throws EmptyResultDataAccessException {
+        Order order = findOrder(orderItemDto.getOrderId());
+
+        //주문에 상품 Id, 상품 가격이 같은 주문 상품이 존재하는지 확인하고 삭제
+        OrderItem orderItem = validateOrderItemExistenceWithOrderItemIdAndItemIdAndPrice(order.getOrderItems(), orderItemDto.getId(), orderItemDto.getItemId(), orderItemDto.getPrice());
+
+        try {
+            //해당 상품의 재고를 늘려주고, 주문 상품을 삭제한다.
+            Item item = orderItem.getItem();
+            item.increaseStock(orderItem.getCount());
+
+            //저장
+            itemRepository.save(item);
+        } catch (NullPointerException e) {
+            //상품이 없으면, 주문 상품만 삭제
+        } finally {
+            orderItemRepository.deleteByChangingStatus(orderItem.getId());
+        }
+    }
+
+    private Order findOrder(Long orderId) {
+        Order order = orderRepository.findOrderWithStoreAndOrderItemsByIdOrderByTime(orderId)
+                .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
+        return order;
+    }
+
     private OrderItem validateOrderItemExistenceWithItemIdAndPrice(List<OrderItem> orderItems, Long itemId, int price) {
-        //주문 상품에 테이블 Id, 상품 Id, 가격이 같은 상품이 존재하는지 확인
+        //주문 상품에 상품 Id, 가격이 같은 상품이 존재하는지 확인
         //해당 조건을 만족하는 상품이 없으면 예외 발생
         return orderItems.stream()
+                .filter(orderItem -> orderItem.getItem().getId().equals(itemId))
+                .filter(orderItem -> orderItem.getPrice() == price)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
+    }
+
+    private OrderItem validateOrderItemExistenceWithOrderItemIdAndItemIdAndPrice(List<OrderItem> orderItems, Long orderItemId, Long itemId, int price) {
+        //주문 상품에 주문 상품 Id, 상품 Id, 가격이 같은 상품이 존재하는지 확인
+        //해당 조건을 만족하는 상품이 없으면 예외 발생
+        return orderItems.stream()
+                .filter(orderItem -> orderItem.getId().equals(orderItemId))
                 .filter(orderItem -> orderItem.getItem().getId().equals(itemId))
                 .filter(orderItem -> orderItem.getPrice() == price)
                 .findFirst()

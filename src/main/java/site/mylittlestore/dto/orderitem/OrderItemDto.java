@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class OrderItemCreationDto {
+public class OrderItemDto {
+    private Long id;
     private Long orderId;
     private Long itemId;
     private int price;
@@ -16,7 +17,8 @@ public class OrderItemCreationDto {
 
     @Builder
     @QueryProjection
-    public OrderItemCreationDto(Long orderId, Long itemId, int price, int count) {
+    public OrderItemDto(Long id, Long orderId, Long itemId, int price, int count) {
+        this.id = id;
         this.orderId = orderId;
         this.itemId = itemId;
         this.price = price;

@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import site.mylittlestore.dto.item.ItemFindDto;
-import site.mylittlestore.dto.orderitem.OrderItemFindDto;
-import site.mylittlestore.dto.orderitem.OrderItemUpdateDto;
+import site.mylittlestore.dto.orderitem.OrderItemCreationDto;
+import site.mylittlestore.dto.orderitem.OrderItemDto;
 import site.mylittlestore.dto.store.StoreOnlyDto;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.form.OrderItemCreationForm;
-import site.mylittlestore.form.OrderItemUpdateForm;
+import site.mylittlestore.form.OrderItemForm;
 import site.mylittlestore.message.Message;
 import site.mylittlestore.service.ItemService;
 import site.mylittlestore.service.OrderItemService;
@@ -87,7 +87,12 @@ public class OrderItemController {
             return "orderItems/orderItemCreationForm";
         }
 
-        Long createdOrderItemId = orderItemService.createOrderItem(orderId, orderItemCreationForm.getItemId(), orderItemCreationForm.getPrice(), orderItemCreationForm.getCount());
+        Long createdOrderItemId = orderItemService.createOrderItem(OrderItemCreationDto.builder()
+                        .orderId(orderId)
+                        .itemId(orderItemCreationForm.getItemId())
+                        .price(orderItemCreationForm.getPrice())
+                        .count(orderItemCreationForm.getCount())
+                        .build());
 
         return "redirect:/members/" + memberId + "/stores/" + storeId + "/orders/" + orderId + "/orderItems/" + createdOrderItemId;
     }
@@ -97,36 +102,56 @@ public class OrderItemController {
         model.addAttribute("memberId", memberId);
         model.addAttribute("storeId", storeId);
         model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
-        model.addAttribute("orderItemUpdateForm", new OrderItemUpdateForm());
+        model.addAttribute("orderItemUpdateForm", new OrderItemForm());
 
         return "orderItems/orderItemUpdateForm";
     }
 
     @PostMapping("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}/update")
-    public String updateOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @Valid OrderItemUpdateForm orderItemUpdateForm, BindingResult result, Model model) {
+    public String updateOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @Valid OrderItemForm orderItemForm, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
-            model.addAttribute("orderItemUpdateForm", new OrderItemUpdateForm());
+            model.addAttribute("orderItemUpdateForm", new OrderItemForm());
             return "orderItems/orderItemUpdateForm";
         }
 
-        Long itemId = orderItemService.findOrderItemDtoById(orderItemId).getItemId();
-
-        Long updatedOrderItemId = orderService.updateOrderItem(OrderItemUpdateDto.builder()
-                .storeId(storeId) //나중에 storeId 검증할 것
+        Long updatedOrderItemId = orderItemService.updateOrderItemCount(OrderItemDto.builder()
+                .id(orderItemId)
                 .orderId(orderId) //나중에 orderId 검증할 것
-                .itemId(itemId) //나중에 itemId 검증할 것
-                .price(orderItemUpdateForm.getPrice())
-                .count(orderItemUpdateForm.getCount())
+                .itemId(orderItemForm.getItemId()) //나중에 itemId 검증할 것
+                .price(orderItemForm.getPrice()) //나중에 price 검증할 것
+                .count(orderItemForm.getCount()) //나중에 count 검증할 것
                 .build());
 
         return "redirect:/members/"+memberId+"/stores/"+storeId+"/orders/"+orderId+"/orderItems/"+updatedOrderItemId;
     }
 
     @GetMapping("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}/delete")
-    public String deleteOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId) {
-        orderService.deleteOrderItem(orderItemId);
+    public String deleteOrderItemForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, Model model) {
+        model.addAttribute("memberId", memberId);
+        model.addAttribute("storeId", storeId);
+        model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
+        model.addAttribute("orderItemDeleteForm", new OrderItemForm());
+
+        return "orderItems/orderItemDeleteForm";
+    }
+
+    @PostMapping("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}/delete")
+    public String deleteOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @Valid OrderItemForm orderItemDeleteForm, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            //
+            //
+            return "orderItems/orderItemDeleteForm";
+        }
+
+        orderItemService.deleteOrderItem(OrderItemDto.builder()
+                .id(orderItemId)
+                .orderId(orderId) //나중에 orderId 검증할 것
+                .itemId(orderItemDeleteForm.getItemId()) //나중에 itemId 검증할 것
+                .price(orderItemDeleteForm.getPrice()) //나중에 price 검증할 것
+                .count(orderItemDeleteForm.getCount()) //나중에 count 검증할 것
+                .build());
 
         return "redirect:/members/"+memberId+"/stores/"+storeId+"/orders/"+orderId;
     }

@@ -44,7 +44,7 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
 
     public OrderDtoWithOrderItemId findOrderDtoWithOrderItemIdById(Long orderId) throws NoSuchOrderException {
-        Optional<Order> findOrderById = orderRepository.findById(orderId);
+        Optional<Order> findOrderById = orderRepository.findUsingById(orderId);
 
         //주문이 없으면 예외 발생
         //Dto로 변환
@@ -63,16 +63,6 @@ public class OrderService {
         return findOrderById.orElseThrow(()
                 -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()))
                 .toOrderDtoWithOrderItemDto();
-    }
-
-    public List<OrderItemFindDto> findAllOrderItemByOrderId(Long orderId) {
-        //테이블에 속한 주문 상품만 찾아야지.
-        List<OrderItem> findOrderItemByOrderId = orderItemRepository.findAllOrderItemByOrderIdOrderByTime(orderId);
-
-        //Dto로 변환
-        return findOrderItemByOrderId.stream()
-                .map(m -> m.toOrderItemDto())
-                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -108,53 +98,6 @@ public class OrderService {
         return savedOrder.getId();
     }
 
-    @Transactional
-    public Long updateOrderItem(OrderItemUpdateDto orderItemUpdateDto) throws NoSuchStoreException, StoreClosedException, NoSuchOrderItemException {
-        Store findStoreByStoreId = findStoreByStoreId(orderItemUpdateDto.getStoreId());
-
-        //가게가 열린 상태인지 확인
-        if (findStoreByStoreId.getStoreStatus().equals(StoreStatus.CLOSE)) {
-            throw new StoreClosedException(StoreErrorMessage.STORE_IS_CLOSED.getMessage());
-        }
-
-        //테이블에 상품 Id이 같은 주문이 존재하는지 확인
-        OrderItem findOrderItemWithOrderIdAndItemId = orderItemRepository.findOrderItemByOrderIdAndItemId(orderItemUpdateDto.getOrderId(), orderItemUpdateDto.getItemId())
-                .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
-
-        Optional<Integer> price = Optional.ofNullable(orderItemUpdateDto.getPrice());
-        Optional<Integer> count = Optional.ofNullable(orderItemUpdateDto.getCount());
-
-        price.ifPresent(findOrderItemWithOrderIdAndItemId::updatePrice);
-        count.ifPresent(findOrderItemWithOrderIdAndItemId::updateCount);
-
-        //저장
-        OrderItem savedOrderItem = orderItemRepository.save(findOrderItemWithOrderIdAndItemId);
-
-        return savedOrderItem.getId();
-    }
-
-    @Transactional
-    public void deleteOrderItem(Long orderItemId) throws EmptyResultDataAccessException {
-        //테이블에 상품 Id가 같은 주문이 존재하는지 확인하고 삭제
-        OrderItem findOrderItemById = orderItemRepository.findById(orderItemId)
-                        .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
-
-        try {
-            //테이블에 있는 해당 상품의 재고를 늘려주고, 주문을 삭제한다.
-            Item item = itemRepository.findById(findOrderItemById.getItem().getId())
-                    .orElseThrow(() -> new NoSuchItemException(ItemErrorMessage.NO_SUCH_ITEM.getMessage()));
-
-            item.increaseStock(findOrderItemById.getCount());
-
-            //저장
-            itemRepository.save(item);
-        } catch (NoSuchItemException e) {
-            //상품이 없으면, 주문 상품만 삭제
-        } finally {
-            orderItemRepository.delete(findOrderItemById);
-        }
-    }
-
     private Store findStoreByStoreId(Long storeId) throws NoSuchStoreException {
         Optional<Store> findStoreById = storeRepository.findById(storeId);
 
@@ -176,8 +119,6 @@ public class OrderService {
         //상품이 없으면, 예외 발생
         return findItemById.orElseThrow(() -> new NoSuchItemException(ItemErrorMessage.NO_SUCH_ITEM.getMessage()));
     }
-
-
 
     private boolean validateDuplicateOrderItemWithItemName(Order order, String newItemName) throws IllegalStateException {
         //테이블 안에 이름이 같은 상품이 있는지 검증

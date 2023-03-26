@@ -8,13 +8,11 @@ import java.util.Optional;
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long>, OrderItemRepositoryQueryDsl {
 //    Optional<OrderItem> findOrderItemByOrderIdAndItemId(Long orderId, Long itemId);
+    Optional<OrderItem> findOrderedById(Long id);
     Optional<OrderItem> findByIdWithItem(Long id);
-
     Optional<OrderItem> findOrderItemByOrderIdAndItemId(Long orderId, Long itemId);
     Optional<OrderItem> findOrderItemByOrderIdAndItemIdAndPrice(Long orderId, Long itemId, int price);
     List<OrderItem> findAllOrderItemByOrderIdOrderByTime(Long orderId);
-
     List<Long> findAllOrderItemIdByOrderId(Long orderId);
-
-
+    void deleteByChangingStatus(Long id);
 }

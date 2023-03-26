@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepositoryQueryDsl {
+    Optional<Order> findUsingById(Long orderId);
     Optional<Order> findOrderWithOrderItemsByIdOrderByTime(Long orderId);
     Optional<Order> findOrderWithStoreAndOrderItemsByIdOrderByTime(Long orderId);
 

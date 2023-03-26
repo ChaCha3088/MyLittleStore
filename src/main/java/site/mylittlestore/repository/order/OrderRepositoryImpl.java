@@ -3,6 +3,7 @@ package site.mylittlestore.repository.order;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import site.mylittlestore.domain.Order;
+import site.mylittlestore.enumstorage.status.OrderStatus;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -17,6 +18,19 @@ import static site.mylittlestore.domain.item.QItem.item;
 public class OrderRepositoryImpl implements OrderRepositoryQueryDsl {
 
     private final EntityManager em;
+
+    @Override
+    public Optional<Order> findUsingById(Long orderId) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return Optional.ofNullable(queryFactory
+                .select(order)
+                .from(order)
+                .where(order.id.eq(orderId)
+                        .and(order.orderStatus.eq(OrderStatus.USING)))
+                .fetchOne());
+    }
+
 
     @Override
     public Optional<Order> findOrderWithOrderItemsByIdOrderByTime(Long orderId) {

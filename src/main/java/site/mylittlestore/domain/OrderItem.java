@@ -69,6 +69,9 @@ public class OrderItem extends BaseEntity {
 
         //OrderItem 생성시 Item의 stock 감소
         this.item.decreaseStock(count);
+
+        //OrderItem과 Order 연관관계 설정
+        order.getOrderItems().add(this);
     }
 
     public Item addCount(int count) throws NotEnoughStockException {

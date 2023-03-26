@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemDto;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
+import site.mylittlestore.dto.orderitem.OrderItemEntityCreationDto;
 import site.mylittlestore.enumstorage.status.OrderStatus;
-import site.mylittlestore.dto.orderitem.OrderItemCreationDto;
 import site.mylittlestore.entity.BaseEntity;
 import site.mylittlestore.exception.item.NotEnoughStockException;
 
@@ -63,22 +63,6 @@ public class Order extends BaseEntity {
         this.orderStatus = OrderStatus.USING;
 
         storeTable.setOrder(this);
-    }
-
-    public OrderItem createOrderItem(OrderItemCreationDto orderItemCreationDto) throws NotEnoughStockException {
-        this.orderStatus = OrderStatus.USING;
-
-        OrderItem createdOrderItem = OrderItem.builder()
-                .order(this)
-                .item(orderItemCreationDto.getItem())
-                .price(orderItemCreationDto.getPrice())
-                .count(orderItemCreationDto.getCount())
-                .build();
-
-        createdOrderItem.setOrder(this);
-        orderItems.add(createdOrderItem);
-
-        return createdOrderItem;
     }
 
     //==DTO==//
