@@ -14,17 +14,16 @@
                         <th>주문 번호</th>
                     </tr>
                 </thead>
-                <tbody th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/orders/{orderId}(memberId = ${memberId}, storeId = ${storeTableFindDto.storeId}, orderId = ${storeTableFindDto.orderId})}'|">
+                <tbody th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTable/{storeTableId}/orders/{orderId}(memberId = ${memberId}, storeId = ${storeTableFindDto.storeId}, storeTableId = {storeTableFindDto.id}, orderId = ${storeTableFindDto.orderId})}'|">
                     <td th:text="${storeTableFindDto.orderId}"></td>
                 </tbody>
             </table>
 
     </div>
 
-    //테이블에 주문이 없으면, 주문하기 버튼이 보인다.
-    <div class="jumbotron">
+    <div th:if="${storeTableFindDto.orderId == null}" class="jumbotron">
         <button class="w-100 btn btn-primary btn-sm"
-                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/orders/new(memberId = ${memberId}, storeId = ${storeId})}'|"
+                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTable/{storeTableId}/orders/new(memberId = ${memberId}, storeId = ${storeId}, storeTableId = {storeTableFindDto.id})}'|"
                 type="button">주문하기
         </button>
     </div>
