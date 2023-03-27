@@ -23,7 +23,7 @@
         <div class="form-group">
             <label th:for="price">가격</label>
             <input type="text" id="price" name="price" class="form-control" placeholder="가격을 입력하세요" value="가격" th:value="${itemFindDto.price}"
-                    th:class="${#fields.hasErrors('price')}? 'form-control fieldError' : 'form-control'" readonly>
+                    th:class="${#fields.hasErrors('price')}? 'form-control fieldError' : 'form-control'">
             <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}">부적절한 가격입니다.</p>
         </div>
         

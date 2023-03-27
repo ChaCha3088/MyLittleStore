@@ -15,6 +15,7 @@ import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.form.OrderItemCreationForm;
 import site.mylittlestore.form.OrderItemForm;
+import site.mylittlestore.form.OrderItemUpdateForm;
 import site.mylittlestore.message.Message;
 import site.mylittlestore.service.ItemService;
 import site.mylittlestore.service.OrderItemService;
@@ -104,26 +105,25 @@ public class OrderItemController {
         model.addAttribute("memberId", memberId);
         model.addAttribute("storeId", storeId);
         model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
-        model.addAttribute("orderItemUpdateForm", new OrderItemForm());
+        model.addAttribute("orderItemUpdateForm", new OrderItemUpdateForm());
 
         return "orderItems/orderItemUpdateForm";
     }
 
     @PostMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/update")
-    public String updateOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @Valid OrderItemForm orderItemForm, BindingResult result, Model model) {
+    public String updateOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @Valid OrderItemUpdateForm orderItemUpdateForm, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
-            model.addAttribute("orderItemUpdateForm", new OrderItemForm());
             return "orderItems/orderItemUpdateForm";
         }
 
         Long updatedOrderItemId = orderItemService.updateOrderItemCount(OrderItemDto.builder()
                 .id(orderItemId)
                 .orderId(orderId) //나중에 orderId 검증할 것
-                .itemId(orderItemForm.getItemId()) //나중에 itemId 검증할 것
-                .price(orderItemForm.getPrice()) //나중에 price 검증할 것
-                .count(orderItemForm.getCount()) //나중에 count 검증할 것
+                .itemId(orderItemUpdateForm.getItemId()) //나중에 itemId 검증할 것
+                .price(orderItemUpdateForm.getPrice()) //나중에 price 검증할 것
+                .count(orderItemUpdateForm.getCount()) //나중에 count 검증할 것
                 .build());
 
         return "redirect:/members/"+memberId+"/stores/"+storeId+"/storeTables/"+storeTableId+"/orders/"+orderId+"/orderItems/"+updatedOrderItemId;

@@ -15,10 +15,9 @@ public class StoreTableController {
     private final StoreTableService storeTableService;
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables")
-    public String storeTableList(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, Model model) {
+    public String storeTableList(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, Model model) {
         model.addAttribute("memberId", memberId);
         model.addAttribute("storeId", storeId);
-        model.addAttribute("storeTableId", storeTableId);
         model.addAttribute("storeTableFindDtoWithOrderFindDtos", storeTableService.findAllStoreTableFindDtoWithOrderFindDtoByStoreId(storeId));
 
         return "storeTables/storeTableList";

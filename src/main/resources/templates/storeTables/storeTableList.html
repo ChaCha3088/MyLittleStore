@@ -15,7 +15,7 @@
                     <th>테이블 상태</th>
                 </tr>
                 </thead>
-                <tbody th:each="storeTableFindDtoWithOrderFindDto : ${storeTableFindDtoWithOrderFindDtos}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}(memberId = ${memberId}, storeId = ${storeTableFindDtoWithOrderFindDto.storeId}, storeTableId = ${storeTableId}, orderId = ${storeTableFindDtoWithOrderFindDto.orderDtoWithOrderItemId.id})}'|">
+                <tbody th:each="storeTableFindDtoWithOrderFindDto : ${storeTableFindDtoWithOrderFindDtos}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}(memberId = ${memberId}, storeId = ${storeTableFindDtoWithOrderFindDto.storeId}, storeTableId = ${storeTableFindDtoWithOrderFindDto.id}, orderId = ${storeTableFindDtoWithOrderFindDto.orderDtoWithOrderItemId.id})}'|">
                     <td th:text="${storeTableFindDtoWithOrderFindDto.id}"></td>
                     <td th:text="${storeTableFindDtoWithOrderFindDto.storeTableStatus}"></td>
                 </tbody>
