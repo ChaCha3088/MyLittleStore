@@ -33,23 +33,23 @@
                     <tr>
                         <th>상품 이름</th>
                         <th>상품 추가 일시</th>
-                        <th>상품 수량</th>
                         <th>상품 가격</th>
+                        <th>상품 수량</th>
                     </tr>
                 </thead>
                 <tbody>
-                <tr th:each="orderItemDtoWithItemNameDto : ${orderDtoWithOrderItemDtoWithItemNameDto.getOrderItemDtoWithItemNameDtos()}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTable/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}(memberId = ${memberId}, storeId = ${orderDtoWithOrderItemDtoWithItemNameDto.storeId}, storeTableId = ${orderDtoWithOrderItemDtoWithItemNameDto.storeId}, orderId = ${orderItemDtoWithItemNameDto.orderId}, orderItemId = ${orderItemDtoWithItemNameDto.id})}'|">
+                <tr th:each="orderItemDtoWithItemNameDto : ${orderDtoWithOrderItemDtoWithItemNameDto.getOrderItemDtoWithItemNameDtos()}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}(memberId = ${memberId}, storeId = ${orderDtoWithOrderItemDtoWithItemNameDto.storeId}, storeTableId = ${orderDtoWithOrderItemDtoWithItemNameDto.storeId}, orderId = ${orderItemDtoWithItemNameDto.orderId}, orderItemId = ${orderItemDtoWithItemNameDto.id})}'|">
                     <td th:text="${orderItemDtoWithItemNameDto.itemName}"></td>
                     <td th:text="${orderItemDtoWithItemNameDto.time}"></td>
-                    <td th:text="${orderItemDtoWithItemNameDto.count}"></td>
                     <td th:text="${orderItemDtoWithItemNameDto.price}"></td>
+                    <td th:text="${orderItemDtoWithItemNameDto.count}"></td>
                 </tbody>
             </table>
     </div>
 
     <div class="jumbotron">
         <button class="w-100 btn btn-primary btn-sm"
-                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTable/{storeTableId}/orders/{orderId}/orderItems/new(memberId = ${memberId}, storeId = ${orderDtoWithOrderItemDtoWithItemNameDto.storeId}, storeTableId = ${orderDtoWithOrderItemDtoWithItemNameDto.storeId}, orderId = ${orderDtoWithOrderItemDtoWithItemNameDto.id})}'|"
+                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new(memberId = ${memberId}, storeId = ${orderDtoWithOrderItemDtoWithItemNameDto.storeId}, storeTableId = ${orderDtoWithOrderItemDtoWithItemNameDto.storeId}, orderId = ${orderDtoWithOrderItemDtoWithItemNameDto.id})}'|"
                 type="button">상품 주문하기
         </button>
     </div>

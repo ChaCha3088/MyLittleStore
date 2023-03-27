@@ -81,12 +81,11 @@ public class ItemController {
         return "items/itemUpdateForm";
     }
 
-    @PutMapping("/members/{memberId}/stores/{storeId}/items/{itemId}/update")
+    @PostMapping("/members/{memberId}/stores/{storeId}/items/{itemId}/update")
     public String updateItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("itemId") Long itemId, @Valid ItemUpdateForm itemUpdateForm, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             model.addAttribute("itemFindDto", itemService.findItemDtoById(storeId));
-            model.addAttribute("itemUpdateForm", new ItemUpdateForm());
             return "items/itemUpdateForm";
         }
 
@@ -98,7 +97,7 @@ public class ItemController {
                 .newStock(itemUpdateForm.getStock())
                 .build());
 
-        return "redirect:/members/"+memberId+"/stores/"+storeId+"/items/"+updatedItemId;
+        return "redirect:/members/"+memberId+"/stores/"+storeId+"/items/";
     }
 
     @GetMapping("/members/{memberId}/stores/{storeId}/items/{itemId}/delete")

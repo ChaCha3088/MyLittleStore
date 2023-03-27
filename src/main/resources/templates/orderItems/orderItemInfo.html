@@ -32,19 +32,19 @@
 
         <div class="col">
             <button class="w-100 btn btn-primary btn-lg"
-                    th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}/delete(memberId = ${memberId}, storeId = ${storeId}, orderId = ${orderItemDtoWithItemFindDto.orderId}, orderItemId = ${orderItemDtoWithItemFindDto.id})}'|"
+                    th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/delete(memberId = ${memberId}, storeId = ${storeId}, storeTableId = ${storeTableId}, orderId = ${orderItemDtoWithItemFindDto.orderId}, orderItemId = ${orderItemDtoWithItemFindDto.id})}'|"
                     type="button">삭제</button>
         </div>
 
         <div class="col">
             <button class="w-100 btn btn-primary btn-lg"
-                    th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}/update(memberId = ${memberId}, storeId = ${storeId}, orderId = ${orderItemDtoWithItemFindDto.orderId}, orderItemId = ${orderItemDtoWithItemFindDto.id})}'|"
+                    th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/update(memberId = ${memberId}, storeId = ${storeId}, storeTableId = ${storeTableId}, orderId = ${orderItemDtoWithItemFindDto.orderId}, orderItemId = ${orderItemDtoWithItemFindDto.id})}'|"
                     type="button">수정</button>
         </div>
 
         <div class="col">
             <button class="w-100 btn btn-secondary btn-lg"
-                    th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/orders/{orderId}(memberId = ${memberId}, storeId = ${storeId}, orderId = ${orderItemDtoWithItemFindDto.orderId})}'|"
+                    th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}(memberId = ${memberId}, storeId = ${storeId}, storeTableId = ${storeTableId}, orderId = ${orderItemDtoWithItemFindDto.orderId})}'|"
                     type="button">목록</button>
         </div>
     </div>

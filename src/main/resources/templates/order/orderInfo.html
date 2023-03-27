@@ -32,7 +32,7 @@
                         <th></th>
                     </tr>
                 </thead>
-                <tbody th:each="orderItemDtoWithItemDto : ${OrderDtoWithOrderItemDto.orderItemDtoWithItemFindDtoList}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}(memberId = ${memberId}, storeId = ${orderItemDtoWithItemDto.itemFindDto.storeId}, orderId = ${orderItemDtoWithItemDto.orderId}, orderItemId = ${orderItemDtoWithItemDto.id})}'|">
+                <tbody th:each="orderItemDtoWithItemDto : ${OrderDtoWithOrderItemDto.orderItemDtoWithItemFindDtoList}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}(memberId = ${memberId}, storeId = ${orderItemDtoWithItemDto.itemFindDto.storeId}, orderId = ${orderItemDtoWithItemDto.orderId}, orderItemId = ${orderItemDtoWithItemDto.id})}'|">
                     <td th:text="${orderItemDtoWithItemDto.getItemFindDto.name}"></td>
                     <td th:text="${orderItemDtoWithItemDto.count}"></td>
                     <td th:text="${orderItemDtoWithItemDto.price}"></td>
@@ -43,7 +43,7 @@
 
     <div class="jumbotron">
         <button class="w-100 btn btn-primary btn-sm"
-                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/new(memberId = ${memberId}, storeId = ${OrderDtoWithOrderItemDto.storeId}, orderId = ${OrderDtoWithOrderItemDto.id})}'|"
+                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new(memberId = ${memberId}, storeId = ${OrderDtoWithOrderItemDto.storeId}, orderId = ${OrderDtoWithOrderItemDto.id})}'|"
                 type="button">주문 등록
         </button>
     </div>

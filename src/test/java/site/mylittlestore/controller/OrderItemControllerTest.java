@@ -119,7 +119,7 @@ public class OrderItemControllerTest {
 //    void orderItemInfo() throws Exception {
 //        //when
 //        //주문 추가
-//        mockMvc.perform(post("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/new", memberTestId, storeTestId, orderTestId)
+//        mockMvc.perform(post("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new", memberTestId, storeTestId, orderTestId)
 //                .param()
 //
 //                        .storeId(storeTestId)
@@ -140,7 +140,7 @@ public class OrderItemControllerTest {
     void orderItemInfo() throws Exception {
         //given
         //주문 추가
-        mockMvc.perform(post("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/new", memberTestId, storeTestId, orderTestId)
+        mockMvc.perform(post("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new", memberTestId, storeTestId, orderTestId)
                 .param("itemId", itemTestId1.toString())
                 .param("price", "10000")
                 .param("count", "100"))
@@ -148,7 +148,7 @@ public class OrderItemControllerTest {
 
         //then
         //주문 조회
-        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}", memberTestId, storeTestId, orderTestId, 7L))
+        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}", memberTestId, storeTestId, orderTestId, 7L))
                 .andExpect(status().isOk())
                 .andExpect(view().name("orderItems/orderItemInfo"));
     }
@@ -157,7 +157,7 @@ public class OrderItemControllerTest {
     void createOrderItemForm() throws Exception {
         //then
         //주문 추가 폼 조회
-        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/new", memberTestId, storeTestId, orderTestId))
+        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new", memberTestId, storeTestId, orderTestId))
                 .andExpect(status().isOk())
                 .andExpect(view().name("orderItems/orderItemCreationForm"));
     }
@@ -166,14 +166,14 @@ public class OrderItemControllerTest {
     void createOrderItem() throws Exception {
         //given
         //주문 추가
-        mockMvc.perform(post("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/new", memberTestId, storeTestId, orderTestId)
+        mockMvc.perform(post("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new", memberTestId, storeTestId, orderTestId)
                 .param("itemId", itemTestId1.toString())
                 .param("price", "10000")
                 .param("count", "100"));
 
         //when
         //주문 조회
-        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}", memberTestId, storeTestId, orderTestId, 6))
+        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}", memberTestId, storeTestId, orderTestId, 6))
                 .andExpect(status().isOk())
                 .andExpect(view().name("orderItems/orderItemInfo"));
 
@@ -191,7 +191,7 @@ public class OrderItemControllerTest {
     void updateOrderItem() throws Exception {
         //given
         //주문 추가
-        mockMvc.perform(post("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/new", memberTestId, storeTestId, orderTestId)
+        mockMvc.perform(post("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new", memberTestId, storeTestId, orderTestId)
                 .param("itemId", itemTestId1.toString())
                 .param("price", "10000")
                 .param("count", "100"))
@@ -200,7 +200,7 @@ public class OrderItemControllerTest {
 
         //when
         //주문 수정(수량 줄이기)
-        mockMvc.perform(post("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}/update", memberTestId, storeTestId, orderTestId, 8)
+        mockMvc.perform(post("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/update", memberTestId, storeTestId, orderTestId, 8)
                 .param("price", "5000")
                 .param("count", "50"))
                 .andExpect(status().is3xxRedirection())
@@ -217,7 +217,7 @@ public class OrderItemControllerTest {
 
         //when
         //주문 수정(수량 늘리기)
-        mockMvc.perform(post("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}/update", memberTestId, storeTestId, orderTestId, 8)
+        mockMvc.perform(post("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/update", memberTestId, storeTestId, orderTestId, 8)
                 .param("price", "7500")
                 .param("count", "75"))
                 .andExpect(status().is3xxRedirection())
@@ -236,7 +236,7 @@ public class OrderItemControllerTest {
     void deleteOrderItem() throws Exception {
         //given
         //주문 추가
-        String redirectedUrl1 = mockMvc.perform(post("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/new", memberTestId, storeTestId, orderTestId)
+        String redirectedUrl1 = mockMvc.perform(post("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new", memberTestId, storeTestId, orderTestId)
                         .param("itemId", itemTestId1.toString())
                         .param("price", "10000")
                         .param("count", "50"))
@@ -250,7 +250,7 @@ public class OrderItemControllerTest {
         assertThat(findItemDtoById1.getStock()).isEqualTo(50);
 
         //when
-        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}/delete", memberTestId, storeTestId, orderTestId, orderItemId))
+        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/delete", memberTestId, storeTestId, orderTestId, orderItemId))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/members/" + memberTestId + "/stores/" + storeTestId + "/orders/" + orderTestId));
 

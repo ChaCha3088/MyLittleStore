@@ -73,10 +73,10 @@ class OrderControllerTest {
     void orderInfo() throws Exception {
         //given
         //order 생성
-        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/orders/new", memberTestId, storeTestId));
+        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/new", memberTestId, storeTestId));
 
         //then
-        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/orders/{orderId}", memberTestId, storeTestId, 3L))
+        mockMvc.perform(get("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}", memberTestId, storeTestId, 3L))
                 .andExpect(status().isOk())
                 .andExpect(view().name("orders/orderInfo"))
                 .andExpect(model().attributeExists("memberId"))
@@ -87,7 +87,7 @@ class OrderControllerTest {
     @DisplayName("주문 생성")
     void createOrder() throws Exception {
         //주문 상세로 리디렉션
-        String redirectedUrl = mockMvc.perform(get("/members/{memberId}/stores/{storeId}/orders/new", memberTestId, storeTestId))
+        String redirectedUrl = mockMvc.perform(get("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/new", memberTestId, storeTestId))
                 .andExpect(status().is3xxRedirection())
                 .andReturn().getResponse().getRedirectedUrl();
 

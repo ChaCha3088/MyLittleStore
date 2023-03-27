@@ -6,7 +6,7 @@
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
 
-    <form th:action="@{/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/new(memberId = ${memberId}, storeId = ${storeId}, orderId = ${orderId})}" th:object="${orderItemCreationForm}" method="post">
+    <form th:action="@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new(memberId = ${memberId}, storeId = ${storeId}, storeTableId = ${storeTableId}, orderId = ${orderId})}" th:object="${orderItemCreationForm}" method="post">
         <div class="form-group">
 
             <div>상품 선택</div>

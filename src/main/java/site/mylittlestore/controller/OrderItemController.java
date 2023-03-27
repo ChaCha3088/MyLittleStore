@@ -37,8 +37,8 @@ public class OrderItemController {
     private final StoreService storeService;
 
     //나중에 주문만 확인할 이유가 생길 때 만들자
-//    @GetMapping("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems")
-//    public String orderItemList(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("orderId") Long orderId, Model model) {
+//    @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems")
+//    public String orderItemList(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, Model model) {
 //        model.addAttribute("memberId", memberId);
 //        model.addAttribute("storeId", storeId);
 //        model.addAttribute("orderId", orderId);
@@ -48,10 +48,11 @@ public class OrderItemController {
 //    }
 
 
-    @GetMapping("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}")
-    public String orderItemInfo(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, Model model) {
+    @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}")
+    public String orderItemInfo(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, Model model) {
         model.addAttribute("memberId", memberId);
         model.addAttribute("storeId", storeId);
+        model.addAttribute("storeTableId", storeTableId);
         model.addAttribute("orderId", orderId);
         model.addAttribute("orderItemId", orderItemId);
         model.addAttribute("orderItemDtoWithItemFindDto", orderItemService.findOrderItemByIdWithItemFindDto(orderItemId));
@@ -59,8 +60,8 @@ public class OrderItemController {
         return "orderItems/orderItemInfo";
     }
 
-    @GetMapping("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/new")
-    public String createOrderItemForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("orderId") Long orderId, Model model) {
+    @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new")
+    public String createOrderItemForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, Model model) {
 
         StoreOnlyDto findStoreDtoById = storeService.findStoreOnlyDtoById(storeId);
 
@@ -73,6 +74,7 @@ public class OrderItemController {
         List<ItemFindDto> findAllItemCreationDtoByStoreId = itemService.findAllItemDtoByStoreId(storeId);
         model.addAttribute("memberId", memberId);
         model.addAttribute("storeId", storeId);
+        model.addAttribute("storeTableId", storeTableId);
         model.addAttribute("orderId", orderId);
         model.addAttribute("itemDtoList", findAllItemCreationDtoByStoreId);
         model.addAttribute("orderItemCreationForm", new OrderItemCreationForm());
@@ -80,8 +82,8 @@ public class OrderItemController {
         return "orderItems/orderItemCreationForm";
     }
 
-    @PostMapping("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/new")
-    public String createOrderItem(@PathVariable("memberId") Long memberId, @PathVariable Long storeId, @PathVariable Long orderId, @Valid OrderItemCreationForm orderItemCreationForm, BindingResult result) {
+    @PostMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new")
+    public String createOrderItem(@PathVariable("memberId") Long memberId, @PathVariable Long storeId, @PathVariable Long storeTableId, @PathVariable Long orderId, @Valid OrderItemCreationForm orderItemCreationForm, BindingResult result) {
 
         if (result.hasErrors()) {
             return "orderItems/orderItemCreationForm";
@@ -94,11 +96,11 @@ public class OrderItemController {
                         .count(orderItemCreationForm.getCount())
                         .build());
 
-        return "redirect:/members/" + memberId + "/stores/" + storeId + "/orders/" + orderId + "/orderItems/" + createdOrderItemId;
+        return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/orderItems/" + createdOrderItemId;
     }
 
-    @GetMapping("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}/update")
-    public String updateOrderItemForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, Model model) {
+    @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/update")
+    public String updateOrderItemForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, Model model) {
         model.addAttribute("memberId", memberId);
         model.addAttribute("storeId", storeId);
         model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
@@ -107,8 +109,8 @@ public class OrderItemController {
         return "orderItems/orderItemUpdateForm";
     }
 
-    @PostMapping("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}/update")
-    public String updateOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @Valid OrderItemForm orderItemForm, BindingResult result, Model model) {
+    @PostMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/update")
+    public String updateOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @Valid OrderItemForm orderItemForm, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
@@ -124,11 +126,11 @@ public class OrderItemController {
                 .count(orderItemForm.getCount()) //나중에 count 검증할 것
                 .build());
 
-        return "redirect:/members/"+memberId+"/stores/"+storeId+"/orders/"+orderId+"/orderItems/"+updatedOrderItemId;
+        return "redirect:/members/"+memberId+"/stores/"+storeId+"/storeTables/"+storeTableId+"/orders/"+orderId+"/orderItems/"+updatedOrderItemId;
     }
 
-    @GetMapping("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}/delete")
-    public String deleteOrderItemForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, Model model) {
+    @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/delete")
+    public String deleteOrderItemForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, Model model) {
         model.addAttribute("memberId", memberId);
         model.addAttribute("storeId", storeId);
         model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
@@ -137,8 +139,8 @@ public class OrderItemController {
         return "orderItems/orderItemDeleteForm";
     }
 
-    @PostMapping("/members/{memberId}/stores/{storeId}/orders/{orderId}/orderItems/{orderItemId}/delete")
-    public String deleteOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @Valid OrderItemForm orderItemDeleteForm, BindingResult result, Model model) {
+    @PostMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/delete")
+    public String deleteOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @Valid OrderItemForm orderItemDeleteForm, BindingResult result, Model model) {
         if (result.hasErrors()) {
             //
             //
@@ -153,6 +155,6 @@ public class OrderItemController {
                 .count(orderItemDeleteForm.getCount()) //나중에 count 검증할 것
                 .build());
 
-        return "redirect:/members/"+memberId+"/stores/"+storeId+"/orders/"+orderId;
+        return "redirect:/members/"+memberId+"/stores/"+storeId+"/storeTables/"+storeTableId+"/orders/"+orderId;
     }
 }

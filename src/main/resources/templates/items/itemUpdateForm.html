@@ -11,7 +11,8 @@
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
 
-    <form role="form" th:action="@{/members/{memberId}/stores/{storeId}/items/{itemId}/update(memberId = ${memberId}, storeId = ${itemFindDto.storeId}, itemId = ${itemFindDto.id})}" th:object="${itemUpdateForm}" method="put">
+    <form role="form" th:action="@{/members/{memberId}/stores/{storeId}/items/{itemId}/update(memberId = ${memberId}, storeId = ${itemFindDto.storeId}, itemId = ${itemFindDto.id})}" th:object="${itemUpdateForm}" method="post">
+
         <div class="form-group">
             <label th:for="name">이름</label>
             <input type="text" id="name" name="name" class="form-control" placeholder="이름을 입력하세요" value="이름" th:value="${itemFindDto.name}"
@@ -22,7 +23,7 @@
         <div class="form-group">
             <label th:for="price">가격</label>
             <input type="text" id="price" name="price" class="form-control" placeholder="가격을 입력하세요" value="가격" th:value="${itemFindDto.price}"
-                    th:class="${#fields.hasErrors('price')}? 'form-control fieldError' : 'form-control'">
+                    th:class="${#fields.hasErrors('price')}? 'form-control fieldError' : 'form-control'" readonly>
             <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}">부적절한 가격입니다.</p>
         </div>
         

@@ -13,7 +13,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping("/members/{memberId}/stores/{storeId}/storeTable/{storeTableId}/orders/{orderId}")
+    @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}")
     public String orderInfo(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, Model model) {
         model.addAttribute("memberId", memberId);
         model.addAttribute("orderDtoWithOrderItemDtoWithItemNameDto", orderService.findOrderDtoWithOrderItemDtoWithItemNameDtoById(orderId));
@@ -21,7 +21,7 @@ public class OrderController {
         return "orders/orderInfo";
     }
 
-    @GetMapping("/members/{memberId}/stores/{storeId}/storeTable/{storeTableId}/orders/new")
+    @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/new")
     public String createOrder(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, Model model) {
         Long createdOrderId = orderService.createOrder(storeId, storeTableId);
 
