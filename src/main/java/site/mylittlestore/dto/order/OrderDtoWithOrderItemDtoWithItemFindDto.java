@@ -4,7 +4,6 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
 import site.mylittlestore.dto.orderitem.OrderItemDtoWithItemFindDto;
-import site.mylittlestore.dto.orderitem.OrderItemDtoWithItemNameDto;
 
 import java.time.LocalDateTime;
 import java.util.List;

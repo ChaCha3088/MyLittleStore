@@ -2,8 +2,6 @@ package site.mylittlestore.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import site.mylittlestore.dto.order.OrderDtoWithOrderItemDtoWithItemFindDto;
-import site.mylittlestore.dto.order.OrderDtoWithOrderItemDtoWithItemNameDto;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
 import site.mylittlestore.enumstorage.status.OrderStatus;
 import site.mylittlestore.entity.BaseEntity;
@@ -65,33 +63,6 @@ public class Order extends BaseEntity {
     }
 
     //==DTO==//
-    public OrderDtoWithOrderItemDtoWithItemNameDto toOrderDtoWithOrderItemDtoWithItemNameDto() {
-        return OrderDtoWithOrderItemDtoWithItemNameDto.builder()
-                .id(id)
-                .storeId(store.getId())
-                .paymentId(payment != null ? payment.getId() : null)
-                .storeTableId(storeTable.getId())
-                .orderItemDtoWithItemNameDtos(orderItems.stream()
-                        .map(OrderItem::toOrderItemDtoWithItemNameDto)
-                        .collect(Collectors.toList()))
-                .startTime(startTime)
-                .orderStatus(orderStatus.toString())
-                .build();
-    }
-
-    public OrderDtoWithOrderItemDtoWithItemFindDto toOrderDtoWithOrderItemDtoWithItemFindDto() {
-        return OrderDtoWithOrderItemDtoWithItemFindDto.builder()
-                .id(id)
-                .storeId(store.getId())
-                .paymentId(payment != null ? payment.getId() : null)
-                .storeTableId(storeTable.getId())
-                .orderItemDtoWithItemFindDtos(orderItems.stream()
-                        .map(OrderItem::toOrderItemDtoWithItemFindDto)
-                        .collect(Collectors.toList()))
-                .startTime(startTime)
-                .orderStatus(orderStatus.toString())
-                .build();
-    }
 
     public OrderDtoWithOrderItemId toOrderDtoWithOrderItemId() {
         return OrderDtoWithOrderItemId.builder()

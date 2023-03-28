@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.orderitem.OrderItemDtoWithItemFindDto;
-import site.mylittlestore.dto.orderitem.OrderItemDtoWithItemNameDto;
 import site.mylittlestore.dto.orderitem.OrderItemFindDto;
 import site.mylittlestore.entity.BaseEntity;
 import site.mylittlestore.enumstorage.status.OrderItemStatus;
@@ -15,6 +14,7 @@ import site.mylittlestore.exception.item.NotEnoughStockException;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
@@ -46,6 +46,9 @@ public class OrderItem extends BaseEntity {
     @JoinColumn(name = "ITEM_ID")
     private Item item;
 
+    @NotBlank
+    private String itemName;
+
     @NotNull
     @Min(value = 1, message = "가격은 0보다 커야합니다.")
     private int price;
@@ -66,6 +69,7 @@ public class OrderItem extends BaseEntity {
         this.store = store;
         this.order = order;
         this.item = item;
+        this.itemName = item.getName();
         this.price = price;
         this.count = count;
         this.time = LocalDateTime.now();
@@ -113,6 +117,7 @@ public class OrderItem extends BaseEntity {
                 .storeId(store.getId())
                 .orderId(order.getId())
                 .itemId(item.getId())
+                .itemName(itemName)
                 .price(price)
                 .count(count)
                 .time(time)
@@ -126,19 +131,7 @@ public class OrderItem extends BaseEntity {
                 .storeId(store.getId())
                 .orderId(order.getId())
                 .itemFindDto(item.toItemFindDto())
-                .price(price)
-                .count(count)
-                .time(time)
-                .orderItemStatus(orderItemStatus.toString())
-                .build();
-    }
-
-    public OrderItemDtoWithItemNameDto toOrderItemDtoWithItemNameDto() {
-        return OrderItemDtoWithItemNameDto.builder()
-                .id(id)
-                .storeId(store.getId())
-                .orderId(order.getId())
-                .itemName(item.getName())
+                .itemName(itemName)
                 .price(price)
                 .count(count)
                 .time(time)

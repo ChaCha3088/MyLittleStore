@@ -47,11 +47,11 @@ public class OrderItemService {
                 .toOrderItemDto();
     }
 
-    public List<OrderItemDtoWithItemNameDto> findAllOrderItemDtoWithItemNameDtoByOrderId(Long orderId) {
-        return orderItemRepository.findAllWithItemByOrderId(orderId)
+    public List<OrderItemFindDto> findAllOrderItemFindDtoByOrderId(Long orderId) {
+        return orderItemRepository.findAllByOrderId(orderId)
                 //Dto로 변환
                 .stream()
-                .map(orderItem -> orderItem.toOrderItemDtoWithItemNameDto())
+                .map(orderItem -> orderItem.toOrderItemDto())
                 .collect(Collectors.toList());
     }
 
@@ -65,12 +65,12 @@ public class OrderItemService {
                 .toOrderItemDtoWithItemFindDto();
     }
 
-    public List<OrderItemDtoWithItemNameDto> findAllOrderItemDtoWithItemNameByOrderIdOrderByTime(Long orderId) {
-        List<OrderItem> findOrderItemByOrderId = orderItemRepository.findAllOrderItemByOrderIdOrderByTime(orderId);
-
-        //Dto로 변환
-        return findOrderItemByOrderId.stream().map(OrderItem::toOrderItemDtoWithItemNameDto).collect(Collectors.toList());
-    }
+//    public List<OrderItemDtoWithItemNameDto> findAllOrderItemDtoWithItemNameByOrderIdOrderByTime(Long orderId) {
+//        List<OrderItem> findOrderItemByOrderId = orderItemRepository.findAllOrderItemByOrderIdOrderByTime(orderId);
+//
+//        //Dto로 변환
+//        return findOrderItemByOrderId.stream().map(OrderItem::toOrderItemDtoWithItemNameDto).collect(Collectors.toList());
+//    }
 
     public List<OrderItemFindDto> findAllOrderItemByOrderId(Long orderId) {
         //테이블에 속한 주문 상품만 찾아야지.
@@ -213,7 +213,7 @@ public class OrderItemService {
     private OrderItem validateOrderItemExistenceWithOrderIdAndOrderItemIdAndItemIdAndPrice(Long orderId, Long orderItemId, Long itemId, int price) {
         //주문 상품에 주문 Id, 주문 상품 Id, 상품 Id, 가격이 같은 상품이 존재하는지 확인
         //해당 조건을 만족하는 상품이 없으면 예외 발생
-        return orderItemRepository.findByOrderIdOrderItemIdAndItemIdAndPrice(orderId, orderItemId, itemId, price)
+        return orderItemRepository.findByOrderIdAndOrderItemIdAndItemIdAndPrice(orderId, orderItemId, itemId, price)
                 .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
     }
 

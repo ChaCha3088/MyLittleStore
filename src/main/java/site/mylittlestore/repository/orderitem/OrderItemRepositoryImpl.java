@@ -72,13 +72,12 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
     }
 
     @Override
-    public List<OrderItem> findAllWithItemByOrderId(Long orderId) {
+    public List<OrderItem> findAllByOrderId(Long orderId) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return queryFactory
                 .select(orderItem)
                 .from(orderItem)
-                .join(orderItem.item, item).fetchJoin()
                 .where(orderItem.order.id.eq(orderId)
                         .and(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED)))
                 .fetch();
@@ -125,7 +124,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
     }
 
     @Override
-    public Optional<OrderItem> findByOrderIdOrderItemIdAndItemIdAndPrice(Long orderId, Long orderItemId, Long itemId, int price) {
+    public Optional<OrderItem> findByOrderIdAndOrderItemIdAndItemIdAndPrice(Long orderId, Long orderItemId, Long itemId, int price) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return Optional.ofNullable(queryFactory

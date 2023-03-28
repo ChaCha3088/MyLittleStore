@@ -7,8 +7,6 @@ import site.mylittlestore.domain.Store;
 import site.mylittlestore.domain.Order;
 import site.mylittlestore.domain.StoreTable;
 import site.mylittlestore.domain.item.Item;
-import site.mylittlestore.dto.order.OrderDtoWithOrderItemDtoWithItemFindDto;
-import site.mylittlestore.dto.order.OrderDtoWithOrderItemDtoWithItemNameDto;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
 import site.mylittlestore.enumstorage.errormessage.*;
 import site.mylittlestore.enumstorage.status.StoreStatus;

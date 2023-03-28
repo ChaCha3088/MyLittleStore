@@ -32,7 +32,7 @@
         <div class="py-5 text-center">
             <h2>주문 상품 목록</h2>
         </div>
-            <table th:if="${orderItemDtoWithItemNameDtos.size() > 0}" class="table table-striped table-hover">
+            <table th:if="${orderItemFindDtos.size() > 0}" class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th>상품 이름</th>
@@ -42,11 +42,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                <tr th:each="orderItemDtoWithItemNameDto : ${orderItemDtoWithItemNameDtos}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}(memberId = ${memberId}, storeId = ${orderDtoWithOrderItemId.storeId}, storeTableId = ${orderDtoWithOrderItemId.storeId}, orderId = ${orderItemDtoWithItemNameDto.orderId}, orderItemId = ${orderItemDtoWithItemNameDto.id})}'|">
-                    <td th:text="${orderItemDtoWithItemNameDto.itemName}"></td>
-                    <td th:text="${orderItemDtoWithItemNameDto.time}"></td>
-                    <td th:text="${orderItemDtoWithItemNameDto.price}"></td>
-                    <td th:text="${orderItemDtoWithItemNameDto.count}"></td>
+                <tr th:each="orderItemFindDto : ${orderItemFindDtos}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}(memberId = ${memberId}, storeId = ${orderDtoWithOrderItemId.storeId}, storeTableId = ${orderDtoWithOrderItemId.storeId}, orderId = ${orderItemFindDto.orderId}, orderItemId = ${orderItemFindDto.id})}'|">
+                    <td th:text="${orderItemFindDto.itemName}"></td>
+                    <td th:text="${orderItemFindDto.time}"></td>
+                    <td th:text="${orderItemFindDto.price}"></td>
+                    <td th:text="${orderItemFindDto.count}"></td>
                 </tbody>
             </table>
     </div>

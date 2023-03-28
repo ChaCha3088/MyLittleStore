@@ -16,6 +16,7 @@ public class OrderItemFindDto {
     private Long storeId;
     private Long orderId;
     private Long itemId;
+    private String itemName;
     private int price;
     private int count;
     private LocalDateTime time;
@@ -23,11 +24,12 @@ public class OrderItemFindDto {
 
     @Builder
     @QueryProjection
-    public OrderItemFindDto(Long id, Long storeId, Long orderId, Long itemId, int price, int count, LocalDateTime time, String orderItemStatus) {
+    public OrderItemFindDto(Long id, Long storeId, Long orderId, Long itemId, String itemName, int price, int count, LocalDateTime time, String orderItemStatus) {
         this.id = id;
         this.storeId = storeId;
         this.orderId = orderId;
         this.itemId = itemId;
+        this.itemName = itemName;
         this.price = price;
         this.count = count;
         this.time = time;

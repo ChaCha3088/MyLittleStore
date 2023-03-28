@@ -12,15 +12,17 @@ public class OrderItemDto {
     private Long id;
     private Long orderId;
     private Long itemId;
+    private String itemName;
     private int price;
     private int count;
 
     @Builder
     @QueryProjection
-    public OrderItemDto(Long id, Long orderId, Long itemId, int price, int count) {
+    public OrderItemDto(Long id, Long orderId, Long itemId, String itemName, int price, int count) {
         this.id = id;
         this.orderId = orderId;
         this.itemId = itemId;
+        this.itemName = itemName;
         this.price = price;
         this.count = count;
     }

@@ -26,7 +26,7 @@ public class OrderController {
     public String orderInfo(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, Model model) {
         model.addAttribute("memberId", memberId);
         model.addAttribute("orderDtoWithOrderItemId", orderService.findOrderDtoWithOrderItemIdById(orderId));
-        model.addAttribute("orderItemDtoWithItemNameDtos", orderItemService.findAllOrderItemDtoWithItemNameDtoByOrderId(orderId));
+        model.addAttribute("orderItemFindDtos", orderItemService.findAllOrderItemFindDtoByOrderId(orderId));
 
         return "orders/orderInfo";
     }
