@@ -49,7 +49,7 @@ public class StoreService {
     }
 
     public List<StoreDto> findAllStoreDtoByMemberId(Long memberId) {
-        //회원님 id를 가지고 있는 가게를 찾아야지.
+        //회원 id를 가지고 있는 가게를 찾아야지.
         List<Store> findStoreByStoreId = storeRepository.findAllStoreByMemberId(memberId);
 
         //Dto로 변환

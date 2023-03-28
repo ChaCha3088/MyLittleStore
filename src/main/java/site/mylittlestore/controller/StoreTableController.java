@@ -43,7 +43,7 @@ public class StoreTableController {
     public String createStoreTable(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId) {
         Long savedStoreTableId = storeTableService.createStoreTable(storeId);
 
-        return "redirect:/members/"+memberId+"/stores/"+storeId+"/storeTables/"+savedStoreTableId;
+        return "redirect:/members/"+memberId+"/stores/"+storeId+"/storeTables/";
     }
 
 }

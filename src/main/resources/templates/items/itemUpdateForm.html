@@ -19,26 +19,26 @@
 
         <div class="form-group">
             <label th:for="name">이름</label>
-            <input type="text" id="name" name="name" class="form-control" placeholder="이름을 입력하세요" value="이름" th:value="${itemFindDto.name}"
+            <input type="text" id="name" name="name" class="form-control" placeholder="이름을 입력하세요." value="이름" th:value="${itemFindDto.name}"
                    th:class="${#fields.hasErrors('name')}? 'form-control fieldError' : 'form-control'">
             <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}">부적절한 이름입니다.</p>
         </div>
 
         <div class="form-group">
             <label th:for="price">가격</label>
-            <input type="text" id="price" name="price" class="form-control" placeholder="가격을 입력하세요" value="가격" th:value="${itemFindDto.price}"
+            <input type="text" id="price" name="price" class="form-control" placeholder="가격을 입력하세요." value="가격" th:value="${itemFindDto.price}"
                     th:class="${#fields.hasErrors('price')}? 'form-control fieldError' : 'form-control'">
             <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}">부적절한 가격입니다.</p>
         </div>
         
         <div class="form-group">
             <label th:for="stock">수량</label>
-            <input type="text" id="stock" name="stock" class="form-control" placeholder="수량을 입력하세요" value="수량" th:value="${itemFindDto.stock}"
+            <input type="text" id="stock" name="stock" class="form-control" placeholder="수량을 입력하세요." value="수량" th:value="${itemFindDto.stock}"
                    th:class="${#fields.hasErrors('stock')}? 'form-control fieldError' : 'form-control'">
             <p th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}">부적절한 수량입니다.</p>
         </div>
 
-        <button type="submit" class="btn btn-primary">완료</button>
+        <button type="submit" class="btn btn-success">완료</button>
     </form>
     <br/>
     <div th:replace="fragments/footer :: footer" />

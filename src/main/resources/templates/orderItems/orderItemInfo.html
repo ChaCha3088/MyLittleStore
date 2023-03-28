@@ -8,7 +8,7 @@
     <div th:replace="fragments/bodyHeader :: bodyHeader" />
 
     <div class="py-5 text-center">
-        <h2>주문 정보</h2>
+        <h2>주문 상품 정보</h2>
     </div>
 
     <form role="form" th:action="@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/delete(memberId = ${memberId}, storeId = ${storeId}, storeTableId = ${storeTableId}, orderId = ${orderItemDtoWithItemFindDto.orderId}, orderItemId = ${orderItemDtoWithItemFindDto.id})}" th:object="${orderItemForm}" method="post">
@@ -42,7 +42,7 @@
 
         <div class="row">
             <div class="col">
-                <button type="submit" class="w-75 btn btn-primary btn-lg">삭제</button>
+                <button type="submit" class="w-75 btn btn-danger btn-lg">삭제</button>
             </div>
 
             <div class="col">

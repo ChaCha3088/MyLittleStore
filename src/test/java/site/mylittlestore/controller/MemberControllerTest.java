@@ -59,7 +59,7 @@ class MemberControllerTest {
         mockMvc.perform(get("/members"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("members/memberList"))
-                .andExpect(model().attributeExists("memberFindDtoList"));
+                .andExpect(model().attributeExists("memberFindDtos"));
 
         List<MemberFindDto> findAllMemberFindDto = memberService.findAllMemberFindDto();
         assertThat(findAllMemberFindDto.size()).isEqualTo(2);
@@ -94,7 +94,7 @@ class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("members/memberInfo"))
                 .andExpect(model().attributeExists("memberFindDto"))
-                .andExpect(model().attributeExists("storeDtoList"));
+                .andExpect(model().attributeExists("storeDtos"));
     }
 
     @Test

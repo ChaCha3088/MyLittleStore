@@ -96,11 +96,10 @@ public class StoreTableRepositoryImpl implements StoreTableRepositoryQueryDsl {
 
         return queryFactory
                 .select(storeTable)
-//                .distinct()
                 .from(storeTable)
-                .join(storeTable.order, order).fetchJoin()
-                .where(storeTable.store.id.eq(storeId))
-                .where(storeTable.storeTableStatus.ne(StoreTableStatus.DELETED))
+                .leftJoin(storeTable.order, order).fetchJoin()
+                .where(storeTable.store.id.eq(storeId)
+                        .and(storeTable.storeTableStatus.ne(StoreTableStatus.DELETED)))
                 .orderBy(storeTable.id.asc())
                 .fetch();
     }

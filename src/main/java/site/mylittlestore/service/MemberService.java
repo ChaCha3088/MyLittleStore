@@ -40,7 +40,7 @@ public class MemberService {
     public MemberFindDto findMemberFindDtoByMemberId(Long memberId) throws NoSuchMemberException {
         Optional<MemberFindDto> findMemberById = memberRepository.findMemberFindDtoById(memberId);
 
-        //회원님이 없으면 예외 발생
+        //회원이 없으면 예외 발생
         return findMemberById.orElseThrow(() -> new NoSuchMemberException(MemberErrorMessage.NO_SUCH_MEMBER.getMessage()));
     }
 
@@ -48,7 +48,7 @@ public class MemberService {
     public MemberFindDto findMemberByMemberEmail(String memberEmail) throws NoSuchMemberException {
         Optional<MemberFindDto> findMemberFindDtoByMemberEmail = findMemberFindDtoByEmail(memberEmail);
 
-        //해당하는 email을 가진 회원님이 없으면, 예외 발생
+        //해당하는 이메일을 가진 회원이 없으면, 예외 발생
         return findMemberFindDtoByMemberEmail.orElseThrow(() -> new NoSuchMemberException(MemberErrorMessage.NO_SUCH_MEMBER_WITH_THAT_EMAIL.getMessage()));
     }
 
@@ -60,7 +60,7 @@ public class MemberService {
 
     @Transactional
     public Long joinMember(MemberCreationDto memberCreationDto) throws DuplicateMemberException {
-        //같은 이메일을 가진 회원님이 있는지 검증
+        //같은 이메일을 가진 회원이 있는지 검증
         validateDuplicateMember(memberCreationDto.getEmail());
 
         Member saveMember = memberRepository.save(Member.builder()
@@ -81,7 +81,7 @@ public class MemberService {
         //업데이트하려는 회원이 있는지 검증
         Member findMemberById = findById(memberUpdateDto.getId());
 
-        //회원님의 정보 업데이트
+        //회원의 정보 업데이트
         newMemberName.ifPresent(newName -> findMemberById.updateMemberName(newName));
         newMemberAddress.ifPresent(newAddress -> findMemberById.updateMemberAddress(newAddress));
 
@@ -100,10 +100,10 @@ public class MemberService {
             throw new MemberPasswordDoesNotMatchException(MemberErrorMessage.PASSWORD_DOES_NOT_MATCH.getMessage());
         }
 
-        //회원님의 정보 업데이트
+        //회원의 정보 업데이트
         findMemberById.updateMemberPassword(memberPasswordUpdateDto.getNewPassword());
 
-        //회원님의 정보 저장
+        //회원의 정보 저장
         memberRepository.save(findMemberById);
     }
 
@@ -112,7 +112,7 @@ public class MemberService {
         //이미 있는 가게인지 확인
         validateDuplicateStoreWithStoreName(storeDto.getName());
 
-//        //회원님이 이미 가지고 있는 가게인지 검증
+//        //회원이 이미 가지고 있는 가게인지 검증
 //        Member findMemberById = validateMemberAlreadyHaveThatStoreWithSameStoreName(storeDto.getMemberId(), storeDto.getName());
 
         //가게 생성
@@ -129,7 +129,7 @@ public class MemberService {
         //가게 저장
         Store savedStore = storeRepository.save(createdStore);
 
-        //회원님의 정보 저장
+        //회원의 정보 저장
         Member savedMember = memberRepository.save(updatedMember);
 
         return savedStore.getId();
@@ -150,7 +150,7 @@ public class MemberService {
         //새로운 가게 이름과 같은 이름의 가게가 있는지 검증
         newName.ifPresent(m -> validateDuplicateStoreWithStoreName(storeUpdateDto.getNewName()));
 
-        //업데이트 하려는 가게가 회원님의 가게인지 검증
+        //업데이트 하려는 가게가 회원의 가게인지 검증
         Store findStore = validateStoreIsMembersStore(storeUpdateDto);
 
         //가게 정보 업데이트
@@ -168,7 +168,7 @@ public class MemberService {
      */
     @Transactional
     public Long changeStoreStatus(StoreUpdateDto storeUpdateDto) throws NoSuchMemberException, IsNotMembersStoreException {
-        //업데이트 하려는 가게가 회원님의 가게인지 검증
+        //업데이트 하려는 가게가 회원의 가게인지 검증
         Store findStore = validateStoreIsMembersStore(storeUpdateDto);
 
         //가게 상태 변경
@@ -185,9 +185,9 @@ public class MemberService {
     private Member findById(Long memberId) throws NoSuchMemberException {
         Optional<Member> findMemberById = memberRepository.findById(memberId);
 
-        //해당하는 Id를 가진 회원님이 없으면, 예외 발생
+        //해당하는 Id를 가진 회원이 없으면, 예외 발생
         if (findMemberById.isEmpty()) {
-            throw new NoSuchMemberException("해당하는 Id를 가진 회원님이 없습니다.");
+            throw new NoSuchMemberException("해당하는 Id를 가진 회원이 없습니다.");
         }
 
         return findMemberById.get();
@@ -196,7 +196,7 @@ public class MemberService {
     private Optional<MemberFindDto> findMemberFindDtoByEmail(String memberEmail) throws NoSuchMemberException {
         Optional<MemberFindDto> findMemberFindDtoByMemberEmail = memberRepository.findMemberFindDtoByEmail(memberEmail);
 
-        findMemberFindDtoByMemberEmail.orElseThrow(() -> new NoSuchMemberException("해당하는 email을 가진 회원님이 없습니다."));
+        findMemberFindDtoByMemberEmail.orElseThrow(() -> new NoSuchMemberException("해당하는 이메일을 가진 회원이 없습니다."));
 
         return findMemberFindDtoByMemberEmail;
     }
@@ -204,14 +204,14 @@ public class MemberService {
     private void validateDuplicateMember(String memberEmail) throws DuplicateMemberException {
         Optional<MemberFindDto> findMemberFindDtoByEmail = memberRepository.findMemberFindDtoByEmail(memberEmail);
 
-        //같은 email의 회원님이 있으면, 예외 발생
+        //같은 이메일을 가진 회원이 있으면, 예외 발생
         findMemberFindDtoByEmail.ifPresent(m -> {
-            throw new DuplicateMemberException("이미 존재하는 회원님입니다.");
+            throw new DuplicateMemberException("이미 존재하는 회원입니다.");
         });
     }
 
     /**
-     * 회원님이 이미 같은 이름의 가게를 가지고 있는지 검증
+     * 회원이 이미 같은 이름의 가게를 가지고 있는지 검증
      * @param targetMemberId
      * @param newStoreName
      * @return
@@ -220,9 +220,9 @@ public class MemberService {
     private Member validateMemberAlreadyHaveThatStoreWithSameStoreName(Long targetMemberId, String newStoreName) throws NoSuchMemberException, MemberHaveDuplicateStoreException {
         Member findMemberById = findById(targetMemberId);
 
-        //회원님이 같은 이름의 가게를 가지고 있으면, 예외 발생
+        //회원이 같은 이름의 가게를 가지고 있으면, 예외 발생
         if (findMemberById.getStores().contains(newStoreName)) {
-            throw new MemberHaveDuplicateStoreException("회원님이 이미 같은 이름의 가게를 가지고 있습니다.");
+            throw new MemberHaveDuplicateStoreException("회원이 이미 같은 이름의 가게를 가지고 있습니다.");
         }
 
         return findMemberById;
@@ -242,7 +242,7 @@ public class MemberService {
         });
     }
 
-    //업데이트 하려는 가게가 회원님의 가게인지 검증
+    //업데이트 하려는 가게가 회원의 가게인지 검증
     private Store validateStoreIsMembersStore(StoreUpdateDto storeUpdateDto) throws IsNotMembersStoreException {
         Optional<Store> findStoreByIdAndMemberId = storeRepository.findStoreByIdAndMemberId(storeUpdateDto.getId(), storeUpdateDto.getMemberId());
 

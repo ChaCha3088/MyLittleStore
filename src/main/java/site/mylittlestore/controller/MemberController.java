@@ -31,7 +31,7 @@ public class MemberController {
     public String memberList(Model model) {
         List<MemberFindDto> findAllMemberFindDto = memberService.findAllMemberFindDto();
 
-        model.addAttribute("memberFindDtoList", findAllMemberFindDto);
+        model.addAttribute("memberFindDtos", findAllMemberFindDto);
 
         return "members/memberList";
     }
@@ -41,7 +41,7 @@ public class MemberController {
         MemberFindDto memberFindDto = memberService.findMemberFindDtoByMemberId(memberId);
         List<StoreDto> findAllStoreDtoByMemberId = storeService.findAllStoreDtoByMemberId(memberId);
         model.addAttribute("memberFindDto", memberFindDto);
-        model.addAttribute("storeDtoList", findAllStoreDtoByMemberId);
+        model.addAttribute("storeDtos", findAllStoreDtoByMemberId);
         return "members/memberInfo";
     }
 

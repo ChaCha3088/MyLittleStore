@@ -30,23 +30,23 @@
 
         <div class="form-group">
             <label for="orderCount">주문수량</label>
-            <input type="number" name="orderCount" class="form-control" id="orderCount" placeholder="주문 수량을 입력하세요">
+            <input type="number" name="orderCount" class="form-control" id="orderCount" placeholder="주문 수량을 입력하세요.">
         </div>
 
         <div class="form-group">
             <label th:for="city">도시</label>
-            <input type="text" th:field="*{memberCreationForm.city}" class="form-control" placeholder="도시를 입력하세요">
+            <input type="text" th:field="*{memberCreationForm.city}" class="form-control" placeholder="도시를 입력하세요.">
         </div>
         <div class="form-group">
             <label th:for="street">거리</label>
-            <input type="text" th:field="*{memberCreationForm.street}" class="form-control" placeholder="거리를 입력하세요">
+            <input type="text" th:field="*{memberCreationForm.street}" class="form-control" placeholder="거리를 입력하세요.">
         </div>
         <div class="form-group">
             <label th:for="zipcode">우편번호</label>
-            <input type="text" th:field="*{memberCreationForm.zipcode}" class="form-control" placeholder="우편번호를 입력하세요">
+            <input type="text" th:field="*{memberCreationForm.zipcode}" class="form-control" placeholder="우편번호를 입력하세요.">
         </div>
 
-        <button type="submit" class="btn btn-primary">완료</button>
+        <button type="submit" class="btn btn-success">완료</button>
     </form>
     <br/>
     <div th:replace="fragments/footer :: footer" />

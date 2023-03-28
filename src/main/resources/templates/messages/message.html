@@ -2,12 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
     <head>
-        <th:block th:if="${#strings.length(messages.message) != 0}">
+        <th:block th:if="${messages.message != null}">
             <script>
                 top.alert("[[${messages.message}]]");
             </script>
         </th:block>
-        <th:block th:if="${#strings.length(messages.href) != 0}">
+        <th:block th:if="${messages.href != null}">
             <script>
                 top.location.href = '[[${messages.href}]]';
             </script>

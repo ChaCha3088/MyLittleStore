@@ -4,7 +4,7 @@
     <head>
     </head>
     <body>
-        <th:block th:if="${#strings.length(messages.message) != 0 && #strings.length(messages.confirmHref) != 0 && #strings.length(messages.cancelHref) != 0}">
+        <th:block th:if="${messages.message != null && messages.confirmHref != null && messages.cancelHref != null}">
             <script th:inline="javascript">
                 let message = [[${messages.message}]];
                 let confirmHref = [[${messages.confirmHref}]];

@@ -66,7 +66,7 @@ public class StoreController {
                         .build())
                 .build());
 
-        return "redirect:/members/"+memberId+"/stores/"+createdStoreId;
+        return "redirect:/members/"+memberId;
     }
 
     @GetMapping("/members/{memberId}/stores/{storeId}/update")

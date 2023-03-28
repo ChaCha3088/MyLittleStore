@@ -44,7 +44,7 @@ public class OrderItemController {
 //        model.addAttribute("memberId", memberId);
 //        model.addAttribute("storeId", storeId);
 //        model.addAttribute("orderId", orderId);
-//        model.addAttribute("orderItemDtoList", orderItemService.findAllOrderItemDtoWithItemNameByOrderIdOrderByTime(orderId));
+//        model.addAttribute("orderItemDtos", orderItemService.findAllOrderItemDtoWithItemNameByOrderIdOrderByTime(orderId));
 //
 //        return "orderItems/orderItemList";
 //    }
@@ -79,7 +79,7 @@ public class OrderItemController {
         model.addAttribute("storeId", storeId);
         model.addAttribute("storeTableId", storeTableId);
         model.addAttribute("orderId", orderId);
-        model.addAttribute("itemDtoList", findAllItemCreationDtoByStoreId);
+        model.addAttribute("itemDtos", findAllItemCreationDtoByStoreId);
         model.addAttribute("orderItemCreationForm", new OrderItemCreationForm());
 
         return "orderItems/orderItemCreationForm";
@@ -99,7 +99,7 @@ public class OrderItemController {
                         .count(orderItemCreationForm.getCount())
                         .build());
 
-        return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/orderItems/" + createdOrderItemId;
+        return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId;
     }
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/update")

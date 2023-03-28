@@ -31,7 +31,7 @@ public class ItemController {
     public String itemList(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, Model model) {
         List<ItemFindDto> findAllItemFindDtoByStoreId = itemService.findAllItemDtoByStoreId(storeId);
         model.addAttribute("memberId", memberId);
-        model.addAttribute("itemDtoList", findAllItemFindDtoByStoreId);
+        model.addAttribute("itemDtos", findAllItemFindDtoByStoreId);
 
         return "items/itemList";
     }

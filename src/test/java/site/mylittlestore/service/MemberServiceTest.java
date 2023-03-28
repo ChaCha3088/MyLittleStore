@@ -82,7 +82,7 @@ class MemberServiceTest {
     }
 
     /**
-     * Id로 회원님 찾기
+     * Id로 회원 찾기
      */
     @Test
     void findMemberById() {
@@ -116,7 +116,7 @@ class MemberServiceTest {
         assertThatThrownBy(() -> {
             memberService.findMemberByMemberEmail("asdfg@gmail.com");
         }).isInstanceOf(NoSuchMemberException.class)
-        .hasMessageContaining("해당하는 email을 가진 회원님이 없습니다.");
+        .hasMessageContaining("해당하는 이메일을 가진 회원이 없습니다.");
     }
 
     @Test
@@ -152,7 +152,7 @@ class MemberServiceTest {
     }
 
     /**
-     * 회원님 가입
+     * 회원 가입
      */
     @Test
     void joinMember() {
@@ -169,7 +169,7 @@ class MemberServiceTest {
                 .build();
 
         //when
-        //회원님 가입 service 메소드 호출
+        //회원 가입 service 메소드 호출
         Long createdMemberId = memberService.joinMember(memberCreationDto);
 
         //영속성 컨텍스트 초기화
@@ -177,14 +177,14 @@ class MemberServiceTest {
         em.clear();
 
         //then
-        //회원님 가입 잘 됐는지 db 확인
+        //회원 가입 잘 됐는지 db 확인
         MemberFindDto findMemberFindDtoById = memberService.findMemberFindDtoByMemberId(createdMemberId);
 
         assertThat(findMemberFindDtoById.getName()).isEqualTo("memberTestB");
     }
 
     /**
-     * 회원님 가입 시 이미 있는 이메일이면 예외 발생
+     * 회원 가입 시 이미 있는 이메일이면 예외 발생
      */
     @Test
     void joinMemberException() {
@@ -201,7 +201,7 @@ class MemberServiceTest {
                 .build();
 
         //then
-        //회원님 가입 잘 됐는지 db 확인
+        //회원 가입 잘 됐는지 db 확인
         assertThatThrownBy(() -> {
             memberService.joinMember(memberCreationDto);
         }).isInstanceOf(DuplicateMemberException.class);
@@ -235,7 +235,7 @@ class MemberServiceTest {
     }
 
     /**
-     * 회원님 비밀번호 수정
+     * 회원 비밀번호 수정
      */
     @Test
     void updateMemberPassword() {
@@ -256,7 +256,7 @@ class MemberServiceTest {
     }
 
     /**
-     * 회원님 가게 생성
+     * 회원 가게 생성
      */
     @Test
     void createStore() {
@@ -276,14 +276,14 @@ class MemberServiceTest {
         em.clear();
 
         //then
-        //회원님 가게 생성 잘 됐는지 db 확인
+        //회원 가게 생성 잘 됐는지 db 확인
         StoreDto findStoreDtoById = storeService.findStoreDtoById(createdStoreId);
 
         assertThat(findStoreDtoById.getName()).isEqualTo("storeTestB");
     }
 
     /**
-     * 회원님 가게 생성
+     * 회원 가게 생성
      * 이름이 같은 가게가 이미 있으면, 예외 발생
      */
     @Test
