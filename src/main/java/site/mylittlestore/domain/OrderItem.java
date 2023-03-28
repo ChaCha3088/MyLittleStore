@@ -14,6 +14,7 @@ import site.mylittlestore.enumstorage.status.OrderItemStatus;
 import site.mylittlestore.exception.item.NotEnoughStockException;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
@@ -46,9 +47,11 @@ public class OrderItem extends BaseEntity {
     private Item item;
 
     @NotNull
+    @Min(value = 1, message = "가격은 0보다 커야합니다.")
     private int price;
 
     @NotNull
+    @Min(value = 1, message = "수량은 0보다 커야합니다.")
     private int count;
 
     @NotNull
