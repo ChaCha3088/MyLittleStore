@@ -106,6 +106,22 @@ public class OrderItemServiceTest {
     }
 
     @Test
+    @DisplayName("주문 Id로 주문된 주문 상품을 모두 찾는다.")
+    void findAllOrderItemDtoWithItemNameDtoByOrderId() {
+        //given
+        //ORDERED도 넣어보고
+        //다른 상태도 넣어보고
+        //다른 주문에 ORDERED도 넣어보고
+
+        //when
+
+
+        //then
+        //정확히 잘 찾는지 확인
+        assertThat(1).isEqualTo(2);
+    }
+
+    @Test
     void findAllOrderItemByOrderId() {
         //given
 
@@ -162,8 +178,8 @@ public class OrderItemServiceTest {
 
         //when
         //생성된 주문 상품 조회
-        OrderItemDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemByIdWithItemFindDto(createdOrderItemId1);
-        OrderItemDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemByIdWithItemFindDto(createdOrderItemId2);
+        OrderItemDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId1);
+        OrderItemDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId2);
 
         //then
         assertThat(findOrderItemById1.getItemFindDto().getId()).isEqualTo(itemTestId);
@@ -208,7 +224,7 @@ public class OrderItemServiceTest {
 
         //when
         //생성된 주문 상품 조회
-        OrderItemDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemByIdWithItemFindDto(createdOrderItemId1);
+        OrderItemDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId1);
 
         //then
         assertThat(findOrderItemById1.getItemFindDto().getId()).isEqualTo(itemTestId);
@@ -247,8 +263,8 @@ public class OrderItemServiceTest {
 
         //when
         //생성된 주문 상품 조회
-        OrderItemDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemByIdWithItemFindDto(createdOrderItemId1);
-        OrderItemDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemByIdWithItemFindDto(createdOrderItemId2);
+        OrderItemDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId1);
+        OrderItemDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId2);
 
         //then
         assertThat(findOrderItemById1.getItemFindDto().getId()).isEqualTo(itemTestId);
@@ -289,8 +305,8 @@ public class OrderItemServiceTest {
 
         //when
         //생성된 주문 상품 조회
-        OrderItemDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemByIdWithItemFindDto(createdOrderItemId1);
-        OrderItemDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemByIdWithItemFindDto(createdOrderItemId2);
+        OrderItemDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId1);
+        OrderItemDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId2);
 
         //then
         assertThat(findOrderItemById1.getItemFindDto().getId()).isEqualTo(itemTestId);
@@ -364,7 +380,7 @@ public class OrderItemServiceTest {
 
         //then
         //수정된 주문 조회
-        OrderItemDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemByIdWithItemFindDto(savedOrderItemId1);
+        OrderItemDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(savedOrderItemId1);
         assertThat(findOrderItemById1.getPrice()).isEqualTo(10000);
         assertThat(findOrderItemById1.getCount()).isEqualTo(49);
 
@@ -381,7 +397,7 @@ public class OrderItemServiceTest {
                 .build());
 
         //수정된 주문 조회
-        OrderItemDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemByIdWithItemFindDto(savedOrderItemId2);
+        OrderItemDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemDtoByIdWithItemFindDto(savedOrderItemId2);
         assertThat(findOrderItemById2.getPrice()).isEqualTo(10000);
         assertThat(findOrderItemById2.getCount()).isEqualTo(51);
 

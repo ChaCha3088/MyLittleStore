@@ -3,11 +3,13 @@ package site.mylittlestore.repository.order;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import site.mylittlestore.domain.Order;
+import site.mylittlestore.enumstorage.status.OrderItemStatus;
 import site.mylittlestore.enumstorage.status.OrderStatus;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static site.mylittlestore.domain.QOrder.order;
 import static site.mylittlestore.domain.QOrderItem.orderItem;
@@ -31,34 +33,16 @@ public class OrderRepositoryImpl implements OrderRepositoryQueryDsl {
                 .fetchOne());
     }
 
-
     @Override
-    public Optional<Order> findOrderWithOrderItemsAndItemByIdOrderByTime(Long orderId) {
-        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
-
-        return Optional.ofNullable(queryFactory
-                .select(order)
-                .from(order)
-                .leftJoin(order.orderItems, orderItem).fetchJoin()
-                .leftJoin(orderItem.item, item).fetchJoin()
-                .where(order.id.eq(orderId)
-                        .and(order.orderStatus.eq(OrderStatus.USING)))
-                .orderBy(orderItem.time.asc())
-                .fetchOne());
-    }
-
-    @Override
-    public Optional<Order> findOrderWithStoreAndOrderItemsByIdOrderByTime(Long orderId) {
+    public Optional<Order> findOrderWithStoreById(Long orderId) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return Optional.ofNullable(queryFactory
                 .select(order)
                 .from(order)
                 .join(order.store, store).fetchJoin()
-                .leftJoin(order.orderItems, orderItem).fetchJoin()
-                .leftJoin(orderItem.item, item).fetchJoin()
-                .where(order.id.eq(orderId))
-                .orderBy(orderItem.time.asc())
+                .where(order.id.eq(orderId)
+                        .and(order.orderStatus.eq(OrderStatus.USING)))
                 .fetchOne());
     }
 
@@ -70,8 +54,11 @@ public class OrderRepositoryImpl implements OrderRepositoryQueryDsl {
                 .select(order)
                 .distinct()
                 .from(order)
-                .join(order.orderItems, orderItem).fetchJoin()
-                .where(order.store.id.eq(storeId))
+                .leftJoin(order.orderItems, orderItem).fetchJoin()
+                    .on(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED)
+                            .or(orderItem.isNull()))
+                .where(order.store.id.eq(storeId)
+                        .and(order.orderStatus.eq(OrderStatus.USING)))
                 .orderBy(order.createdDate.asc())
                 .fetch();
     }

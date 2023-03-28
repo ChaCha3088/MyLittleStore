@@ -11,7 +11,7 @@
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
 
-    <form role="form" th:action="@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/update(memberId = ${memberId}, storeId = ${storeId}, storeTableId = ${storeTableId}, orderId = ${orderId}, orderItemId = ${orderItemFindDto.id})}" th:object="${orderItemUpdateForm}" method="post">
+    <form role="form" th:action="@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/update(memberId = ${memberId}, storeId = ${storeId}, storeTableId = ${storeTableId}, orderId = ${orderId}, orderItemId = ${orderItemFindDto.id})}" th:object="${orderItemForm}" method="post">
         <div class="form-group" style="display:none">
             <label th:for="id">Id</label>
             <input type="text" id="id" name="id" class="form-control" placeholder="Id를 입력하세요" value="Id" th:value="${orderItemFindDto.id}"

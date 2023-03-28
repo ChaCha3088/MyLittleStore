@@ -9,7 +9,8 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class OrderItemCreationForm {
-    @NotNull(message = "상품 선택은 필수입니다.")
+
+    @NotNull(message = "상품 Id는 필수입니다.")
     private Long itemId;
 
     @NotNull(message = "가격은 필수입니다.")

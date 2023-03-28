@@ -10,7 +10,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
     Optional<Order> findUsingById(Long orderId);
 
     List<Order> findAllByStoreId(Long storeId);
-    Optional<Order> findOrderWithOrderItemsAndItemByIdOrderByTime(Long orderId);
 
-    Optional<Order> findOrderWithStoreAndOrderItemsByIdOrderByTime(Long orderId);
+    Optional<Order> findOrderWithStoreById(Long orderId);
 }

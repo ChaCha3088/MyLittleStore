@@ -55,6 +55,7 @@ public class OrderItem extends BaseEntity {
     private LocalDateTime time;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private OrderItemStatus orderItemStatus;
 
     @Builder

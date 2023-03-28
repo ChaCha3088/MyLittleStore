@@ -18,10 +18,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <td th:text="${orderDtoWithOrderItemDtoWithItemNameDto.id}"></td>
-                    <td th:text="${orderDtoWithOrderItemDtoWithItemNameDto.startTime}"></td>
-                    <td th:text="${orderDtoWithOrderItemDtoWithItemNameDto.endTime}"></td>
-                    <td th:text="${orderDtoWithOrderItemDtoWithItemNameDto.orderStatus}"></td>
+                    <td th:text="${orderDtoWithOrderItemId.id}"></td>
+                    <td th:text="${orderDtoWithOrderItemId.startTime}"></td>
+                    <td th:text="${orderDtoWithOrderItemId.endTime}"></td>
+                    <td th:text="${orderDtoWithOrderItemId.orderStatus}"></td>
                 </tbody>
             </table>
     </div>
@@ -38,7 +38,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                <tr th:each="orderItemDtoWithItemNameDto : ${orderDtoWithOrderItemDtoWithItemNameDto.getOrderItemDtoWithItemNameDtos()}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}(memberId = ${memberId}, storeId = ${orderDtoWithOrderItemDtoWithItemNameDto.storeId}, storeTableId = ${orderDtoWithOrderItemDtoWithItemNameDto.storeId}, orderId = ${orderItemDtoWithItemNameDto.orderId}, orderItemId = ${orderItemDtoWithItemNameDto.id})}'|">
+                <tr th:each="orderItemDtoWithItemNameDto : ${orderItemDtoWithItemNameDtoList}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}(memberId = ${memberId}, storeId = ${orderDtoWithOrderItemId.storeId}, storeTableId = ${orderDtoWithOrderItemId.storeId}, orderId = ${orderItemDtoWithItemNameDto.orderId}, orderItemId = ${orderItemDtoWithItemNameDto.id})}'|">
                     <td th:text="${orderItemDtoWithItemNameDto.itemName}"></td>
                     <td th:text="${orderItemDtoWithItemNameDto.time}"></td>
                     <td th:text="${orderItemDtoWithItemNameDto.price}"></td>
@@ -48,8 +48,8 @@
     </div>
 
     <div class="jumbotron">
-        <button class="w-100 btn btn-primary btn-sm"
-                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new(memberId = ${memberId}, storeId = ${orderDtoWithOrderItemDtoWithItemNameDto.storeId}, storeTableId = ${orderDtoWithOrderItemDtoWithItemNameDto.storeId}, orderId = ${orderDtoWithOrderItemDtoWithItemNameDto.id})}'|"
+        <button class="w-75 btn btn-primary btn-sm"
+                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new(memberId = ${memberId}, storeId = ${orderDtoWithOrderItemId.storeId}, storeTableId = ${orderDtoWithOrderItemId.storeId}, orderId = ${orderDtoWithOrderItemId.id})}'|"
                 type="button">상품 주문하기
         </button>
     </div>

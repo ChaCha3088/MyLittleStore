@@ -34,11 +34,11 @@
 
     </div>
     <div class="jumbotron">
-        <button class="w-100 btn btn-primary btn-sm"
+        <button class="w-75 btn btn-primary btn-sm"
                 th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables(memberId = ${storeDto.memberId}, storeId = ${storeDto.id})}'|"
                 type="button">테이블 목록
         </button>
-        <button class="w-100 btn btn-primary btn-sm"
+        <button class="w-75 btn btn-primary btn-sm"
                 th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/items(memberId = ${storeDto.memberId}, storeId = ${storeDto.id})}'|"
                 type="button">상품 목록
         </button>

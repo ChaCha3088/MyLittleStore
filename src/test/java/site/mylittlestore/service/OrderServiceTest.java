@@ -1,9 +1,6 @@
 package site.mylittlestore.service;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -55,7 +52,7 @@ class OrderServiceTest {
     private Long storeTableTestId;
     private Long orderTestId;
 
-    @BeforeAll
+    @BeforeEach
     void setUp() {
         Long newMemberId = memberService.joinMember(MemberCreationDto.builder()
                 .name("memberTest")
@@ -120,35 +117,35 @@ class OrderServiceTest {
                 .isInstanceOf(NoSuchOrderException.class);
     }
 
-    @Test
-    void findOrderDtoById() {
-        //given
-        //가게 열기
-        memberService.changeStoreStatus(StoreUpdateDto.builder()
-                .id(storeTestId)
-                .memberId(memberTestId)
-                .build());
-
-        orderItemService.createOrderItem(OrderItemCreationDto.builder()
-                .orderId(orderTestId)
-                .itemId(itemTestId)
-                .price(10000)
-                .count(1)
-                .build());
-
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
-
-        //when
-        OrderDtoWithOrderItemDtoWithItemFindDto orderDtoWithOrderItemDtoWithItemFindDtoById = orderService.findOrderDtoWithOrderItemDtoWithItemFindDtoById(orderTestId);
-
-        //then
-        assertThat(orderDtoWithOrderItemDtoWithItemFindDtoById.getOrderStatus()).isEqualTo(OrderStatus.USING);
-        assertThat(orderDtoWithOrderItemDtoWithItemFindDtoById.getOrderItemDtoWithItemFindDtos().size()).isEqualTo(1);
-        assertThat(orderDtoWithOrderItemDtoWithItemFindDtoById.getOrderItemDtoWithItemFindDtos().get(0).getPrice()).isEqualTo(10000);
-        assertThat(orderDtoWithOrderItemDtoWithItemFindDtoById.getOrderItemDtoWithItemFindDtos().get(0).getItemFindDto().getName()).isEqualTo("itemTest");
-    }
+//    @Test
+//    void findOrderDtoById() {
+//        //given
+//        //가게 열기
+//        memberService.changeStoreStatus(StoreUpdateDto.builder()
+//                .id(storeTestId)
+//                .memberId(memberTestId)
+//                .build());
+//
+//        orderItemService.createOrderItem(OrderItemCreationDto.builder()
+//                .orderId(orderTestId)
+//                .itemId(itemTestId)
+//                .price(10000)
+//                .count(1)
+//                .build());
+//
+//        //영속성 컨텍스트 초기화
+//        em.flush();
+//        em.clear();
+//
+//        //when
+//        OrderDtoWithOrderItemDtoWithItemFindDto orderDtoWithOrderItemDtoWithItemFindDtoById = orderService.findOrderDtoWithOrderItemDtoWithItemFindDtoById(orderTestId);
+//
+//        //then
+//        assertThat(orderDtoWithOrderItemDtoWithItemFindDtoById.getOrderStatus()).isEqualTo(OrderStatus.USING);
+//        assertThat(orderDtoWithOrderItemDtoWithItemFindDtoById.getOrderItemDtoWithItemFindDtos().size()).isEqualTo(1);
+//        assertThat(orderDtoWithOrderItemDtoWithItemFindDtoById.getOrderItemDtoWithItemFindDtos().get(0).getPrice()).isEqualTo(10000);
+//        assertThat(orderDtoWithOrderItemDtoWithItemFindDtoById.getOrderItemDtoWithItemFindDtos().get(0).getItemFindDto().getName()).isEqualTo("itemTest");
+//    }
     
     @Test
     @DisplayName("주문 생성")

@@ -69,7 +69,7 @@ public class ItemController {
                 .stock(itemCreationForm.getStock())
                 .build());
 
-        return "redirect:/members/" + memberId + "/stores/" + storeId + "/items/" + createdItemId;
+        return "redirect:/members/" + memberId + "/stores/" + storeId + "/items/";
     }
 
     @GetMapping("/members/{memberId}/stores/{storeId}/items/{itemId}/update")

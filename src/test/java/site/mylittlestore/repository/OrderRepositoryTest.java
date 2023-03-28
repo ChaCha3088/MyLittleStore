@@ -1,11 +1,13 @@
 package site.mylittlestore.repository;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.domain.Order;
@@ -30,7 +32,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@Transactional
+@Sql(scripts = {"classpath:sql/test.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class OrderRepositoryTest {
@@ -57,7 +59,7 @@ class OrderRepositoryTest {
     private Long itemTestId;
     private Long orderTestId;
 
-    @BeforeAll
+    @BeforeEach
     void setUp() {
         Long newMemberId = memberService.joinMember(MemberCreationDto.builder()
                 .name("memberTest")

@@ -11,11 +11,12 @@ import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.orderitem.OrderItemCreationDto;
 import site.mylittlestore.dto.orderitem.OrderItemDto;
 import site.mylittlestore.dto.store.StoreOnlyDto;
+import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.form.OrderItemCreationForm;
 import site.mylittlestore.form.OrderItemForm;
-import site.mylittlestore.form.OrderItemUpdateForm;
+import site.mylittlestore.message.Confirm;
 import site.mylittlestore.message.Message;
 import site.mylittlestore.service.ItemService;
 import site.mylittlestore.service.OrderItemService;
@@ -56,7 +57,8 @@ public class OrderItemController {
         model.addAttribute("storeTableId", storeTableId);
         model.addAttribute("orderId", orderId);
         model.addAttribute("orderItemId", orderItemId);
-        model.addAttribute("orderItemDtoWithItemFindDto", orderItemService.findOrderItemByIdWithItemFindDto(orderItemId));
+        model.addAttribute("orderItemDtoWithItemFindDto", orderItemService.findOrderItemDtoByIdWithItemFindDto(orderItemId));
+        model.addAttribute("orderItemForm", new OrderItemForm());
 
         return "orderItems/orderItemInfo";
     }
@@ -105,13 +107,13 @@ public class OrderItemController {
         model.addAttribute("memberId", memberId);
         model.addAttribute("storeId", storeId);
         model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
-        model.addAttribute("orderItemUpdateForm", new OrderItemUpdateForm());
+        model.addAttribute("orderItemForm", new OrderItemForm());
 
         return "orderItems/orderItemUpdateForm";
     }
 
     @PostMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/update")
-    public String updateOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @Valid OrderItemUpdateForm orderItemUpdateForm, BindingResult result, Model model) {
+    public String updateOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @Valid OrderItemForm orderItemForm, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
@@ -120,39 +122,41 @@ public class OrderItemController {
 
         Long updatedOrderItemId = orderItemService.updateOrderItemCount(OrderItemDto.builder()
                 .id(orderItemId)
-                .orderId(orderId) //나중에 orderId 검증할 것
-                .itemId(orderItemUpdateForm.getItemId()) //나중에 itemId 검증할 것
-                .price(orderItemUpdateForm.getPrice()) //나중에 price 검증할 것
-                .count(orderItemUpdateForm.getCount()) //나중에 count 검증할 것
+                .orderId(orderItemForm.getId()) //나중에 orderId 검증할 것
+                .itemId(orderItemForm.getItemId()) //나중에 itemId 검증할 것
+                .price(orderItemForm.getPrice()) //나중에 price 검증할 것
+                .count(orderItemForm.getCount()) //나중에 count 검증할 것
                 .build());
 
         return "redirect:/members/"+memberId+"/stores/"+storeId+"/storeTables/"+storeTableId+"/orders/"+orderId+"/orderItems/"+updatedOrderItemId;
     }
 
-    @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/delete")
-    public String deleteOrderItemForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, Model model) {
-        model.addAttribute("memberId", memberId);
-        model.addAttribute("storeId", storeId);
-        model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
-        model.addAttribute("orderItemDeleteForm", new OrderItemForm());
+//    @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/delete")
+//    public String deleteOrderItemForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, Model model) {
+//        model.addAttribute("memberId", memberId);
+//        model.addAttribute("storeId", storeId);
+//        model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
+//        model.addAttribute("orderItemDeleteForm", new OrderItemForm());
+//
+//        return "orderItems/orderItemDeleteForm";
+//    }
 
-        return "orderItems/orderItemDeleteForm";
+    @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/delete")
+    public String deleteOrderItemConfirm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, Model model) {
+        //팝업 확인창(주문 상품 삭제 확인창)
+        model.addAttribute("messages", new Confirm(OrderItemErrorMessage.CONFIRM_DELETE_ORDER_ITEM.getMessage(), "/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/orderItems/" + orderItemId + "/delete", "/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId));
+        return "messages/confirm";
     }
 
     @PostMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/delete")
-    public String deleteOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @Valid OrderItemForm orderItemDeleteForm, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            //
-            //
-            return "orderItems/orderItemDeleteForm";
-        }
+    public String deleteOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @Valid OrderItemForm orderItemForm, BindingResult result, Model model) {
 
         orderItemService.deleteOrderItem(OrderItemDto.builder()
                 .id(orderItemId)
                 .orderId(orderId) //나중에 orderId 검증할 것
-                .itemId(orderItemDeleteForm.getItemId()) //나중에 itemId 검증할 것
-                .price(orderItemDeleteForm.getPrice()) //나중에 price 검증할 것
-                .count(orderItemDeleteForm.getCount()) //나중에 count 검증할 것
+                .itemId(orderItemForm.getItemId()) //나중에 itemId 검증할 것
+                .price(orderItemForm.getPrice()) //나중에 price 검증할 것
+                .count(orderItemForm.getCount()) //나중에 count 검증할 것
                 .build());
 
         return "redirect:/members/"+memberId+"/stores/"+storeId+"/storeTables/"+storeTableId+"/orders/"+orderId;

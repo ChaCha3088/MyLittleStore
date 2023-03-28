@@ -11,6 +11,10 @@
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
 
+    <div class="py-5 text-center">
+        <h2>상품 수정</h2>
+    </div>
+
     <form role="form" th:action="@{/members/{memberId}/stores/{storeId}/items/{itemId}/update(memberId = ${memberId}, storeId = ${itemFindDto.storeId}, itemId = ${itemFindDto.id})}" th:object="${itemUpdateForm}" method="post">
 
         <div class="form-group">

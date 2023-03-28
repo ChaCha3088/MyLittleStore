@@ -7,8 +7,7 @@ import java.util.Optional;
 
 public interface OrderRepositoryQueryDsl {
     Optional<Order> findUsingById(Long orderId);
-    Optional<Order> findOrderWithOrderItemsAndItemByIdOrderByTime(Long orderId);
-    Optional<Order> findOrderWithStoreAndOrderItemsByIdOrderByTime(Long orderId);
+    Optional<Order> findOrderWithStoreById(Long orderId);
 
 
     //가게에 속한 테이블만 찾아야지.

@@ -47,23 +47,23 @@ public class OrderService {
                 .toOrderDtoWithOrderItemId();
     }
 
-    public OrderDtoWithOrderItemDtoWithItemNameDto findOrderDtoWithOrderItemDtoWithItemNameDtoById(Long orderId) throws NoSuchOrderException {
-        //주문이 없으면 예외 발생
-        Order order = orderRepository.findOrderWithOrderItemsAndItemByIdOrderByTime(orderId)
-                .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
+//    public OrderDtoWithOrderItemDtoWithItemNameDto findOrderDtoWithOrderItemDtoWithItemNameDtoById(Long orderId) throws NoSuchOrderException {
+//        Order order = orderRepository.findOrderWithOrderItemsAndItemByIdOrderByTime(orderId)
+//        //주문이 없으면 예외 발생
+//                .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
+//
+//        //Dto로 변환
+//        return order.toOrderDtoWithOrderItemDtoWithItemNameDto();
+//    }
 
-        //Dto로 변환
-        return order.toOrderDtoWithOrderItemDtoWithItemNameDto();
-    }
-
-    public OrderDtoWithOrderItemDtoWithItemFindDto findOrderDtoWithOrderItemDtoWithItemFindDtoById(Long orderId) throws NoSuchOrderException {
-        //주문이 없으면 예외 발생
-        Order order = orderRepository.findOrderWithOrderItemsAndItemByIdOrderByTime(orderId)
-                .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
-
-        //Dto로 변환
-        return order.toOrderDtoWithOrderItemDtoWithItemFindDto();
-    }
+//    public OrderDtoWithOrderItemDtoWithItemFindDto findOrderDtoWithOrderItemDtoWithItemFindDtoById(Long orderId) throws NoSuchOrderException {
+//        Order order = orderRepository.findOrderWithOrderItemsAndItemByIdOrderByTime(orderId)
+//        //주문이 없으면 예외 발생
+//                .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
+//
+//        //Dto로 변환
+//        return order.toOrderDtoWithOrderItemDtoWithItemFindDto();
+//    }
 
     @Transactional
     public Long createOrder(Long storeId, Long storeTableId) throws NoSuchStoreException, StoreClosedException {

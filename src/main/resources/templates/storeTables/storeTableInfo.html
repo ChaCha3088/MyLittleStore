@@ -14,7 +14,7 @@
                         <th>주문 번호</th>
                     </tr>
                 </thead>
-                <tbody th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}(memberId = ${memberId}, storeId = ${storeTableFindDto.storeId}, storeTableId = {storeTableFindDto.id}, orderId = ${storeTableFindDto.orderId})}'|">
+                <tbody th:if="${not #strings.isEmpty(storeTableFindDto.orderId)}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}(memberId = ${memberId}, storeId = ${storeTableFindDto.storeId}, storeTableId = ${storeTableFindDto.id}, orderId = ${storeTableFindDto.orderId})}'|">
                     <td th:text="${storeTableFindDto.orderId}"></td>
                 </tbody>
             </table>
@@ -22,7 +22,7 @@
     </div>
 
     <div th:if="${storeTableFindDto.orderId == null}" class="jumbotron">
-        <button class="w-100 btn btn-primary btn-sm"
+        <button class="w-75 btn btn-primary btn-sm"
                 th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/new(memberId = ${memberId}, storeId = ${storeTableFindDto.storeId}, storeTableId = ${storeTableFindDto.id})}'|"
                 type="button">주문하기
         </button>

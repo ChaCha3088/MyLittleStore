@@ -6,13 +6,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderItemRepositoryQueryDsl {
-    Optional<OrderItem> findOrderedById(Long id);
-    Optional<OrderItem> findByIdWithItem(Long id);
+    Optional<OrderItem> findById(Long id);
+    Optional<OrderItem> findWithItemById(Long id);
     Optional<OrderItem> findOrderItemByOrderIdAndItemId(Long orderId, Long itemId);
-
     Optional<OrderItem> findOrderItemByOrderIdAndItemIdAndPrice(Long orderId, Long itemId, int price);
+    List<OrderItem> findAllWithItemByOrderId(Long orderId);
 
     List<OrderItem> findAllOrderItemByOrderIdOrderByTime(Long orderId);
-    List<Long> findAllOrderItemIdByOrderId(Long orderId);
+    List<OrderItem> findAllOrderItemIdByOrderId(Long orderId);
+    Optional<OrderItem> findByOrderIdAndItemIdAndPrice(Long orderId, Long itemId, int price);
+    Optional<OrderItem> findByOrderIdOrderItemIdAndItemIdAndPrice(Long orderId, Long orderItemId, Long itemId, int price);
     void deleteByChangingStatus(Long id);
 }

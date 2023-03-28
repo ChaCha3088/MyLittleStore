@@ -18,7 +18,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
     private final EntityManager em;
 
     @Override
-    public Optional<OrderItem> findOrderedById(Long id) {
+    public Optional<OrderItem> findById(Long id) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return Optional.ofNullable(queryFactory
@@ -30,7 +30,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
     }
 
     @Override
-    public Optional<OrderItem> findByIdWithItem(Long id) {
+    public Optional<OrderItem> findWithItemById(Long id) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return Optional.ofNullable(queryFactory
@@ -56,7 +56,6 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
                         .fetchOne());
     }
 
-
     @Override
     public Optional<OrderItem> findOrderItemByOrderIdAndItemIdAndPrice(Long orderId, Long itemId, int price) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
@@ -72,7 +71,18 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
                         .fetchOne());
     }
 
+    @Override
+    public List<OrderItem> findAllWithItemByOrderId(Long orderId) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
+        return queryFactory
+                .select(orderItem)
+                .from(orderItem)
+                .join(orderItem.item, item).fetchJoin()
+                .where(orderItem.order.id.eq(orderId)
+                        .and(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED)))
+                .fetch();
+    }
 
     @Override
     public List<OrderItem> findAllOrderItemByOrderIdOrderByTime(Long orderId) {
@@ -89,16 +99,46 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
     }
 
     @Override
-    public List<Long> findAllOrderItemIdByOrderId(Long orderId) {
+    public List<OrderItem> findAllOrderItemIdByOrderId(Long orderId) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return queryFactory
-                        .select(orderItem.id)
+                        .select(orderItem)
                         .from(orderItem)
                         .where(orderItem.order.id.eq(orderId)
                                 .and(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED)))
                         .fetch();
     }
+
+    @Override
+    public Optional<OrderItem> findByOrderIdAndItemIdAndPrice(Long orderId, Long itemId, int price) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return Optional.ofNullable(queryFactory
+                .select(orderItem)
+                .from(orderItem)
+                .where(orderItem.order.id.eq(orderId)
+                        .and(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED))
+                        .and(orderItem.item.id.eq(itemId))
+                        .and(orderItem.price.eq(price)))
+                .fetchOne());
+    }
+
+    @Override
+    public Optional<OrderItem> findByOrderIdOrderItemIdAndItemIdAndPrice(Long orderId, Long orderItemId, Long itemId, int price) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return Optional.ofNullable(queryFactory
+                .select(orderItem)
+                .from(orderItem)
+                .where(orderItem.order.id.eq(orderId)
+                        .and(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED))
+                        .and(orderItem.id.eq(orderItemId))
+                        .and(orderItem.item.id.eq(itemId))
+                        .and(orderItem.price.eq(price)))
+                .fetchOne());
+    }
+
 
     @Override
     public void deleteByChangingStatus(Long id) {
