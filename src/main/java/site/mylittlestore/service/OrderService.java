@@ -82,7 +82,7 @@ public class OrderService {
             throw new OrderAlreadyExistException(StoreTableErrorMessage.ORDER_ALREADY_EXIST.getMessage());
         }
 
-        //가게가 열린 상태인지 확인
+        //가게가 열려있는지 확인
         if (store.getStoreStatus().equals(StoreStatus.CLOSE)) {
             throw new StoreClosedException(StoreErrorMessage.STORE_IS_CLOSED.getMessage());
         }

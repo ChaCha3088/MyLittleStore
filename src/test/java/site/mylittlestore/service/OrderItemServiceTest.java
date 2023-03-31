@@ -438,4 +438,18 @@ public class OrderItemServiceTest {
                 .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
         assertThat(orderItem.getOrderItemStatus()).isEqualTo(OrderItemStatus.DELETED);
     }
+    
+    @Test
+    @DisplayName("결제가 생기면 orderItem 추가, 수정, 삭제 불가하도록")
+    void validateOrderItemChangeAbility() {
+        //given
+        
+        
+        //when
+        
+        
+        //then
+        
+        assertThat(1).isEqualTo(2);
+    }
 }

@@ -9,14 +9,13 @@ import site.mylittlestore.domain.OrderItem;
 import site.mylittlestore.domain.Store;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.orderitem.*;
-import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
-import site.mylittlestore.enumstorage.errormessage.OrderErrorMessage;
-import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
-import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
+import site.mylittlestore.enumstorage.errormessage.*;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.item.NoSuchItemException;
 import site.mylittlestore.exception.item.NotEnoughStockException;
+import site.mylittlestore.exception.order.OrderException;
 import site.mylittlestore.exception.orderitem.OrderItemException;
+import site.mylittlestore.exception.payment.PaymentException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
 import site.mylittlestore.exception.store.NoSuchStoreException;
 import site.mylittlestore.exception.store.StoreClosedException;
@@ -89,10 +88,9 @@ public class OrderItemService {
 
         Store store = order.getStore();
 
-        //가게가 열린 상태인지 확인
-        if (store.getStoreStatus().equals(StoreStatus.CLOSE)) {
-            throw new StoreClosedException(StoreErrorMessage.STORE_IS_CLOSED.getMessage());
-        }
+        //가게가 열려있는지 확인
+        //정산 중인지 확인
+        validateOrderItemChangeAbility(order, store);
 
         try {
             //주문에 상품 Id와 상품 가격이 같은 주문 상품이 존재하는지 확인
@@ -134,6 +132,25 @@ public class OrderItemService {
     }
 
     /**
+     * 가게가 열려있는지 확인
+     * 정산 중인지 확인
+     * @param order
+     * @param store
+     */
+    private static void validateOrderItemChangeAbility(Order order, Store store) {
+        //가게가 열려있는지 확인
+        if (store.getStoreStatus().equals(StoreStatus.CLOSE)) {
+            throw new StoreClosedException(StoreErrorMessage.STORE_IS_CLOSED.getMessage());
+        }
+
+        //정산 중인지 확인
+        //정산 중이면 예외 발생
+        if (order.getPayment() != null) {
+            throw new PaymentException(PaymentErrorMessage.PAYMENT_ALREADY_IN_PROGRESS.getMessage());
+        }
+    }
+
+    /**
      * 주문 상품을 수정하기 위해서는 상품 Id, 상품 가격이 같아야 한다.
      * 따라서 가격이 한번 정해지면, 수량만 변경 가능하다.
      * @param orderItemDto
@@ -149,10 +166,9 @@ public class OrderItemService {
 
         Store store = order.getStore();
 
-        //가게가 열린 상태인지 확인
-        if (store.getStoreStatus().equals(StoreStatus.CLOSE)) {
-            throw new StoreClosedException(StoreErrorMessage.STORE_IS_CLOSED.getMessage());
-        }
+        //가게가 열려있는지 확인
+        //정산 중인지 확인
+        validateOrderItemChangeAbility(order, store);
 
         //주문에 상품 Id와 가격이 같은 주문 상품이 존재하는지 확인
         OrderItem orderItem = validateOrderItemExistenceWithOrderIdAndOrderItemIdAndItemIdAndPrice(orderItemDto.getOrderId(), orderItemDto.getId(), orderItemDto.getItemId(), orderItemDto.getPrice());
@@ -179,6 +195,11 @@ public class OrderItemService {
         OrderItemDto orderItemDto1 = orderItemDto;
 
         Order order = findOrder(orderItemDto.getOrderId());
+        Store store = order.getStore();
+
+        //가게가 열려있는지 확인
+        //정산 중인지 확인
+        validateOrderItemChangeAbility(order, store);
 
         //주문에 상품 Id, 상품 가격이 같은 주문 상품이 존재하는지 확인하고 삭제
         OrderItem orderItem = validateOrderItemExistenceWithOrderIdAndOrderItemIdAndItemIdAndPrice(order.getId(), orderItemDto.getId(), orderItemDto.getItemId(), orderItemDto.getPrice());
