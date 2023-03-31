@@ -16,9 +16,8 @@ import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.orderitem.OrderItemFindDto;
 import site.mylittlestore.dto.store.StoreDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
-import site.mylittlestore.dto.store.StoreTableCreationDto;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
-import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
+import site.mylittlestore.exception.orderitem.OrderItemException;
 import site.mylittlestore.service.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -256,7 +255,7 @@ public class OrderItemControllerTest {
 
         //then
         assertThatThrownBy(() -> orderItemService.findOrderItemDtoById(orderItemId))
-                .isInstanceOf(NoSuchOrderItemException.class)
+                .isInstanceOf(OrderItemException.class)
                 .hasMessageContaining(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage());
 
         ItemFindDto findItemDtoById2 = itemService.findItemDtoById(itemTestId1);

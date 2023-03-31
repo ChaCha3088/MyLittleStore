@@ -19,7 +19,7 @@ import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.enumstorage.status.OrderItemStatus;
 import site.mylittlestore.exception.item.NotEnoughStockException;
-import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
+import site.mylittlestore.exception.orderitem.OrderItemException;
 import site.mylittlestore.exception.store.StoreClosedException;
 import site.mylittlestore.repository.orderitem.OrderItemRepository;
 
@@ -427,7 +427,7 @@ public class OrderItemServiceTest {
 
         //then
         //주문 삭제 확인
-        assertThatThrownBy(() -> orderItemService.findOrderItemDtoById(createdOrderItemId)).isInstanceOf(NoSuchOrderItemException.class);
+        assertThatThrownBy(() -> orderItemService.findOrderItemDtoById(createdOrderItemId)).isInstanceOf(OrderItemException.class);
 
         //재고 확인
         ItemFindDto findItemDtoById = itemService.findItemDtoById(itemTestId);
@@ -435,7 +435,7 @@ public class OrderItemServiceTest {
         
         //주문 삭제 확인
         OrderItem orderItem = orderItemRepository.findById(createdOrderItemId)
-                .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
+                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
         assertThat(orderItem.getOrderItemStatus()).isEqualTo(OrderItemStatus.DELETED);
     }
 }

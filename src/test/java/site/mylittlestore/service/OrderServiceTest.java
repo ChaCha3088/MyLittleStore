@@ -162,4 +162,32 @@ class OrderServiceTest {
         StoreTableFindDtoWithOrderFindDto storeTableFindDtoWithOrderFindDtoByStoreId = storeTableService.findStoreTableFindDtoWithOrderFindDtoByStoreId(storeTableTestId, storeTestId);
         assertThat(storeTableFindDtoWithOrderFindDtoByStoreId.getOrderDtoWithOrderItemId().getOrderStatus()).isEqualTo(OrderStatus.USING.toString());
     }
+
+    @Test
+    @DisplayName("결제가 없을 때, 결제 시작")
+    void startPaymentWhenNoPayment() {
+        //given
+
+
+        //when
+
+
+        //then
+
+        assertThat(1).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("결제가 이미 있을 때, 결제 시작")
+    void startPaymentWhenPayment() {
+        //given
+
+
+        //when
+
+
+        //then
+
+        assertThat(1).isEqualTo(2);
+    }
 }

@@ -16,7 +16,7 @@ import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.item.NoSuchItemException;
 import site.mylittlestore.exception.item.NotEnoughStockException;
-import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
+import site.mylittlestore.exception.orderitem.OrderItemException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
 import site.mylittlestore.exception.store.NoSuchStoreException;
 import site.mylittlestore.exception.store.StoreClosedException;
@@ -42,7 +42,7 @@ public class OrderItemService {
     public OrderItemFindDto findOrderItemDtoById(Long orderItemId) {
         return orderItemRepository.findById(orderItemId)
                 //주문 상품이 없으면 예외 발생
-                .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()))
+                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()))
                 //Dto로 변환
                 .toOrderItemDto();
     }
@@ -55,12 +55,12 @@ public class OrderItemService {
                 .collect(Collectors.toList());
     }
 
-    public OrderItemDtoWithItemFindDto findOrderItemDtoByIdWithItemFindDto(Long orderItemId) throws NoSuchOrderItemException {
+    public OrderItemDtoWithItemFindDto findOrderItemDtoByIdWithItemFindDto(Long orderItemId) throws OrderItemException {
         Optional<OrderItem> findOrderItemById = orderItemRepository.findWithItemById(orderItemId);
 
         return findOrderItemById
                 //주문 상품이 없으면 예외 발생
-                .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()))
+                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()))
                 //Dto로 변환
                 .toOrderItemDtoWithItemFindDto();
     }
@@ -109,7 +109,7 @@ public class OrderItemService {
 
             return savedOrderItem.getId();
 
-        } catch (NoSuchOrderItemException e) {
+        } catch (OrderItemException e) {
             //주문에 상품이 없으면,
 
             //가게 Id와 상품 Id로 상품을 찾는다.
@@ -140,10 +140,10 @@ public class OrderItemService {
      * @return
      * @throws NoSuchStoreException
      * @throws StoreClosedException
-     * @throws NoSuchOrderItemException
+     * @throws OrderItemException
      */
     @Transactional
-    public Long updateOrderItemCount(OrderItemDto orderItemDto) throws NoSuchStoreException, StoreClosedException, NoSuchOrderItemException {
+    public Long updateOrderItemCount(OrderItemDto orderItemDto) throws NoSuchStoreException, StoreClosedException, OrderItemException {
         //주문 Id로 주문을 찾는다.
         Order order = findOrder(orderItemDto.getOrderId());
 
@@ -207,14 +207,14 @@ public class OrderItemService {
         //주문 상품에 주문 Id, 상품 Id, 가격이 같은 상품이 존재하는지 확인
         //해당 조건을 만족하는 주문 상품이 없으면 예외 발생
         return orderItemRepository.findByOrderIdAndItemIdAndPrice(orderId, itemId, price)
-                .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
+                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
     }
 
     private OrderItem validateOrderItemExistenceWithOrderIdAndOrderItemIdAndItemIdAndPrice(Long orderId, Long orderItemId, Long itemId, int price) {
         //주문 상품에 주문 Id, 주문 상품 Id, 상품 Id, 가격이 같은 상품이 존재하는지 확인
         //해당 조건을 만족하는 상품이 없으면 예외 발생
         return orderItemRepository.findByOrderIdAndOrderItemIdAndItemIdAndPrice(orderId, orderItemId, itemId, price)
-                .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
+                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
     }
 
 //    private OrderItem validateOrderItemExistenceWithItemIdAndPrice(Long orderId, Long itemId, int price) throws NoSuchOrderException, NoSuchOrderItemException {

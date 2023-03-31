@@ -3,14 +3,15 @@ package site.mylittlestore.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import site.mylittlestore.domain.Store;
-import site.mylittlestore.domain.Order;
-import site.mylittlestore.domain.StoreTable;
+import site.mylittlestore.domain.*;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
 import site.mylittlestore.enumstorage.errormessage.*;
+import site.mylittlestore.enumstorage.status.PaymentStatus;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.item.NoSuchItemException;
+import site.mylittlestore.exception.orderitem.OrderItemException;
+import site.mylittlestore.exception.payment.PaymentException;
 import site.mylittlestore.exception.store.NoSuchStoreException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
 import site.mylittlestore.exception.store.StoreClosedException;
@@ -22,7 +23,9 @@ import site.mylittlestore.repository.store.StoreRepository;
 import site.mylittlestore.repository.order.OrderRepository;
 import site.mylittlestore.repository.storetable.StoreTableRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Transactional(readOnly = true)
@@ -94,6 +97,47 @@ public class OrderService {
         Order savedOrder = orderRepository.save(createOrder);
 
         return savedOrder.getId();
+    }
+
+    @Transactional
+    public Long startPayment(Long orderId) {
+        Order usingById = orderRepository.findUsingById(orderId)
+                .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
+
+        //Order안에 Payment가 있는지 확인
+
+        //Payment가 있으면
+        //결제가 이미 진행중이라는 뜻
+        //Payment Id 반환
+        if (usingById.getPayment() != null) {
+            return usingById.getPayment().getId();
+        }
+
+        //Payment가 비어있으면
+        //Payment 생성
+        if (usingById.getPayment() == null) {
+            //주문에 있는 주문 상품을 모두 찾는다.
+            List<OrderItem> allByOrderId = orderItemRepository.findAllByOrderId(orderId);
+            //주문 상품이 없으면 예외 발생
+            if (allByOrderId.isEmpty()) {
+                throw new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage());
+            }
+
+            //합계 계산
+            AtomicInteger totalAmount = new AtomicInteger(0);
+            allByOrderId.stream().map(orderItem -> totalAmount.getAndAdd(orderItem.getPrice() * orderItem.getPrice()))
+
+            //Payment 생성
+            Payment createdPayment = Payment.builder()
+                    .initialAmount(totalAmount.get())
+                    .paymentStatus(PaymentStatus.INIT)
+                    .build();
+
+            //저장
+            Long paymentId = paymentRepository.save(createdPayment);
+
+            return paymentId;
+        }
     }
 
     private Store findStoreByStoreId(Long storeId) throws NoSuchStoreException {
