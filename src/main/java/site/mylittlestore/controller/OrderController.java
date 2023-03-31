@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
 import site.mylittlestore.dto.store.StoreOnlyDto;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.enumstorage.status.StoreStatus;
@@ -24,8 +25,14 @@ public class OrderController {
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}")
     public String orderInfo(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, Model model) {
+        //Order가 정산 중이면 정산 페이지로 리다이렉트
+        OrderDtoWithOrderItemId orderDtoWithOrderItemId = orderService.findOrderDtoWithOrderItemIdById(orderId);
+        if (orderDtoWithOrderItemId.getPaymentId() != null) {
+            return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/payment/" + orderDtoWithOrderItemId.getPaymentId();
+        }
+
         model.addAttribute("memberId", memberId);
-        model.addAttribute("orderDtoWithOrderItemId", orderService.findOrderDtoWithOrderItemIdById(orderId));
+        model.addAttribute("orderDtoWithOrderItemId", orderDtoWithOrderItemId);
         model.addAttribute("orderItemFindDtos", orderItemService.findAllOrderItemFindDtoByOrderId(orderId));
 
         return "orders/orderInfo";

@@ -13,7 +13,6 @@ import site.mylittlestore.enumstorage.errormessage.*;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.item.NoSuchItemException;
 import site.mylittlestore.exception.item.NotEnoughStockException;
-import site.mylittlestore.exception.order.OrderException;
 import site.mylittlestore.exception.orderitem.OrderItemException;
 import site.mylittlestore.exception.payment.PaymentException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
