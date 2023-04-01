@@ -172,4 +172,32 @@ public class StoreTableServiceTest {
         //then
         assertThat(allStoreTableFindDtoByStoreId.size()).isEqualTo(4);
     }
+
+    @Test
+    @DisplayName("테이블 삭제")
+    void deleteStoreTable() {
+        //given
+
+
+        //when
+
+
+        //then
+
+        assertThat(1).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("주문이 남아있을 때 테이블 삭제시 예외 발생")
+    void deleteStoreTableException() {
+        //given
+
+
+        //when
+
+
+        //then
+
+        assertThat(1).isEqualTo(2);
+    }
 }

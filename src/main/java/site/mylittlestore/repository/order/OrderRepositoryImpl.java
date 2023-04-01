@@ -34,6 +34,20 @@ public class OrderRepositoryImpl implements OrderRepositoryQueryDsl {
     }
 
     @Override
+    public List<Order> findAllUsingByStoreId(Long storeId) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return queryFactory
+                .select(order)
+                .distinct()
+                .from(order)
+                .where(order.store.id.eq(storeId)
+                        .and(order.orderStatus.eq(OrderStatus.USING)))
+                .fetch();
+    }
+
+
+    @Override
     public Optional<Order> findOrderWithStoreById(Long orderId) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 

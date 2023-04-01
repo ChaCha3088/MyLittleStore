@@ -11,6 +11,9 @@ import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreTableErrorMessage;
 import site.mylittlestore.exception.store.NoSuchStoreException;
 import site.mylittlestore.exception.storetable.NoSuchStoreTableException;
+import site.mylittlestore.exception.storetable.StoreTableException;
+import site.mylittlestore.repository.order.OrderRepository;
+import site.mylittlestore.repository.orderitem.OrderItemRepository;
 import site.mylittlestore.repository.store.StoreRepository;
 import site.mylittlestore.repository.storetable.StoreTableRepository;
 
@@ -26,8 +29,12 @@ public class StoreTableService {
 
     private final StoreTableRepository storeTableRepository;
 
+    private final OrderRepository orderRepository;
+
+    private final OrderItemRepository orderItemRepository;
+
     public StoreTableFindDto findStoreTableFindDtoById(Long storeTableId) throws NoSuchStoreTableException {
-        StoreTable findStoreTable = storeTableRepository.findByIdWhereStoreTableStatusIsNotDeleted(storeTableId)
+        StoreTable findStoreTable = storeTableRepository.findNotDeletedById(storeTableId)
                 .orElseThrow(() -> new NoSuchStoreTableException(StoreTableErrorMessage.NO_SUCH_STORE_TABLE.getMessage()));
         return findStoreTable.toStoreTableFindDto();
     }
@@ -81,6 +88,23 @@ public class StoreTableService {
 //        }
 
         return savedStoreTable.getId();
+    }
+
+    @Transactional
+    public Long deleteStoreTable(Long storeTableId, Long storeId) {
+        //해당 storeTable이 store에 소속되어있는지 확인
+        //storeId와 storeTableId로 where로 찾아오기
+        StoreTable storeTable = storeTableRepository.findNotDeletedByIdAndStoreId(storeTableId, storeId)
+                .orElseThrow(() -> new NoSuchStoreTableException(StoreTableErrorMessage.NO_SUCH_STORE_TABLE.getMessage()));
+
+        //이 테이블의 주문, 주문 상품이 활성화된 것이 하나라도 있다면
+        //예외 발생
+        if (orderRepository.findAllUsingByStoreId(storeTable.getOrder().getId()).size() > 0 | orderItemRepository.findAllByOrderId(storeTable.getOrder().getId()).size() > 0)) {
+            throw new StoreTableException(StoreTableErrorMessage.STILL_ORDER_OR_ORDER_ITEM_EXIST.getMessage());
+        }
+
+        //모든 조건을 통과하면, StoreTable을 DELETED 상태로 변경
+        storeTable.delete();
     }
 
     private Store findById(Long id) throws NoSuchStoreException {

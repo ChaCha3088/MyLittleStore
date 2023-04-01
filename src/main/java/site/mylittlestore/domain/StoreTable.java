@@ -45,6 +45,11 @@ public class StoreTable extends BaseEntity {
         this.storeTableStatus = StoreTableStatus.EMPTY;
     }
 
+    //-- 비즈니스 로직 --//
+    public void delete() {
+        this.storeTableStatus = StoreTableStatus.DELETED;
+    }
+
     //-- 연관 관계 메소드 --//
     public void setOrder(Order order) {
         this.order = order;

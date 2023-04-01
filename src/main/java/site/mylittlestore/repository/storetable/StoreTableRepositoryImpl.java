@@ -35,13 +35,26 @@ public class StoreTableRepositoryImpl implements StoreTableRepositoryQueryDsl {
 //    }
 
     @Override
-    public Optional<StoreTable> findByIdWhereStoreTableStatusIsNotDeleted(Long id) {
+    public Optional<StoreTable> findNotDeletedById(Long id) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return Optional.ofNullable(queryFactory
                 .select(storeTable)
                 .from(storeTable)
                 .where(storeTable.id.eq(id)
+                        .and(storeTable.storeTableStatus.ne(StoreTableStatus.DELETED)))
+                .fetchOne());
+    }
+
+    @Override
+    public Optional<StoreTable> findNotDeletedByIdAndStoreId(Long id, Long storeId) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return Optional.ofNullable(queryFactory
+                .select(storeTable)
+                .from(storeTable)
+                .where(storeTable.id.eq(id)
+                        .and(storeTable.store.id.eq(storeId))
                         .and(storeTable.storeTableStatus.ne(StoreTableStatus.DELETED)))
                 .fetchOne());
     }

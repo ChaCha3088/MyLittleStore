@@ -1,9 +1,6 @@
 package site.mylittlestore.repository;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -106,5 +103,19 @@ class OrderRepositoryTest {
         assertThat(orderById.orElseThrow(()
                 -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage())).getId())
                 .isEqualTo(orderTestId);
+    }
+    
+    @Test
+    @DisplayName("storeId로 USING인 모든 주문 조회")
+    void findAllUsingByStoreId() {
+        //given
+        
+        
+        //when
+        
+        
+        //then
+        
+        assertThat(1).isEqualTo(2);
     }
 }

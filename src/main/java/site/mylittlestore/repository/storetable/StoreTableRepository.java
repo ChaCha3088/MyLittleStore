@@ -8,7 +8,8 @@ import java.util.Optional;
 
 public interface StoreTableRepository extends JpaRepository<StoreTable, Long>, StoreTableRepositoryQueryDsl {
 
-    Optional<StoreTable> findByIdWhereStoreTableStatusIsNotDeleted(Long id);
+    Optional<StoreTable> findNotDeletedById(Long id);
+    Optional<StoreTable> findNotDeletedByIdAndStoreId(Long id, Long storeId);
     Optional<StoreTable> findStoreTableWithStoreByIdAndStoreId(Long id, Long storeId);
 
     Optional<StoreTable> findStoreTableWithStoreAndOrderByIdAndStoreId(Long id, Long storeId);
