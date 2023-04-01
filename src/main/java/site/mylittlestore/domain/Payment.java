@@ -1,11 +1,14 @@
 package site.mylittlestore.domain;
 
 import lombok.*;
-import site.mylittlestore.enumstorage.PaymentMethod;
+import site.mylittlestore.enumstorage.PaymentMethodType;
+import site.mylittlestore.enumstorage.status.PaymentStatus;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,19 +20,23 @@ public class Payment {
     private Long id;
 
     @NotNull
+    @OneToMany(mappedBy = "payment")
+    private List<PaymentMethod> paymentMethods = new ArrayList<>();
+
+    @NotNull
+    private Long initialAmount;
+
+    private Long finalAmount;
+
+    private LocalDateTime completeDateTime;
+
+    @NotNull
     @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod;
-
-    @NotNull
-    private int paymentAmount;
-
-    @NotNull
-    private LocalDateTime paymentTime;
+    private PaymentStatus paymentStatus;
 
     @Builder
-    protected Payment(PaymentMethod paymentMethod, int paymentAmount, LocalDateTime paymentTime) {
-        this.paymentMethod = paymentMethod;
-        this.paymentAmount = paymentAmount;
-        this.paymentTime = paymentTime;
+    protected Payment(Long initialAmount) {
+        this.initialAmount = initialAmount;
+        this.paymentStatus = PaymentStatus.INIT;
     }
 }

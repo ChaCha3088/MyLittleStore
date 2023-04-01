@@ -37,6 +37,7 @@ public class Member extends BaseEntity {
     private Address address;
 
     @JsonIgnore
+    @NotNull
     @OneToMany(mappedBy = "member")
     private List<Store> stores = new ArrayList<>();
 

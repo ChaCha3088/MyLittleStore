@@ -27,7 +27,7 @@ public class StoreOnlyDto {
 
     @Builder
     @QueryProjection
-    public StoreOnlyDto(Long id, Long memberId, String name, Address address, StoreStatus storeStatus, List<Long> storeTables, List<Long> items, int tableNumbers) {
+    public StoreOnlyDto(Long id, Long memberId, String name, Address address, StoreStatus storeStatus, List<Long> storeTables, List<Long> items) {
         this.id = id;
         this.memberId = memberId;
         this.name = name;

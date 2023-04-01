@@ -17,14 +17,14 @@ public class OrderItemFindDto {
     private Long orderId;
     private Long itemId;
     private String itemName;
-    private int price;
-    private int count;
+    private Long price;
+    private Long count;
     private LocalDateTime time;
     private String orderItemStatus;
 
     @Builder
     @QueryProjection
-    public OrderItemFindDto(Long id, Long storeId, Long orderId, Long itemId, String itemName, int price, int count, LocalDateTime time, String orderItemStatus) {
+    public OrderItemFindDto(Long id, Long storeId, Long orderId, Long itemId, String itemName, Long price, Long count, LocalDateTime time, String orderItemStatus) {
         this.id = id;
         this.storeId = storeId;
         this.orderId = orderId;

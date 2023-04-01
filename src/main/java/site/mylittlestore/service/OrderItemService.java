@@ -172,8 +172,8 @@ public class OrderItemService {
         //주문에 상품 Id와 가격이 같은 주문 상품이 존재하는지 확인
         OrderItem orderItem = validateOrderItemExistenceWithOrderIdAndOrderItemIdAndItemIdAndPrice(orderItemDto.getOrderId(), orderItemDto.getId(), orderItemDto.getItemId(), orderItemDto.getPrice());
 
-        Optional<Integer> price = Optional.ofNullable(orderItemDto.getPrice());
-        Optional<Integer> count = Optional.ofNullable(orderItemDto.getCount());
+        Optional<Long> price = Optional.ofNullable(orderItemDto.getPrice());
+        Optional<Long> count = Optional.ofNullable(orderItemDto.getCount());
 
         price.ifPresent(orderItem::updatePrice);
         count.ifPresent(orderItem::updateCount);
@@ -223,21 +223,21 @@ public class OrderItemService {
         return order;
     }
 
-    private OrderItem validateOrderItemExistenceWithOrderIdAndItemIdAndPrice(Long orderId, Long itemId, int price) {
+    private OrderItem validateOrderItemExistenceWithOrderIdAndItemIdAndPrice(Long orderId, Long itemId, Long price) {
         //주문 상품에 주문 Id, 상품 Id, 가격이 같은 상품이 존재하는지 확인
         //해당 조건을 만족하는 주문 상품이 없으면 예외 발생
         return orderItemRepository.findByOrderIdAndItemIdAndPrice(orderId, itemId, price)
                 .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
     }
 
-    private OrderItem validateOrderItemExistenceWithOrderIdAndOrderItemIdAndItemIdAndPrice(Long orderId, Long orderItemId, Long itemId, int price) {
+    private OrderItem validateOrderItemExistenceWithOrderIdAndOrderItemIdAndItemIdAndPrice(Long orderId, Long orderItemId, Long itemId, Long price) {
         //주문 상품에 주문 Id, 주문 상품 Id, 상품 Id, 가격이 같은 상품이 존재하는지 확인
         //해당 조건을 만족하는 상품이 없으면 예외 발생
         return orderItemRepository.findByOrderIdAndOrderItemIdAndItemIdAndPrice(orderId, orderItemId, itemId, price)
                 .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
     }
 
-//    private OrderItem validateOrderItemExistenceWithItemIdAndPrice(Long orderId, Long itemId, int price) throws NoSuchOrderException, NoSuchOrderItemException {
+//    private OrderItem validateOrderItemExistenceWithItemIdAndPrice(Long orderId, Long itemId, Long price) throws NoSuchOrderException, NoSuchOrderItemException {
 //        //주문 상품에 테이블 Id, 상품 Id, 가격이 같은 상품이 존재하는지 확인
 //        //해당 조건을 만족하는 상품이 없으면 예외 발생
 //        return orderItemRepository.findOrderItemByOrderIdAndItemIdAndPrice(orderId, itemId, price)

@@ -35,11 +35,11 @@ public class Item extends BaseEntity {
 
     @NotNull
     @Min(value = 1, message = "가격은 0보다 커야합니다.")
-    private int price;
+    private Long price;
 
     @NotNull
     @Min(value = 1, message = "재고는 0보다 커야합니다.")
-    private int stock;
+    private Long stock;
 
     /**
      * 이미지는 url로 저장
@@ -53,7 +53,7 @@ public class Item extends BaseEntity {
     private ItemStatus itemStatus;
 
     @Builder
-    protected Item(Store store, String name, int price, int stock) {
+    protected Item(Store store, String name, Long price, Long stock) {
         this.store = store;
         this.name = name;
         this.price = price;
@@ -66,11 +66,11 @@ public class Item extends BaseEntity {
         this.name = newName;
     }
 
-    public void updatePrice(int newPrice) {
+    public void updatePrice(Long newPrice) {
         this.price = newPrice;
     }
 
-    public void updateStock(int newStock) {
+    public void updateStock(Long newStock) {
         this.stock = newStock;
     }
 
@@ -83,11 +83,11 @@ public class Item extends BaseEntity {
         this.store = store;
     }
 
-    public void increaseStock(int count) {
+    public void increaseStock(Long count) {
         this.stock += count;
     }
 
-    public void decreaseStock(int count) throws NotEnoughStockException {
+    public void decreaseStock(Long count) throws NotEnoughStockException {
         if (this.stock < count) {
             throw new NotEnoughStockException(ItemErrorMessage.NOT_ENOUGH_STOCK.getMessage());
         }

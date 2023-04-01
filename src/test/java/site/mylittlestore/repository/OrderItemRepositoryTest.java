@@ -25,7 +25,7 @@ public class OrderItemRepositoryTest {
         //given
         Long orderId = 0L;
         Long itemId = 0L;
-        int price = 0;
+        Long price = 0;
         //주문 Id1에 상품1, 가격1 주문 상품 만들기
         //주문 Id1에 상품2, 가격1 주문 상품 만들기
         //주문 Id1에 상품1, 가격2 주문 상품 만들기
@@ -48,7 +48,7 @@ public class OrderItemRepositoryTest {
         Long orderId = 0L;
         Long orderItemId = 0L;
         Long itemId = 0L;
-        int price = 0;
+        Long price = 0;
         //주문 Id1에 상품1, 가격1 주문 상품 만들기
         //주문 Id1에 상품2, 가격1 주문 상품 만들기
         //주문 Id1에 상품1, 가격2 주문 상품 만들기

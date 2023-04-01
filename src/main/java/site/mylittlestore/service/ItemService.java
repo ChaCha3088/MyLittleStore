@@ -52,7 +52,7 @@ public class ItemService {
 //    }
 
 //    @Transactional
-//    public void updateItem(Long id, String name, int price, int stock) throws IllegalStateException {
+//    public void updateItem(Long id, String name, Long price, Long stock) throws IllegalStateException {
 //        Item findItemById = findItemById(id);
 //
 //        //아이템 정보 업데이트

@@ -7,11 +7,9 @@ import site.mylittlestore.domain.*;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
 import site.mylittlestore.enumstorage.errormessage.*;
-import site.mylittlestore.enumstorage.status.PaymentStatus;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.item.NoSuchItemException;
 import site.mylittlestore.exception.orderitem.OrderItemException;
-import site.mylittlestore.exception.payment.PaymentException;
 import site.mylittlestore.exception.store.NoSuchStoreException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
 import site.mylittlestore.exception.store.StoreClosedException;
@@ -19,13 +17,14 @@ import site.mylittlestore.exception.storetable.NoSuchStoreTableException;
 import site.mylittlestore.exception.storetable.OrderAlreadyExistException;
 import site.mylittlestore.repository.item.ItemRepository;
 import site.mylittlestore.repository.orderitem.OrderItemRepository;
+import site.mylittlestore.repository.payment.PaymentRepository;
 import site.mylittlestore.repository.store.StoreRepository;
 import site.mylittlestore.repository.order.OrderRepository;
 import site.mylittlestore.repository.storetable.StoreTableRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @Transactional(readOnly = true)
@@ -37,6 +36,7 @@ public class OrderService {
     private final StoreRepository storeRepository;
     private final StoreTableRepository storeTableRepository;
     private final OrderItemRepository orderItemRepository;
+    private final PaymentRepository paymentRepository;
 
     public OrderDtoWithOrderItemId findOrderDtoWithOrderItemIdById(Long orderId) throws NoSuchOrderException {
         Optional<Order> findOrderById = orderRepository.findUsingById(orderId);
@@ -115,29 +115,26 @@ public class OrderService {
 
         //Payment가 비어있으면
         //Payment 생성
-        if (usingById.getPayment() == null) {
-            //주문에 있는 주문 상품을 모두 찾는다.
-            List<OrderItem> allByOrderId = orderItemRepository.findAllByOrderId(orderId);
-            //주문 상품이 없으면 예외 발생
-            if (allByOrderId.isEmpty()) {
-                throw new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage());
-            }
-
-            //합계 계산
-            AtomicInteger totalAmount = new AtomicInteger(0);
-            allByOrderId.stream().map(orderItem -> totalAmount.getAndAdd(orderItem.getPrice() * orderItem.getPrice()))
-
-            //Payment 생성
-            Payment createdPayment = Payment.builder()
-                    .initialAmount(totalAmount.get())
-                    .paymentStatus(PaymentStatus.INIT)
-                    .build();
-
-            //저장
-            Long paymentId = paymentRepository.save(createdPayment);
-
-            return paymentId;
+        //주문에 있는 주문 상품을 모두 찾는다.
+        List<OrderItem> allByOrderId = orderItemRepository.findAllByOrderId(orderId);
+        //주문 상품이 없으면 예외 발생
+        if (allByOrderId.isEmpty()) {
+            throw new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage());
         }
+
+        //합계 계산
+        AtomicLong totalAmount = new AtomicLong(0);
+        allByOrderId.stream().map(orderItem -> totalAmount.getAndAdd(orderItem.getPrice() * orderItem.getPrice()));
+
+        //Payment 생성
+        Payment createdPayment = Payment.builder()
+                .initialAmount(totalAmount.get())
+                .build();
+
+        //저장
+        Payment payment = paymentRepository.save(createdPayment);
+
+        return payment.getId();
     }
 
     private Store findStoreByStoreId(Long storeId) throws NoSuchStoreException {
@@ -169,5 +166,4 @@ public class OrderService {
                 .findFirst()
                 .isPresent();
     }
-
 }

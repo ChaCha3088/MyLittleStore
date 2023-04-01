@@ -34,11 +34,9 @@ public class StoreUpdateDto {
 
     private List<Item> items;
 
-    private int tableNumbers;
-
     @Builder
     @QueryProjection
-    public StoreUpdateDto(Long id, Long memberId, String originalName, String newName, Address address, Address newAddress, StoreStatus storeStatus, List<Order> orders, List<Item> items, int tableNumbers) {
+    public StoreUpdateDto(Long id, Long memberId, String originalName, String newName, Address address, Address newAddress, StoreStatus storeStatus, List<Order> orders, List<Item> items) {
         this.id = id;
         this.memberId = memberId;
         this.originalName = originalName;
@@ -48,6 +46,5 @@ public class StoreUpdateDto {
         this.storeStatus = storeStatus;
         this.orders = orders;
         this.items = items;
-        this.tableNumbers = tableNumbers;
     }
 }

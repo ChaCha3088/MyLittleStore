@@ -57,7 +57,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
     }
 
     @Override
-    public Optional<OrderItem> findOrderItemByOrderIdAndItemIdAndPrice(Long orderId, Long itemId, int price) {
+    public Optional<OrderItem> findOrderItemByOrderIdAndItemIdAndPrice(Long orderId, Long itemId, Long price) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return Optional.ofNullable(queryFactory
@@ -110,7 +110,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
     }
 
     @Override
-    public Optional<OrderItem> findByOrderIdAndItemIdAndPrice(Long orderId, Long itemId, int price) {
+    public Optional<OrderItem> findByOrderIdAndItemIdAndPrice(Long orderId, Long itemId, Long price) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return Optional.ofNullable(queryFactory
@@ -124,7 +124,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
     }
 
     @Override
-    public Optional<OrderItem> findByOrderIdAndOrderItemIdAndItemIdAndPrice(Long orderId, Long orderItemId, Long itemId, int price) {
+    public Optional<OrderItem> findByOrderIdAndOrderItemIdAndItemIdAndPrice(Long orderId, Long orderItemId, Long itemId, Long price) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return Optional.ofNullable(queryFactory

@@ -28,8 +28,6 @@ public class StoreDto {
 
     private List<Item> items;
 
-    private int tableNumbers;
-
     @Builder
     @QueryProjection
     public StoreDto(Long id, Long memberId, String name, Address address, StoreStatus storeStatus, List<StoreTable> storeTables, List<Item> items) {

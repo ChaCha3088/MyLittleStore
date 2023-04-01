@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 public class OrderItemCreationDto {
     private Long orderId;
     private Long itemId;
-    private int price;
-    private int count;
+    private Long price;
+    private Long count;
 
     @Builder
     @QueryProjection
-    public OrderItemCreationDto(Long orderId, Long itemId, int price, int count) {
+    public OrderItemCreationDto(Long orderId, Long itemId, Long price, Long count) {
         this.orderId = orderId;
         this.itemId = itemId;
         this.price = price;

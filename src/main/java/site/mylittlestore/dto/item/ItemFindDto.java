@@ -13,15 +13,15 @@ public class ItemFindDto {
 
     private String name;
 
-    private int price;
+    private Long price;
 
-    private int stock;
+    private Long stock;
 
     private String image;
 
     @Builder
     @QueryProjection
-    public ItemFindDto(Long id, Long storeId, String name, int price, int stock, String image) {
+    public ItemFindDto(Long id, Long storeId, String name, Long price, Long stock, String image) {
         this.id = id;
         this.storeId = storeId;
         this.name = name;

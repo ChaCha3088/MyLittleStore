@@ -18,13 +18,13 @@ public class ItemUpdateDto {
 
     private String newItemName;
 
-    private int price;
+    private Long price;
 
-    private int newPrice;
+    private Long newPrice;
 
-    private int stock;
+    private Long stock;
 
-    private int newStock;
+    private Long newStock;
 
     private String image;
 
@@ -32,7 +32,7 @@ public class ItemUpdateDto {
 
     @Builder
     @QueryProjection
-    public ItemUpdateDto(Long id, Long storeId, String itemName, String newItemName, int price, int newPrice, int stock, int newStock, String image, String newImage) {
+    public ItemUpdateDto(Long id, Long storeId, String itemName, String newItemName, Long price, Long newPrice, Long stock, Long newStock, String image, String newImage) {
         this.id = id;
         this.storeId = storeId;
         this.itemName = itemName;

@@ -51,11 +51,11 @@ public class OrderItem extends BaseEntity {
 
     @NotNull
     @Min(value = 1, message = "가격은 0보다 커야합니다.")
-    private int price;
+    private Long price;
 
     @NotNull
     @Min(value = 1, message = "수량은 0보다 커야합니다.")
-    private int count;
+    private Long count;
 
     @NotNull
     private LocalDateTime time;
@@ -65,7 +65,7 @@ public class OrderItem extends BaseEntity {
     private OrderItemStatus orderItemStatus;
 
     @Builder
-    protected OrderItem(Store store, Order order, Item item, int price, int count) throws NotEnoughStockException {
+    protected OrderItem(Store store, Order order, Item item, Long price, Long count) throws NotEnoughStockException {
         this.store = store;
         this.order = order;
         this.item = item;
@@ -82,19 +82,19 @@ public class OrderItem extends BaseEntity {
         order.getOrderItems().add(this);
     }
 
-    public Item addCount(int count) throws NotEnoughStockException {
+    public Item addCount(Long count) throws NotEnoughStockException {
         this.item.decreaseStock(count);
         this.count += count;
 
         return this.item;
     }
 
-    public void updatePrice(int price) {
+    public void updatePrice(Long price) {
         this.price = price;
     }
 
-    public void updateCount(int count) {
-        int oldCount = this.count;
+    public void updateCount(Long count) {
+        Long oldCount = this.count;
 
         if (oldCount > count) {
             this.item.increaseStock(oldCount - count);

@@ -1,5 +1,5 @@
 package site.mylittlestore.enumstorage;
 
-public enum PaymentMethod {
+public enum PaymentMethodType {
     CARD, CASH
 }
