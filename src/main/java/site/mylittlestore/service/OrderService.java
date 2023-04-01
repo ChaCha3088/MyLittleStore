@@ -30,7 +30,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OrderService {
-
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
     private final StoreRepository storeRepository;
@@ -162,8 +161,6 @@ public class OrderService {
     private boolean validateDuplicateOrderItemWithItemName(Order order, String newItemName) throws IllegalStateException {
         //테이블 안에 이름이 같은 상품이 있는지 검증
         return order.getOrderItems().stream()
-                .filter(orderItem -> orderItem.getItem().getName().equals(newItemName))
-                .findFirst()
-                .isPresent();
+                .anyMatch(orderItem -> orderItem.getItem().getName().equals(newItemName));
     }
 }
