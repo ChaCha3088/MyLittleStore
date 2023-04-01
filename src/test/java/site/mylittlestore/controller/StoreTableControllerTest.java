@@ -102,7 +102,7 @@ public class StoreTableControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andReturn().getResponse().getRedirectedUrl();
 
-        //접근시 주문 정보로 리다이렉트 되는지 확인
+        //접근시 주문 정보로 redirect 되는지 확인
         mockMvc.perform(get("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}", memberTestId, storeTestId, storeTableId))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/members/" + memberTestId + "/stores/" + storeTestId + "/storeTables/" + storeTableId + "/orders/" + getId(redirectedUrl2)));

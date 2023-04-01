@@ -86,7 +86,7 @@ class OrderControllerTest {
     @Test
     @DisplayName("주문 생성")
     void createOrder() throws Exception {
-        //주문 상세로 리디렉션
+        //주문 상세로 redirect
         String redirectedUrl = mockMvc.perform(get("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/new", memberTestId, storeTestId))
                 .andExpect(status().is3xxRedirection())
                 .andReturn().getResponse().getRedirectedUrl();

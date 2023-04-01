@@ -79,7 +79,7 @@ public class OrderService {
 
         //테이블에 주문이 이미 존재하는지 확인
         if (order != null) {
-            throw new OrderAlreadyExistException(StoreTableErrorMessage.ORDER_ALREADY_EXIST.getMessage());
+            throw new OrderAlreadyExistException(StoreTableErrorMessage.ORDER_ALREADY_EXIST.getMessage(), order.getId());
         }
 
         //가게가 열려있는지 확인

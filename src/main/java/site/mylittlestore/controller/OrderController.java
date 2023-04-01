@@ -10,6 +10,7 @@ import site.mylittlestore.dto.store.StoreOnlyDto;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.store.NoSuchOrderException;
+import site.mylittlestore.exception.storetable.OrderAlreadyExistException;
 import site.mylittlestore.message.Message;
 import site.mylittlestore.service.OrderItemService;
 import site.mylittlestore.service.OrderService;
@@ -29,7 +30,7 @@ public class OrderController {
         try {
             OrderDtoWithOrderItemId orderDtoWithOrderItemId = orderService.findOrderDtoWithOrderItemIdById(orderId);
 
-            //Order가 정산 중이면 정산 페이지로 리다이렉트
+            //Order가 정산 중이면 정산 페이지로 redirect
             if (orderDtoWithOrderItemId.getPaymentId() != null) {
                 return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/payment/" + orderDtoWithOrderItemId.getPaymentId();
             }
@@ -54,8 +55,13 @@ public class OrderController {
             return "messages/message";
         }
 
-        Long createdOrderId = orderService.createOrder(storeId, storeTableId);
+        //테이블에 주문이 이미 존재하면, 해당 주문으로 redirect
+        try {
+            Long createdOrderId = orderService.createOrder(storeId, storeTableId);
 
-        return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + createdOrderId;
+            return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + createdOrderId;
+        } catch (OrderAlreadyExistException e) {
+            return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + e.getOrderId();
+        }
     }
 }

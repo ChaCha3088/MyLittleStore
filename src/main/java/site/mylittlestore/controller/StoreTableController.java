@@ -27,7 +27,7 @@ public class StoreTableController {
     public String storeTableInfo(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, Model model) {
         StoreTableFindDto storeTableFindDtoById = storeTableService.findStoreTableFindDtoById(storeTableId);
 
-        //주문이 있으면 주문 정보로 리다이렉트
+        //주문이 있으면 주문 정보로 redirect
         if (storeTableFindDtoById.getOrderId() != null) {
             return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + storeTableFindDtoById.getOrderId();
         }
