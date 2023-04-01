@@ -10,7 +10,7 @@ import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.member.MemberFindDto;
 import site.mylittlestore.dto.member.MemberPasswordUpdateDto;
 import site.mylittlestore.dto.member.MemberUpdateDto;
-import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.MemberErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
@@ -108,20 +108,20 @@ public class MemberService {
     }
 
     @Transactional
-    public Long createStore(StoreDto storeDto) throws DuplicateStoreNameException, NoSuchMemberException {
+    public Long createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos storeDtoWithStoreTableFindDtosAndItemFindDtos) throws DuplicateStoreNameException, NoSuchMemberException {
         //이미 있는 가게인지 확인
-        validateDuplicateStoreWithStoreName(storeDto.getName());
+        validateDuplicateStoreWithStoreName(storeDtoWithStoreTableFindDtosAndItemFindDtos.getName());
 
 //        //회원이 이미 가지고 있는 가게인지 검증
 //        Member findMemberById = validateMemberAlreadyHaveThatStoreWithSameStoreName(storeDto.getMemberId(), storeDto.getName());
 
         //가게 생성
-        Member findMemberById = findById(storeDto.getMemberId());
+        Member findMemberById = findById(storeDtoWithStoreTableFindDtosAndItemFindDtos.getMemberId());
 
         Store createdStore = Store.builder()
                 .member(findMemberById)
-                .name(storeDto.getName())
-                .address(storeDto.getAddress())
+                .name(storeDtoWithStoreTableFindDtosAndItemFindDtos.getName())
+                .address(storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto())
                 .build();
 
         Member updatedMember = findMemberById.createStore(createdStore);
@@ -174,7 +174,7 @@ public class MemberService {
         //가게 상태 변경
         if (findStore.getStoreStatus() == StoreStatus.OPEN) {
             findStore.changeStoreStatus(StoreStatus.CLOSE);
-        } else if (findStore.getStoreStatus() == StoreStatus.CLOSE) {
+        } else if (findStore.getStoreStatus().equals(StoreStatus.CLOSE.toString()))) {
             findStore.changeStoreStatus(StoreStatus.OPEN);
         }
 

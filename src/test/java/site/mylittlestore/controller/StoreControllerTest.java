@@ -1,6 +1,5 @@
 package site.mylittlestore.controller;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -12,7 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.member.MemberCreationDto;
-import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.service.MemberService;
 import site.mylittlestore.service.StoreService;
@@ -99,11 +98,11 @@ class StoreControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/members/" + memberTestId + "/stores/4"));
 
-        StoreDto storeDtoById = storeService.findStoreDtoById(4L);
-        assertThat(storeDtoById.getName()).isEqualTo("storeTest");
-        assertThat(storeDtoById.getAddress().getCity()).isEqualTo("city");
-        assertThat(storeDtoById.getAddress().getStreet()).isEqualTo("street");
-        assertThat(storeDtoById.getAddress().getZipcode()).isEqualTo("zipcode");
+        StoreDtoWithStoreTableFindDtosAndItemFindDtos storeDtoWithStoreTableFindDtosAndItemFindDtosById = storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(4L);
+        assertThat(storeDtoWithStoreTableFindDtosAndItemFindDtosById.getName()).isEqualTo("storeTest");
+        assertThat(storeDtoWithStoreTableFindDtosAndItemFindDtosById.getAddressDto().getCity()).isEqualTo("city");
+        assertThat(storeDtoWithStoreTableFindDtosAndItemFindDtosById.getAddressDto().getStreet()).isEqualTo("street");
+        assertThat(storeDtoWithStoreTableFindDtosAndItemFindDtosById.getAddressDto().getZipcode()).isEqualTo("zipcode");
     }
 
     @Test
@@ -161,11 +160,11 @@ class StoreControllerTest {
 
         //then
         //가게 수정 확인
-        StoreDto storeDtoById = storeService.findStoreDtoById(3L);
-        assertThat(storeDtoById.getName()).isEqualTo("Cha Cha");
-        assertThat(storeDtoById.getAddress().getCity()).isEqualTo("newCity");
-        assertThat(storeDtoById.getAddress().getStreet()).isEqualTo("newStreet");
-        assertThat(storeDtoById.getAddress().getZipcode()).isEqualTo("newZipcode");
+        StoreDtoWithStoreTableFindDtosAndItemFindDtos storeDtoWithStoreTableFindDtosAndItemFindDtosById = storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(3L);
+        assertThat(storeDtoWithStoreTableFindDtosAndItemFindDtosById.getName()).isEqualTo("Cha Cha");
+        assertThat(storeDtoWithStoreTableFindDtosAndItemFindDtosById.getAddressDto().getCity()).isEqualTo("newCity");
+        assertThat(storeDtoWithStoreTableFindDtosAndItemFindDtosById.getAddressDto().getStreet()).isEqualTo("newStreet");
+        assertThat(storeDtoWithStoreTableFindDtosAndItemFindDtosById.getAddressDto().getZipcode()).isEqualTo("newZipcode");
     }
 
     @Test
@@ -188,8 +187,8 @@ class StoreControllerTest {
 
         //then
         //가게 상태 변경 확인
-        StoreDto storeDtoById1 = storeService.findStoreDtoById(5L);
-        assertThat(storeDtoById1.getStoreStatus()).isEqualTo(StoreStatus.OPEN);
+        StoreDtoWithStoreTableFindDtosAndItemFindDtos storeDtoWithStoreTableFindDtosAndItemFindDtosById1 = storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(5L);
+        assertThat(storeDtoWithStoreTableFindDtosAndItemFindDtosById1.getStoreStatus()).isEqualTo(StoreStatus.OPEN);
 
         //when
         //가게 상태 변경
@@ -199,7 +198,7 @@ class StoreControllerTest {
 
         //then
         //가게 상태 변경 확인
-        StoreDto storeDtoById2 = storeService.findStoreDtoById(5L);
-        assertThat(storeDtoById2.getStoreStatus()).isEqualTo(StoreStatus.CLOSE);
+        StoreDtoWithStoreTableFindDtosAndItemFindDtos storeDtoWithStoreTableFindDtosAndItemFindDtosById2 = storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(5L);
+        assertThat(storeDtoWithStoreTableFindDtosAndItemFindDtosById2.getStoreStatus()).isEqualTo(StoreStatus.CLOSE);
     }
 }

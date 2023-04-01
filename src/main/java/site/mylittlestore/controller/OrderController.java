@@ -6,7 +6,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import site.mylittlestore.dto.order.OrderDto;
-import site.mylittlestore.dto.store.StoreOnlyDto;
+import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.store.NoSuchOrderException;
@@ -47,12 +48,15 @@ public class OrderController {
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/new")
     public String createOrder(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, Model model) {
-        StoreOnlyDto storeOnlyDtoById = storeService.findStoreOnlyDtoById(storeId);
+        StoreDto storeDtoById = storeService.findStoreDtoById(storeId);
 
         //가게가 닫혀있으면, 가게를 열어야합니다. 메시지 출력
-        if (storeOnlyDtoById.getStoreStatus() == StoreStatus.CLOSE) {
+        if (storeDtoById.getStoreStatus().equals(StoreStatus.CLOSE.toString())) {
             //팝업 알림창
-            model.addAttribute("messages", new Message(StoreErrorMessage.STORE_CLOSED.getMessage(), "/members/" + memberId + "/stores/" + storeId));
+            model.addAttribute("messages", Message.builder()
+                    .message(StoreErrorMessage.STORE_CLOSED.getMessage())
+                    .href("/members/" + memberId + "/stores/" + storeId)
+                    .build());
             return "messages/message";
         }
 
@@ -67,7 +71,12 @@ public class OrderController {
     }
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/payment/new")
-    public String createPaymentForm(@PathVariable("orderId") Long orderId, Model model) {
-        orderService.
+    public String createPaymentForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, Model model) {
+        //이미 정산중이면 정산 페이지로 redirect
+        OrderDto orderDtoById = orderService.findOrderDtoById(orderId);
+        if (orderDtoById.getPaymentId() != null) {
+            return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/payment/" + orderDtoById.getPaymentId();
+        }
+
     }
 }

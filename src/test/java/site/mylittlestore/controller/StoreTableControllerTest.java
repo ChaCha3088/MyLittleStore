@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.member.MemberCreationDto;
-import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.storetable.StoreTableFindDto;
 import site.mylittlestore.service.MemberService;
 import site.mylittlestore.service.OrderService;
@@ -58,7 +58,7 @@ public class StoreTableControllerTest {
                         .build())
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreDto.builder()
+        Long newStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .address(Address.builder()

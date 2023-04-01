@@ -7,13 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
-import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
 import site.mylittlestore.enumstorage.status.ItemStatus;
 import site.mylittlestore.exception.item.NoSuchItemException;
@@ -64,7 +63,7 @@ class ItemServiceTest {
                         .build())
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreDto.builder()
+        Long newStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .address(Address.builder()

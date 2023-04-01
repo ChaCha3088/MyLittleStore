@@ -1,0 +1,99 @@
+package site.mylittlestore.interceptor;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.ui.Model;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.HandlerMapping;
+import site.mylittlestore.dto.order.OrderDto;
+import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
+import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
+import site.mylittlestore.enumstorage.status.StoreStatus;
+import site.mylittlestore.message.Message;
+import site.mylittlestore.service.OrderService;
+import site.mylittlestore.service.StoreService;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Map;
+
+@RequiredArgsConstructor
+public class OrderItemInterceptor implements HandlerInterceptor {
+    private final OrderService orderService;
+    private final StoreService storeService;
+
+    private final ObjectMapper objectMapper;
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        Map pathVariables = (Map) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+        Long memberId = (Long) pathVariables.get("memberId");
+        Long storeId = (Long) pathVariables.get("storeId");
+        Long storeTableId = (Long) pathVariables.get("storeTableId");
+        Long orderId = (Long) pathVariables.get("orderId");
+
+        boolean paymentStarted = isPaymentStarted(memberId, storeId, storeTableId, orderId, response);
+        if (!paymentStarted) {
+            return false;
+        }
+
+        boolean storeOpen = isStoreOpen(memberId, storeId, response);
+        if (!storeOpen) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isPaymentStarted(Long memberId, Long storeId, Long storeTableId, Long orderId, HttpServletResponse response) throws IOException {
+        //이미 정산중이면 정산 페이지로 redirect
+        //진행중인 정산이 존재하면
+        OrderDto orderDtoById = orderService.findOrderDtoById(orderId);
+        if (orderDtoById.getPaymentId() != null) {
+            Message message = Message.builder()
+                    .message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage())
+                    .href("/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/payments/" + orderDtoById.getPaymentId())
+                    .build();
+
+            //json 형식으로 메시지 출력
+            returnJson(response, message);
+
+            //redirect
+            response.sendRedirect(message.getHref());
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isStoreOpen(Long memberId, Long storeId, HttpServletResponse response) throws IOException {
+        //가게가 닫혀있으면, 가게를 열어야합니다. 메시지 출력
+        if (storeService.findStoreDtoById(storeId).getStoreStatus().equals(StoreStatus.CLOSE.toString())) {
+            Message message = Message.builder()
+                    .message(StoreErrorMessage.STORE_CLOSED.getMessage())
+                    .href("/members/" + memberId + "/stores/" + storeId)
+                    .build();
+
+            //json 형식으로 메시지 출력
+            returnJson(response, message);
+
+            //redirect
+            response.sendRedirect(message.getHref());
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private void returnJson(HttpServletResponse response, Message message) throws IOException {
+        //json 형식으로 메시지 출력
+        //content-type
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
+        String json = objectMapper.writeValueAsString(message);
+        response.getWriter().write(json);
+    }
+}

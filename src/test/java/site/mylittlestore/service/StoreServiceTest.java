@@ -7,15 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.item.ItemUpdateDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
-import site.mylittlestore.dto.store.StoreDto;
-import site.mylittlestore.dto.store.StoreTableCreationDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.enumstorage.status.ItemStatus;
@@ -72,7 +70,7 @@ class StoreServiceTest {
                         .build())
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreDto.builder()
+        Long newStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .address(Address.builder()
@@ -97,7 +95,7 @@ class StoreServiceTest {
     @Test
     void findStoreDtoById() {
         //when
-        StoreDto findStoreById = storeService.findStoreDtoById(storeTestId);
+        StoreDtoWithStoreTableFindDtosAndItemFindDtos findStoreById = storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeTestId);
 
         //then
         assertThat(findStoreById.getName()).isEqualTo("storeTest");
@@ -106,7 +104,7 @@ class StoreServiceTest {
     @Test
     void findStoreByIdException() {
         //then
-        assertThatThrownBy(() -> storeService.findStoreDtoById(123456789L))
+        assertThatThrownBy(() -> storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(123456789L))
                 .isInstanceOf(NoSuchStoreException.class)
                 .hasMessageContaining(StoreErrorMessage.NO_SUCH_STORE.getMessage());
 
@@ -115,7 +113,7 @@ class StoreServiceTest {
     @Test
     public void findAllStoreByMemberId() {
         //given
-        Long savedStoreId = memberService.createStore(StoreDto.builder()
+        Long savedStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
                 .memberId(memberTestId)
                 .name("newStoreTest")
                 .address(Address.builder()
@@ -130,7 +128,7 @@ class StoreServiceTest {
         em.clear();
 
         //when
-        List<StoreDto> findAllStoreByMemberId = storeService.findAllStoreDtoByMemberId(memberTestId);
+        List<StoreDtoWithStoreTableFindDtosAndItemFindDtos> findAllStoreByMemberId = storeService.findAllStoreDtoByMemberId(memberTestId);
 
         //then
         assertThat(findAllStoreByMemberId.size()).isEqualTo(2);
@@ -184,7 +182,7 @@ class StoreServiceTest {
         //then
         //아이템을 업데이트하면 store에서 item을 찾았을 때, 업데이트된 아이템이 나와야 한다.
 //        Long findItemId = storeService.findStoreDtoById(storeTestId).getItems().stream()
-        Long findItemId = storeService.findStoreDtoById(storeTestId).getItems().stream()
+        Long findItemId = storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeTestId).getItemFindDtos().stream()
                 .filter(i -> i.getId().equals(itemTestId))
                 .findFirst()
                 .get().getId();

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import site.mylittlestore.dto.item.ItemFindDto;
+import site.mylittlestore.dto.order.OrderDto;
 import site.mylittlestore.dto.orderitem.OrderItemCreationDto;
 import site.mylittlestore.dto.orderitem.OrderItemDto;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
@@ -68,14 +69,6 @@ public class OrderItemController {
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new")
     public String createOrderItemForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, Model model) {
-        //가게가 닫혀있으면, 가게를 열어야합니다. 메시지 출력
-        String x = isStoreOpen(memberId, storeId, model);
-        if (x != null) return x;
-
-        //정산이 시작되었는지 확인
-        String x1 = isPaymentStarted(memberId, storeId, storeTableId, orderId, model);
-        if (x1 != null) return x1;
-
         List<ItemFindDto> findAllItemCreationDtoByStoreId = itemService.findAllItemDtoByStoreId(storeId);
         model.addAttribute("memberId", memberId);
         model.addAttribute("storeId", storeId);
@@ -105,25 +98,23 @@ public class OrderItemController {
             return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId;
         } catch (PaymentAlreadyExistException e) {  //진행중인 정산이 존재하면, 정산이 시작되어 변경이 불가능합니다.
             //팝업 알림창
-            model.addAttribute("messages", new Message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage(), "/members/" + memberId + "/stores/" + storeId + "/storeTables/" + e.getStoreTableId() + "/orders/" + e.getOrderId()));
+            model.addAttribute("messages", Message.builder()
+.message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage())
+.href("/members/" + memberId + "/stores/" + storeId + "/storeTables/" + e.getStoreTableId() + "/orders/" + e.getOrderId())
+.build());
             return "messages/message";
         } catch (StoreClosedException e) {  //가게가 닫혀있으면, 가게를 열어야합니다.
             //팝업 알림창
-            model.addAttribute("messages", new Message(StoreErrorMessage.STORE_CLOSED.getMessage(), "/members/" + memberId + "/stores/" + storeId));
+            model.addAttribute("messages", Message.builder()
+.message(StoreErrorMessage.STORE_CLOSED.getMessage())
+.href("/members/" + memberId + "/stores/" + storeId)
+.build());
             return "messages/message";
         }
     }
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/update")
     public String updateOrderItemForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, Model model) {
-        //가게가 닫혀있으면, 가게를 열어야합니다. 메시지 출력
-        String x = isStoreOpen(memberId, storeId, model);
-        if (x != null) return x;
-
-        //정산이 시작되었는지 확인
-        String x1 = isPaymentStarted(memberId, storeId, storeTableId, orderId, model);
-        if (x1 != null) return x1;
-
         model.addAttribute("memberId", memberId);
         model.addAttribute("storeId", storeId);
         model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
@@ -153,11 +144,17 @@ public class OrderItemController {
             return "redirect:/members/"+memberId+"/stores/"+storeId+"/storeTables/"+storeTableId+"/orders/"+orderId+"/orderItems/"+updatedOrderItemId;
         } catch (PaymentAlreadyExistException e) {  //진행중인 정산이 존재하면, 정산이 시작되어 변경이 불가능합니다.
             //팝업 알림창
-            model.addAttribute("messages", new Message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage(), "/members/" + memberId + "/stores/" + storeId + "/storeTables/" + e.getStoreTableId() + "/orders/" + e.getOrderId()));
+            model.addAttribute("messages", Message.builder()
+                    .message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage())
+                    .href("/members/" + memberId + "/stores/" + storeId + "/storeTables/" + e.getStoreTableId() + "/orders/" + e.getOrderId())
+                    .build());
             return "messages/message";
         } catch (StoreClosedException e) {  //가게가 닫혀있으면, 가게를 열어야합니다.
             //팝업 알림창
-            model.addAttribute("messages", new Message(StoreErrorMessage.STORE_CLOSED.getMessage(), "/members/" + memberId + "/stores/" + storeId));
+            model.addAttribute("messages", Message.builder()
+.message(StoreErrorMessage.STORE_CLOSED.getMessage())
+.href("/members/" + memberId + "/stores/" + storeId)
+.build());
             return "messages/message";
         }
     }
@@ -174,14 +171,6 @@ public class OrderItemController {
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/delete")
     public String deleteOrderItemConfirm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, Model model) {
-        //가게가 닫혀있으면, 가게를 열어야합니다. 메시지 출력
-        String x = isStoreOpen(memberId, storeId, model);
-        if (x != null) return x;
-
-        //정산이 시작되었는지 확인
-        String x1 = isPaymentStarted(memberId, storeId, storeTableId, orderId, model);
-        if (x1 != null) return x1;
-
         //팝업 확인창(주문 상품 삭제 확인창)
         model.addAttribute("messages", new Confirm(OrderItemErrorMessage.CONFIRM_DELETE_ORDER_ITEM.getMessage(), "/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/orderItems/" + orderItemId + "/delete", "/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId));
         return "messages/confirm";
@@ -202,33 +191,18 @@ public class OrderItemController {
             return "redirect:/members/"+memberId+"/stores/"+storeId+"/storeTables/"+storeTableId+"/orders/"+orderId;
         } catch (PaymentAlreadyExistException e) {  //진행중인 정산이 존재하면, 정산이 시작되어 변경이 불가능합니다.
             //팝업 알림창
-            model.addAttribute("messages", new Message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage(), "/members/" + memberId + "/stores/" + storeId + "/storeTables/" + e.getStoreTableId() + "/orders/" + e.getOrderId()));
+            model.addAttribute("messages", Message.builder()
+.message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage())
+.href("/members/" + memberId + "/stores/" + storeId + "/storeTables/" + e.getStoreTableId() + "/orders/" + e.getOrderId())
+.build());
             return "messages/message";
         } catch (StoreClosedException e) {  //가게가 닫혀있으면, 가게를 열어야합니다.
             //팝업 알림창
-            model.addAttribute("messages", new Message(StoreErrorMessage.STORE_CLOSED.getMessage(), "/members/" + memberId + "/stores/" + storeId));
+            model.addAttribute("messages", Message.builder()
+.message(StoreErrorMessage.STORE_CLOSED.getMessage())
+.href("/members/" + memberId + "/stores/" + storeId)
+.build());
             return "messages/message";
         }
-    }
-
-    private String isStoreOpen(Long memberId, Long storeId, Model model) {
-        //가게가 닫혀있으면, 가게를 열어야합니다. 메시지 출력
-        if (storeService.findStoreOnlyDtoById(storeId).getStoreStatus() == StoreStatus.CLOSE) {
-            //팝업 알림창
-            model.addAttribute("messages", new Message(StoreErrorMessage.STORE_CLOSED.getMessage(), "/members/" + memberId + "/stores/" + storeId));
-            return "messages/message";
-        }
-        return null;
-    }
-
-    private String isPaymentStarted(Long memberId, Long storeId, Long storeTableId, Long orderId, Model model) {
-        //정산이 시작되었는지 확인
-        //진행중인 정산이 존재하면
-        if (orderService.findOrderDtoById(orderId).getPaymentId() != null) {
-            //팝업 알림창
-            model.addAttribute("messages", new Message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage(), "/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId));
-            return "messages/message";
-        }
-        return null;
     }
 }

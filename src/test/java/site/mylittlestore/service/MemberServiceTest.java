@@ -9,14 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.member.MemberUpdateDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.member.MemberFindDto;
 import site.mylittlestore.dto.member.MemberPasswordUpdateDto;
-import site.mylittlestore.dto.store.StoreDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.exception.member.DuplicateMemberException;
@@ -67,7 +66,7 @@ class MemberServiceTest {
                         .build())
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreDto.builder()
+        Long newStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
                 .name("storeTest")
                 .memberId(newMemberId)
                 .address(Address.builder()
@@ -261,7 +260,7 @@ class MemberServiceTest {
     @Test
     void createStore() {
         //when
-        Long createdStoreId = memberService.createStore(StoreDto.builder()
+        Long createdStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
                 .name("storeTestB")
                 .memberId(memberTestId)
                 .address(Address.builder()
@@ -277,9 +276,9 @@ class MemberServiceTest {
 
         //then
         //회원 가게 생성 잘 됐는지 db 확인
-        StoreDto findStoreDtoById = storeService.findStoreDtoById(createdStoreId);
+        StoreDtoWithStoreTableFindDtosAndItemFindDtos findStoreDtoWithStoreTableFindDtosAndItemFindDtosById = storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(createdStoreId);
 
-        assertThat(findStoreDtoById.getName()).isEqualTo("storeTestB");
+        assertThat(findStoreDtoWithStoreTableFindDtosAndItemFindDtosById.getName()).isEqualTo("storeTestB");
     }
 
     /**
@@ -290,7 +289,7 @@ class MemberServiceTest {
     void createStoreDuplicateStoreException() {
         //이름이 같은 가게를 생성하면, 예외 발생
         Assertions.assertThatThrownBy(() -> {
-            memberService.createStore(StoreDto.builder()
+            memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
                     .name("storeTest")
                     .memberId(memberTestId)
                     .address(Address.builder()
@@ -320,17 +319,17 @@ class MemberServiceTest {
         em.flush();
         em.clear();
 
-        StoreDto updatedStoreDtoById = storeService.findStoreDtoById(updateStoreId);
+        StoreDtoWithStoreTableFindDtosAndItemFindDtos updatedStoreDtoWithStoreTableFindDtosAndItemFindDtosById = storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(updateStoreId);
 
         //then
-        assertThat(updatedStoreDtoById.getName()).isEqualTo("newStoreTest");
-        assertThat(updatedStoreDtoById.getAddress().getCity()).isEqualTo("newCity");
+        assertThat(updatedStoreDtoWithStoreTableFindDtosAndItemFindDtosById.getName()).isEqualTo("newStoreTest");
+        assertThat(updatedStoreDtoWithStoreTableFindDtosAndItemFindDtosById.getAddressDto().getCity()).isEqualTo("newCity");
     }
 
     @Test
     public void updateStoreNameAndAddressDuplicateStoreNameException(){
         //given
-        Long createdStoreId = memberService.createStore(StoreDto.builder()
+        Long createdStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
                 .name("storeTestB")
                 .memberId(memberTestId)
                 .address(Address.builder()
@@ -375,10 +374,10 @@ class MemberServiceTest {
         em.flush();
         em.clear();
 
-        StoreDto updatedStoreDtoById = storeService.findStoreDtoById(updateStoreId);
+        StoreDtoWithStoreTableFindDtosAndItemFindDtos updatedStoreDtoWithStoreTableFindDtosAndItemFindDtosById = storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(updateStoreId);
 
         //then
-        assertThat(updatedStoreDtoById.getName()).isEqualTo("newStoreTest");
+        assertThat(updatedStoreDtoWithStoreTableFindDtosAndItemFindDtosById.getName()).isEqualTo("newStoreTest");
     }
 
     /**
@@ -401,10 +400,10 @@ class MemberServiceTest {
         em.flush();
         em.clear();
 
-        StoreDto updatedStoreDtoById = storeService.findStoreDtoById(updateStoreId);
+        StoreDtoWithStoreTableFindDtosAndItemFindDtos updatedStoreDtoWithStoreTableFindDtosAndItemFindDtosById = storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(updateStoreId);
 
         //then
-        assertThat(updatedStoreDtoById.getAddress().getCity()).isEqualTo("newCity");
+        assertThat(updatedStoreDtoWithStoreTableFindDtosAndItemFindDtosById.getAddressDto().getCity()).isEqualTo("newCity");
     }
 
     @Test
@@ -421,7 +420,7 @@ class MemberServiceTest {
         em.clear();
 
         //when
-        StoreDto findStoreById = storeService.findStoreDtoById(storeTestId);
+        StoreDtoWithStoreTableFindDtosAndItemFindDtos findStoreById = storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeTestId);
 
         //then
         assertThat(findStoreById.getStoreStatus()).isEqualTo(StoreStatus.OPEN);
@@ -441,7 +440,7 @@ class MemberServiceTest {
         em.clear();
 
         //when
-        StoreDto findStoreById1 = storeService.findStoreDtoById(storeTestId);
+        StoreDtoWithStoreTableFindDtosAndItemFindDtos findStoreById1 = storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeTestId);
 
         //then
         assertThat(findStoreById1.getStoreStatus()).isEqualTo(StoreStatus.OPEN);
@@ -457,7 +456,7 @@ class MemberServiceTest {
         em.clear();
 
         //when
-        StoreDto findStoreById2 = storeService.findStoreDtoById(storeTestId);
+        StoreDtoWithStoreTableFindDtosAndItemFindDtos findStoreById2 = storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeTestId);
 
         //then
         assertThat(findStoreById2.getStoreStatus()).isEqualTo(StoreStatus.CLOSE);

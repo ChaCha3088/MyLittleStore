@@ -12,7 +12,7 @@ import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
-import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.repository.item.ItemRepository;
 import site.mylittlestore.repository.member.MemberRepository;
 import site.mylittlestore.repository.store.StoreRepository;
@@ -63,7 +63,7 @@ class ItemRepositoryTest {
                         .build())
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreDto.builder()
+        Long newStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .address(Address.builder()

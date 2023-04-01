@@ -46,12 +46,12 @@
                 </tr>
             </thead>
 
-            <tbody th:each="storeDto : ${storeDtos}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}(memberId = ${storeDto.memberId}, storeId = ${storeDto.id})}'|">
-                <td th:text="${storeDto.name}"></td>
-                <td th:text="${storeDto.storeStatus}"></td>
-                <td th:text="${storeDto.address.city}"></td>
-                <td th:text="${storeDto.address.street}"></td>
-                <td th:text="${storeDto.address.zipcode}"></td>
+            <tbody th:each="storeDtoWithStoreTableFindDtosAndItemFindDtos : ${storeDtos}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}(memberId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.memberId}, storeId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.id})}'|">
+                <td th:text="${storeDtoWithStoreTableFindDtosAndItemFindDtos.name}"></td>
+                <td th:text="${storeDtoWithStoreTableFindDtosAndItemFindDtos.storeStatus}"></td>
+                <td th:text="${storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto.city}"></td>
+                <td th:text="${storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto.street}"></td>
+                <td th:text="${storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto.zipcode}"></td>
             </tbody>
         </table>
 

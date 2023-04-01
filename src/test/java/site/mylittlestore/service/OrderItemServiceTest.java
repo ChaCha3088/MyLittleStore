@@ -14,7 +14,7 @@ import site.mylittlestore.dto.orderitem.OrderItemCreationDto;
 import site.mylittlestore.dto.orderitem.OrderItemDto;
 import site.mylittlestore.dto.orderitem.OrderItemDtoWithItemFindDto;
 import site.mylittlestore.dto.orderitem.OrderItemFindDto;
-import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.enumstorage.status.OrderItemStatus;
@@ -69,7 +69,7 @@ public class OrderItemServiceTest {
                         .build())
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreDto.builder()
+        Long newStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .address(Address.builder()

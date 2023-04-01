@@ -4,13 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Store;
-import site.mylittlestore.domain.StoreTable;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemUpdateDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreDto;
-import site.mylittlestore.dto.store.StoreOnlyDto;
-import site.mylittlestore.dto.store.StoreTableCreationDto;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.exception.item.DuplicateItemException;
@@ -34,6 +32,13 @@ public class StoreService {
 
     private final StoreTableRepository storeTableRepository;
 
+    public StoreDtoWithStoreTableFindDtosAndItemFindDtos findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(Long id) throws NoSuchStoreException {
+        Optional<Store> findStore = storeRepository.findById(id);
+
+        //가게가 없으면 예외 발생
+        return findStore.orElseThrow(() -> new NoSuchStoreException(StoreErrorMessage.NO_SUCH_STORE.getMessage())).toStoreDtoWithStoreTableFindDtosAndItemFindDtos();
+    }
+
     public StoreDto findStoreDtoById(Long id) throws NoSuchStoreException {
         Optional<Store> findStore = storeRepository.findById(id);
 
@@ -41,20 +46,13 @@ public class StoreService {
         return findStore.orElseThrow(() -> new NoSuchStoreException(StoreErrorMessage.NO_SUCH_STORE.getMessage())).toStoreDto();
     }
 
-    public StoreOnlyDto findStoreOnlyDtoById(Long id) throws NoSuchStoreException {
-        Optional<Store> findStore = storeRepository.findById(id);
-
-        //가게가 없으면 예외 발생
-        return findStore.orElseThrow(() -> new NoSuchStoreException(StoreErrorMessage.NO_SUCH_STORE.getMessage())).toStoreOnlyDto();
-    }
-
-    public List<StoreDto> findAllStoreDtoByMemberId(Long memberId) {
+    public List<StoreDtoWithStoreTableFindDtosAndItemFindDtos> findAllStoreDtoByMemberId(Long memberId) {
         //회원 id를 가지고 있는 가게를 찾아야지.
         List<Store> findStoreByStoreId = storeRepository.findAllStoreByMemberId(memberId);
 
         //Dto로 변환
         return findStoreByStoreId.stream()
-                .map(m -> m.toStoreDto())
+                .map(m -> m.toStoreDtoWithStoreTableFindDtosAndItemFindDtos())
                 .collect(Collectors.toList());
     }
 

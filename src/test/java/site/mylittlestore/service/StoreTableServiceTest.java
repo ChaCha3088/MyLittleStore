@@ -11,7 +11,7 @@ import org.springframework.test.context.jdbc.Sql;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
-import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.dto.storetable.StoreTableFindDto;
 import site.mylittlestore.dto.storetable.StoreTableFindDtoWithOrderFindDto;
@@ -62,7 +62,7 @@ public class StoreTableServiceTest {
                         .build())
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreDto.builder()
+        Long newStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .address(Address.builder()

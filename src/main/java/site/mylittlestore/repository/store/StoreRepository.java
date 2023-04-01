@@ -3,7 +3,6 @@ package site.mylittlestore.repository.store;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import site.mylittlestore.domain.Store;
-import site.mylittlestore.dto.store.StoreDto;
 
 import java.util.List;
 import java.util.Optional;

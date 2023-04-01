@@ -3,9 +3,9 @@ package site.mylittlestore.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import site.mylittlestore.domain.item.Item;
-import site.mylittlestore.dto.store.StoreOnlyDto;
-import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.enumstorage.status.StoreStatus;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.entity.BaseEntity;
 
 import javax.persistence.*;
@@ -95,22 +95,20 @@ public class Store extends BaseEntity {
     }
 
     //==DTO==//
-    public StoreDto toStoreDto() {
-        return StoreDto.builder()
+    public StoreDtoWithStoreTableFindDtosAndItemFindDtos toStoreDtoWithStoreTableFindDtosAndItemFindDtos() {
+        return StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
                 .id(this.id)
                 .memberId(this.member.getId())
                 .name(this.name)
                 .address(this.address)
                 .storeStatus(this.storeStatus)
                 .storeTables(this.storeTables)
-//                .orders(this.orders.stream().map(Order::getId).collect(Collectors.toList()))
-//                .items(this.items.stream().map(Item::getId).collect(Collectors.toList()))
                 .items(this.items)
                 .build();
     }
 
-    public StoreOnlyDto toStoreOnlyDto() {
-        return StoreOnlyDto.builder()
+    public StoreDto toStoreDto() {
+        return StoreDto.builder()
                 .id(this.id)
                 .memberId(this.member.getId())
                 .name(this.name)

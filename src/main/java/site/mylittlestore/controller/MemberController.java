@@ -7,11 +7,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.member.MemberFindDto;
 import site.mylittlestore.dto.member.MemberUpdateDto;
-import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.form.MemberCreationForm;
 import site.mylittlestore.form.MemberUpdateForm;
 import site.mylittlestore.service.MemberService;
@@ -39,9 +40,9 @@ public class MemberController {
     @GetMapping("/members/{memberId}")
     public String memberInfo(@PathVariable("memberId") Long memberId, Model model) {
         MemberFindDto memberFindDto = memberService.findMemberFindDtoByMemberId(memberId);
-        List<StoreDto> findAllStoreDtoByMemberId = storeService.findAllStoreDtoByMemberId(memberId);
+        List<StoreDtoWithStoreTableFindDtosAndItemFindDtos> findAllStoreDtoByMemberIdWithStoreTableFindDtosAndItemFindDtos = storeService.findAllStoreDtoByMemberId(memberId);
         model.addAttribute("memberFindDto", memberFindDto);
-        model.addAttribute("storeDtos", findAllStoreDtoByMemberId);
+        model.addAttribute("storeDtos", findAllStoreDtoByMemberIdWithStoreTableFindDtosAndItemFindDtos);
         return "members/memberInfo";
     }
 

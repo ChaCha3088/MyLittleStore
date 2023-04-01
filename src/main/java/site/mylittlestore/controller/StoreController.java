@@ -7,12 +7,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import site.mylittlestore.domain.Address;
-import site.mylittlestore.dto.member.MemberFindDto;
-import site.mylittlestore.dto.member.MemberUpdateDto;
-import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreUpdateDto;
-import site.mylittlestore.form.MemberUpdateForm;
 import site.mylittlestore.form.StoreCreationForm;
 import site.mylittlestore.form.StoreUpdateForm;
 import site.mylittlestore.service.ItemService;
@@ -36,7 +34,7 @@ public class StoreController {
     public String storeInfo(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, Model model) {
         model.addAttribute("memberId", memberId);
         model.addAttribute("storeId", storeId);
-        model.addAttribute("storeDto", storeService.findStoreDtoById(storeId));
+        model.addAttribute("storeDto", storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeId));
 
         return "stores/storeInfo";
     }
@@ -56,7 +54,7 @@ public class StoreController {
             return "stores/storeCreationForm";
         }
 
-        Long createdStoreId = memberService.createStore(StoreDto.builder()
+        Long createdStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
                 .memberId(memberId)
                 .name(storeCreationForm.getName())
                 .address(Address.builder()
@@ -71,7 +69,7 @@ public class StoreController {
 
     @GetMapping("/members/{memberId}/stores/{storeId}/update")
     public String updateStoreForm(@PathVariable("storeId") Long storeId, Model model) {
-        model.addAttribute("storeFindDto", storeService.findStoreDtoById(storeId));
+        model.addAttribute("storeFindDto", storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeId));
         model.addAttribute("storeUpdateForm", new StoreUpdateForm());
 
         return "stores/storeUpdateForm";
@@ -81,7 +79,7 @@ public class StoreController {
     public String updateStore(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @RequestBody @Valid StoreUpdateForm storeUpdateForm, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
-            model.addAttribute("storeFindDto", storeService.findStoreDtoById(storeId));
+            model.addAttribute("storeFindDto", storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeId));
             model.addAttribute("storeUpdateForm", new StoreUpdateForm());
             return "stores/storeUpdateForm";
         }

@@ -10,10 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.member.MemberFindDto;
-import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.service.MemberService;
-
-import javax.persistence.EntityManager;
 
 import java.util.List;
 
@@ -79,7 +77,7 @@ class MemberControllerTest {
                         .build())
                 .build());
 
-        Long savedStoreId = memberService.createStore(StoreDto.builder()
+        Long savedStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
                 .memberId(savedMemberId)
                 .name("storeTest")
                 .address(Address.builder()

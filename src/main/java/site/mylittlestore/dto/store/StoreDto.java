@@ -4,9 +4,7 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
 import site.mylittlestore.domain.Address;
-import site.mylittlestore.domain.Order;
-import site.mylittlestore.domain.StoreTable;
-import site.mylittlestore.domain.item.Item;
+import site.mylittlestore.dto.address.AddressDto;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 
 import java.util.List;
@@ -20,23 +18,27 @@ public class StoreDto {
 
     private String name;
 
-    private Address address;
+    private AddressDto addressDto;
 
-    private StoreStatus storeStatus;
+    private String storeStatus;
 
-    private List<StoreTable> storeTables;
+    private List<Long> storeTableIds;
 
-    private List<Item> items;
+    private List<Long> itemIds;
 
     @Builder
     @QueryProjection
-    public StoreDto(Long id, Long memberId, String name, Address address, StoreStatus storeStatus, List<StoreTable> storeTables, List<Item> items) {
+    public StoreDto(Long id, Long memberId, String name, Address address, StoreStatus storeStatus, List<Long> storeTableIds, List<Long> itemIds) {
         this.id = id;
         this.memberId = memberId;
         this.name = name;
-        this.address = address;
-        this.storeStatus = storeStatus;
-        this.storeTables = storeTables;
-        this.items = items;
+        this.addressDto = AddressDto.builder()
+                .city(address.getCity())
+                .street(address.getStreet())
+                .zipcode(address.getZipcode())
+                .build();
+        this.storeStatus = storeStatus.toString();
+        this.storeTableIds = storeTableIds;
+        this.itemIds = itemIds;
     }
 }

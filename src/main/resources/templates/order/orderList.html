@@ -49,7 +49,7 @@
                 <td th:text="${item.getOrderStatus}"></td>
                 <td th:text="${item.orderDate}"></td>
                 <td>
-                    <a th:if="${item.getOrderStatus.name() == 'ORDER'}" href="#" th:href="'javascript:cancel('+${item.id}+')'"
+                    <a th:if="${item.getOrderStatus.toString() == 'ORDER'}" href="#" th:href="'javascript:cancel('+${item.id}+')'"
                        class="btn btn-danger">CANCEL</a>
                 </td>
             </tr>
