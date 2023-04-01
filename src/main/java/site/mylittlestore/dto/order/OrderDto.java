@@ -3,13 +3,12 @@ package site.mylittlestore.dto.order;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
-import site.mylittlestore.enumstorage.status.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-public class OrderDtoWithOrderItemId {
+public class OrderDto {
 
     private Long id;
     private Long storeId;
@@ -22,7 +21,7 @@ public class OrderDtoWithOrderItemId {
 
     @Builder
     @QueryProjection
-    public OrderDtoWithOrderItemId(Long id, Long storeId, Long paymentId, Long storeTableId, List<Long> orderItemIds, LocalDateTime startTime, LocalDateTime endTime, String orderStatus) {
+    public OrderDto(Long id, Long storeId, Long paymentId, Long storeTableId, List<Long> orderItemIds, LocalDateTime startTime, LocalDateTime endTime, String orderStatus) {
         this.id = id;
         this.storeId = storeId;
         this.paymentId = paymentId;

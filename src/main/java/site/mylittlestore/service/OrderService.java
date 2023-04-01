@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.*;
 import site.mylittlestore.domain.item.Item;
-import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
+import site.mylittlestore.dto.order.OrderDto;
 import site.mylittlestore.enumstorage.errormessage.*;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.item.NoSuchItemException;
@@ -37,14 +37,14 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final PaymentRepository paymentRepository;
 
-    public OrderDtoWithOrderItemId findOrderDtoWithOrderItemIdById(Long orderId) throws NoSuchOrderException {
+    public OrderDto findOrderDtoById(Long orderId) throws NoSuchOrderException {
         Optional<Order> findOrderById = orderRepository.findUsingById(orderId);
 
         //주문이 없으면 예외 발생
         //Dto로 변환
         return findOrderById.orElseThrow(()
                 -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()))
-                .toOrderDtoWithOrderItemId();
+                .toOrderDto();
     }
 
 //    public OrderDtoWithOrderItemDtoWithItemNameDto findOrderDtoWithOrderItemDtoWithItemNameDtoById(Long orderId) throws NoSuchOrderException {
@@ -83,7 +83,7 @@ public class OrderService {
 
         //가게가 열려있는지 확인
         if (store.getStoreStatus().equals(StoreStatus.CLOSE)) {
-            throw new StoreClosedException(StoreErrorMessage.STORE_IS_CLOSED.getMessage());
+            throw new StoreClosedException(StoreErrorMessage.STORE_CLOSED.getMessage(), store.getId());
         }
 
         //이제 테이블에 주문이 없다면, 주문 생성

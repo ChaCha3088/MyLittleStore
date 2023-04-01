@@ -56,7 +56,7 @@ public class ItemController {
     }
 
     @PostMapping("/members/{memberId}/stores/{storeId}/items/new")
-    public String createItem(@PathVariable Long memberId, @PathVariable Long storeId, @Valid ItemCreationForm itemCreationForm, BindingResult result) {
+    public String createItem(@PathVariable Long memberId, @PathVariable Long storeId, @RequestBody @Valid ItemCreationForm itemCreationForm, BindingResult result) {
 
         if (result.hasErrors()) {
             return "items/itemCreationForm";
@@ -82,7 +82,7 @@ public class ItemController {
     }
 
     @PostMapping("/members/{memberId}/stores/{storeId}/items/{itemId}/update")
-    public String updateItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("itemId") Long itemId, @Valid ItemUpdateForm itemUpdateForm, BindingResult result, Model model) {
+    public String updateItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("itemId") Long itemId, @RequestBody @Valid ItemUpdateForm itemUpdateForm, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             model.addAttribute("itemFindDto", itemService.findItemDtoById(storeId));

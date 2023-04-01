@@ -53,7 +53,7 @@ public class MemberController {
     }
 
     @PostMapping("/members/new")
-    public String createMember(@Valid MemberCreationForm memberCreationForm, BindingResult result) {
+    public String createMember(@RequestBody @Valid MemberCreationForm memberCreationForm, BindingResult result) {
 
         if (result.hasErrors()) {
             return "members/memberCreationForm";
@@ -82,7 +82,7 @@ public class MemberController {
     }
 
     @PostMapping("/members/{memberId}/update")
-    public String updateMember(@PathVariable("memberId") Long memberId, @Valid MemberUpdateForm memberUpdateForm, BindingResult result, Model model) {
+    public String updateMember(@PathVariable("memberId") Long memberId, @RequestBody @Valid MemberUpdateForm memberUpdateForm, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             model.addAttribute("memberFindDto", memberService.findMemberFindDtoByMemberId(memberId));

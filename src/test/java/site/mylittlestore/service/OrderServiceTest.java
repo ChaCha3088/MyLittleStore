@@ -7,7 +7,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.item.ItemCreationDto;
-import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
+import site.mylittlestore.dto.order.OrderDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
@@ -101,7 +101,7 @@ class OrderServiceTest {
     @Test
     void findOrderById() {
         //when
-        OrderDtoWithOrderItemId findOrderWithOrderItemIdById = orderService.findOrderDtoWithOrderItemIdById(orderTestId);
+        OrderDto findOrderWithOrderItemIdById = orderService.findOrderDtoById(orderTestId);
 
         //then
         assertThat(findOrderWithOrderItemIdById.getOrderStatus()).isEqualTo(OrderStatus.USING);
@@ -110,7 +110,7 @@ class OrderServiceTest {
     @Test
     void findOrderByIdNoSuchOrderException() {
         //then
-        assertThatThrownBy(() -> orderService.findOrderDtoWithOrderItemIdById(100L))
+        assertThatThrownBy(() -> orderService.findOrderDtoById(100L))
                 .isInstanceOf(NoSuchOrderException.class);
     }
 
@@ -160,7 +160,7 @@ class OrderServiceTest {
         
         //then
         StoreTableFindDtoWithOrderFindDto storeTableFindDtoWithOrderFindDtoByStoreId = storeTableService.findStoreTableFindDtoWithOrderFindDtoByStoreId(storeTableTestId, storeTestId);
-        assertThat(storeTableFindDtoWithOrderFindDtoByStoreId.getOrderDtoWithOrderItemId().getOrderStatus()).isEqualTo(OrderStatus.USING.toString());
+        assertThat(storeTableFindDtoWithOrderFindDtoByStoreId.getOrderDto().getOrderStatus()).isEqualTo(OrderStatus.USING.toString());
     }
 
     @Test

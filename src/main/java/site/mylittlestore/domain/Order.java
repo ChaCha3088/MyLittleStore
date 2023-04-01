@@ -2,7 +2,7 @@ package site.mylittlestore.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
+import site.mylittlestore.dto.order.OrderDto;
 import site.mylittlestore.enumstorage.status.OrderStatus;
 import site.mylittlestore.entity.BaseEntity;
 
@@ -64,8 +64,8 @@ public class Order extends BaseEntity {
 
     //==DTO==//
 
-    public OrderDtoWithOrderItemId toOrderDtoWithOrderItemId() {
-        return OrderDtoWithOrderItemId.builder()
+    public OrderDto toOrderDto() {
+        return OrderDto.builder()
                 .id(id)
                 .storeId(store.getId())
                 .paymentId(payment != null ? payment.getId() : null)

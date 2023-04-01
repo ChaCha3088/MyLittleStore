@@ -20,10 +20,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <td th:text="${orderDtoWithOrderItemId.id}"></td>
-                    <td th:text="${orderDtoWithOrderItemId.startTime}"></td>
-                    <td th:text="${orderDtoWithOrderItemId.endTime}"></td>
-                    <td th:text="${orderDtoWithOrderItemId.orderStatus}"></td>
+                    <td th:text="${orderDto.id}"></td>
+                    <td th:text="${orderDto.startTime}"></td>
+                    <td th:text="${orderDto.endTime}"></td>
+                    <td th:text="${orderDto.orderStatus}"></td>
                 </tbody>
             </table>
     </div>
@@ -42,7 +42,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                <tr th:each="orderItemFindDto : ${orderItemFindDtos}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}(memberId = ${memberId}, storeId = ${orderDtoWithOrderItemId.storeId}, storeTableId = ${orderDtoWithOrderItemId.storeId}, orderId = ${orderItemFindDto.orderId}, orderItemId = ${orderItemFindDto.id})}'|">
+                <tr th:each="orderItemFindDto : ${orderItemFindDtos}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}(memberId = ${memberId}, storeId = ${orderDto.storeId}, storeTableId = ${orderDto.storeId}, orderId = ${orderItemFindDto.orderId}, orderItemId = ${orderItemFindDto.id})}'|">
                     <td th:text="${orderItemFindDto.itemName}"></td>
                     <td th:text="${orderItemFindDto.time}"></td>
                     <td th:text="${orderItemFindDto.price}"></td>
@@ -53,7 +53,7 @@
 
     <div class="jumbotron">
         <button class="w-75 btn btn-primary btn-lg"
-                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new(memberId = ${memberId}, storeId = ${orderDtoWithOrderItemId.storeId}, storeTableId = ${orderDtoWithOrderItemId.storeId}, orderId = ${orderDtoWithOrderItemId.id})}'|"
+                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new(memberId = ${memberId}, storeId = ${orderDto.storeId}, storeTableId = ${orderDto.storeId}, orderId = ${orderDto.id})}'|"
                 type="button">상품 주문하기
         </button>
     </div>

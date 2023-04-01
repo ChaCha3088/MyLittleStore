@@ -72,7 +72,7 @@ public class StoreTable extends BaseEntity {
         return StoreTableFindDtoWithOrderFindDto.builder()
                 .id(id)
                 .storeId(store.getId())
-                .orderDtoWithOrderItemId(order != null ? order.toOrderDtoWithOrderItemId() : null)
+                .orderDto(order != null ? order.toOrderDto() : null)
                 .xCoordinate(xCoordinate)
                 .yCoordinate(yCoordinate)
                 .storeTableStatus(storeTableStatus.toString())

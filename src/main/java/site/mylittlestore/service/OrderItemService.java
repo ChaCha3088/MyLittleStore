@@ -14,7 +14,7 @@ import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.item.NoSuchItemException;
 import site.mylittlestore.exception.item.NotEnoughStockException;
 import site.mylittlestore.exception.orderitem.OrderItemException;
-import site.mylittlestore.exception.payment.PaymentException;
+import site.mylittlestore.exception.payment.PaymentAlreadyExistException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
 import site.mylittlestore.exception.store.NoSuchStoreException;
 import site.mylittlestore.exception.store.StoreClosedException;
@@ -139,13 +139,13 @@ public class OrderItemService {
     private static void validateOrderItemChangeAbility(Order order, Store store) {
         //가게가 열려있는지 확인
         if (store.getStoreStatus().equals(StoreStatus.CLOSE)) {
-            throw new StoreClosedException(StoreErrorMessage.STORE_IS_CLOSED.getMessage());
+            throw new StoreClosedException(StoreErrorMessage.STORE_CLOSED.getMessage(), store.getId());
         }
 
         //정산 중인지 확인
         //정산 중이면 예외 발생
         if (order.getPayment() != null) {
-            throw new PaymentException(PaymentErrorMessage.PAYMENT_ALREADY_IN_PROGRESS.getMessage());
+            throw new PaymentAlreadyExistException(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage(), order.getStoreTable().getId(), order.getId());
         }
     }
 

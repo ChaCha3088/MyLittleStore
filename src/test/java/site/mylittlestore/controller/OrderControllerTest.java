@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.member.MemberCreationDto;
-import site.mylittlestore.dto.order.OrderDtoWithOrderItemId;
+import site.mylittlestore.dto.order.OrderDto;
 import site.mylittlestore.dto.store.StoreDto;
 import site.mylittlestore.enumstorage.status.OrderStatus;
 import site.mylittlestore.service.MemberService;
@@ -94,7 +94,7 @@ class OrderControllerTest {
         String[] split = redirectedUrl.split("/");
         Long orderId = Long.parseLong(split[split.length - 1]);
 
-        OrderDtoWithOrderItemId orderDtoWithOrderItemIdById = orderService.findOrderDtoWithOrderItemIdById(orderId);
-        assertThat(orderDtoWithOrderItemIdById.getOrderStatus()).isEqualTo(OrderStatus.USING.toString());
+        OrderDto orderDto = orderService.findOrderDtoById(orderId);
+        assertThat(orderDto.getOrderStatus()).isEqualTo(OrderStatus.USING.toString());
     }
 }

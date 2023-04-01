@@ -15,9 +15,9 @@ public class OrderItemCreationForm {
 
     @NotNull(message = "가격은 필수입니다.")
     @Min(value = 1, message = "가격은 0보다 커야합니다.")
-    private Integer price;
+    private Long price;
 
     @NotNull(message = "수량은 필수입니다.")
     @Min(value = 1, message = "수량은 0보다 커야합니다.")
-    private Integer count;
+    private Long count;
 }

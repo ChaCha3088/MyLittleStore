@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum PaymentErrorMessage {
 
-    PAYMENT_ALREADY_IN_PROGRESS("결제가 이미 진행중입니다.");
+    PAYMENT_ALREADY_EXIST("정산이 시작되어 변경이 불가능합니다.");
 
     private String message;
 
