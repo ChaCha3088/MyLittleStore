@@ -7,6 +7,7 @@ import site.mylittlestore.enumstorage.PaymentMethodType;
 import site.mylittlestore.enumstorage.status.PaymentMethodStatus;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -26,6 +27,7 @@ public class PaymentMethod {
     private PaymentMethodType paymentMethodType;
 
     @NotNull
+    @Min(value = 1, message = "가격은 0보다 커야합니다.")
     private Long paymentMethodAmount;
 
     private LocalDateTime paymentMethodCompleteDateTime;

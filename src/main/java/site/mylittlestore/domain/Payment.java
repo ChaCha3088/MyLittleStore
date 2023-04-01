@@ -1,10 +1,10 @@
 package site.mylittlestore.domain;
 
 import lombok.*;
-import site.mylittlestore.enumstorage.PaymentMethodType;
 import site.mylittlestore.enumstorage.status.PaymentStatus;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,9 +24,11 @@ public class Payment {
     private List<PaymentMethod> paymentMethods = new ArrayList<>();
 
     @NotNull
-    private Long initialAmount;
+    @Min(value = 1, message = "가격은 0보다 커야합니다.")
+    private Long initialPaymentAmount;
 
-    private Long finalAmount;
+    @Min(value = 1, message = "가격은 0보다 커야합니다.")
+    private Long finalPaymentAmount;
 
     private LocalDateTime completeDateTime;
 
@@ -35,8 +37,8 @@ public class Payment {
     private PaymentStatus paymentStatus;
 
     @Builder
-    protected Payment(Long initialAmount) {
-        this.initialAmount = initialAmount;
+    protected Payment(Long initialPaymentAmount) {
+        this.initialPaymentAmount = initialPaymentAmount;
         this.paymentStatus = PaymentStatus.INIT;
     }
 }

@@ -127,7 +127,7 @@ public class OrderService {
 
         //Payment 생성
         Payment createdPayment = Payment.builder()
-                .initialAmount(totalAmount.get())
+                .initialPaymentAmount(totalAmount.get())
                 .build();
 
         //저장
