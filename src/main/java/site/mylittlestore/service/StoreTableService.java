@@ -91,7 +91,7 @@ public class StoreTableService {
     }
 
     @Transactional
-    public Long deleteStoreTable(Long storeTableId, Long storeId) {
+    public void deleteStoreTable(Long storeTableId, Long storeId) {
         //해당 storeTable이 store에 소속되어있는지 확인
         //storeId와 storeTableId로 where로 찾아오기
         StoreTable storeTable = storeTableRepository.findNotDeletedByIdAndStoreId(storeTableId, storeId)
@@ -99,7 +99,7 @@ public class StoreTableService {
 
         //이 테이블의 주문, 주문 상품이 활성화된 것이 하나라도 있다면
         //예외 발생
-        if (orderRepository.findAllUsingByStoreId(storeTable.getOrder().getId()).size() > 0 | orderItemRepository.findAllByOrderId(storeTable.getOrder().getId()).size() > 0)) {
+        if (orderRepository.findAllUsingByStoreId(storeTable.getOrder().getId()).size() > 0 | orderItemRepository.findAllByOrderId(storeTable.getOrder().getId()).size() > 0) {
             throw new StoreTableException(StoreTableErrorMessage.STILL_ORDER_OR_ORDER_ITEM_EXIST.getMessage());
         }
 
