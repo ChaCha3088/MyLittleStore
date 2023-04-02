@@ -16,6 +16,7 @@ import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.enumstorage.status.StoreStatus;
+import site.mylittlestore.exception.orderitem.OrderItemException;
 import site.mylittlestore.exception.payment.PaymentAlreadyExistException;
 import site.mylittlestore.exception.store.StoreClosedException;
 import site.mylittlestore.form.OrderItemCreationForm;
@@ -61,7 +62,7 @@ public class OrderItemController {
         model.addAttribute("storeTableId", storeTableId);
         model.addAttribute("orderId", orderId);
         model.addAttribute("orderItemId", orderItemId);
-        model.addAttribute("orderItemDtoWithItemFindDto", orderItemService.findOrderItemDtoByIdWithItemFindDto(orderItemId));
+        model.addAttribute("orderItemDtoWithItemFindDto", orderItemService.findOrderItemDtoByIdWithItemFindDto(orderItemId, orderId));
         model.addAttribute("orderItemForm", new OrderItemForm());
 
         return "orderItem/orderItemInfo";
@@ -96,7 +97,7 @@ public class OrderItemController {
                     .build());
 
             return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId;
-        } catch (PaymentAlreadyExistException e) {  //진행중인 정산이 존재하면, 정산이 시작되어 변경이 불가능합니다.
+        } catch (PaymentAlreadyExistException e) {  //진행중인 결제가 존재하면, 결제가 시작되어 변경이 불가능합니다.
             //팝업 알림창
             model.addAttribute("messages", Message.builder()
                     .message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage())
@@ -117,7 +118,7 @@ public class OrderItemController {
     public String orderItemUpdateForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, Model model) {
         model.addAttribute("memberId", memberId);
         model.addAttribute("storeId", storeId);
-        model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
+        model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId, orderId));
         model.addAttribute("orderItemForm", new OrderItemForm());
 
         return "orderItem/orderItemUpdateForm";
@@ -127,12 +128,12 @@ public class OrderItemController {
 
     @PostMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/update")
     public String updateOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @RequestBody @Valid OrderItemForm orderItemForm, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
-            return "orderItem/orderItemUpdateForm";
-        }
-
         try {
+            if (result.hasErrors()) {
+                model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId, orderId));
+                return "orderItem/orderItemUpdateForm";
+            }
+
             Long updatedOrderItemId = orderItemService.updateOrderItemCount(OrderItemDto.builder()
                     .id(orderItemId)
                     .orderId(orderItemForm.getId()) //나중에 orderId 검증할 것
@@ -142,7 +143,7 @@ public class OrderItemController {
                     .build());
 
             return "redirect:/members/"+memberId+"/stores/"+storeId+"/storeTables/"+storeTableId+"/orders/"+orderId+"/orderItems/"+updatedOrderItemId;
-        } catch (PaymentAlreadyExistException e) {  //진행중인 정산이 존재하면, 정산이 시작되어 변경이 불가능합니다.
+        } catch (PaymentAlreadyExistException e) {  //진행중인 결제가 존재하면, 결제가 시작되어 변경이 불가능합니다.
             //팝업 알림창
             model.addAttribute("messages", Message.builder()
                     .message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage())
@@ -152,9 +153,16 @@ public class OrderItemController {
         } catch (StoreClosedException e) {  //가게가 닫혀있으면, 가게를 열어야합니다.
             //팝업 알림창
             model.addAttribute("messages", Message.builder()
-.message(StoreErrorMessage.STORE_CLOSED.getMessage())
-.href("/members/" + memberId + "/stores/" + storeId)
-.build());
+                    .message(StoreErrorMessage.STORE_CLOSED.getMessage())
+                    .href("/members/" + memberId + "/stores/" + storeId)
+                    .build());
+            return "message/message";
+        } catch (OrderItemException e) {
+            //팝업 알림창
+            model.addAttribute("messages", Message.builder()
+                    .message(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage())
+                    .href("/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId)
+                    .build());
             return "message/message";
         }
     }
@@ -189,7 +197,7 @@ public class OrderItemController {
                     .build());
 
             return "redirect:/members/"+memberId+"/stores/"+storeId+"/storeTables/"+storeTableId+"/orders/"+orderId;
-        } catch (PaymentAlreadyExistException e) {  //진행중인 정산이 존재하면, 정산이 시작되어 변경이 불가능합니다.
+        } catch (PaymentAlreadyExistException e) {  //진행중인 결제가 존재하면, 결제가 시작되어 변경이 불가능합니다.
             //팝업 알림창
             model.addAttribute("messages", Message.builder()
 .message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage())

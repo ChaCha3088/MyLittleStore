@@ -25,11 +25,9 @@ import site.mylittlestore.repository.orderitem.OrderItemRepository;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
-//@Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Sql(scripts = {"classpath:sql/test.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
@@ -82,8 +80,8 @@ public class OrderItemServiceTest {
         Long newItemId = storeService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest")
-                .price(10000)
-                .stock(100)
+                .price(10000L)
+                .stock(100L)
                 .build());
 
         //가게 열기
@@ -128,15 +126,15 @@ public class OrderItemServiceTest {
         Long createdOrderItemId1 = orderItemService.createOrderItem(OrderItemCreationDto.builder()
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(10000)
-                .count(1)
+                .price(10000L)
+                .count(1L)
                 .build());
 
         Long createdOrderItemId2 = orderItemService.createOrderItem(OrderItemCreationDto.builder()
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(5000)
-                .count(5)
+                .price(5000L)
+                .count(5L)
                 .build());
 
         //when
@@ -157,37 +155,37 @@ public class OrderItemServiceTest {
         Long newItemId = storeService.createItem(ItemCreationDto.builder()
                 .storeId(storeTestId)
                 .name("itemTest2")
-                .price(9999)
-                .stock(99)
+                .price(9999L)
+                .stock(99L)
                 .build());
 
         //주문 상품 생성
         Long createdOrderItemId1 = orderItemService.createOrderItem(OrderItemCreationDto.builder()
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(10000)
-                .count(1)
+                .price(10000L)
+                .count(1L)
                 .build());
 
         Long createdOrderItemId2 = orderItemService.createOrderItem(OrderItemCreationDto.builder()
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(9999)
-                .count(10)
+                .price(9999L)
+                .count(10L)
                 .build());
 
         //when
         //생성된 주문 상품 조회
-        OrderItemFindDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId1);
-        OrderItemFindDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId2);
+        OrderItemFindDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId1, orderTestId);
+        OrderItemFindDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId2, orderTestId);
 
         //then
         assertThat(findOrderItemById1.getItemFindDto().getId()).isEqualTo(itemTestId);
-        assertThat(findOrderItemById1.getPrice()).isEqualTo(10000);
+        assertThat(findOrderItemById1.getPrice()).isEqualTo(10000L);
         assertThat(findOrderItemById1.getCount()).isEqualTo(1);
 
         assertThat(findOrderItemById2.getItemFindDto().getId()).isEqualTo(itemTestId);
-        assertThat(findOrderItemById2.getPrice()).isEqualTo(9999);
+        assertThat(findOrderItemById2.getPrice()).isEqualTo(9999L);
         assertThat(findOrderItemById2.getCount()).isEqualTo(10);
 
         //주문 상품 개수 확인
@@ -210,25 +208,25 @@ public class OrderItemServiceTest {
         Long createdOrderItemId1 = orderItemService.createOrderItem(OrderItemCreationDto.builder()
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(10000)
-                .count(99)
+                .price(10000L)
+                .count(99L)
                 .build());
 
         //같은 상품으로 주문 상품 생성
         Long createdOrderItemId2 = orderItemService.createOrderItem(OrderItemCreationDto.builder()
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(10000)
-                .count(1)
+                .price(10000L)
+                .count(1L)
                 .build());
 
         //when
         //생성된 주문 상품 조회
-        OrderItemFindDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId1);
+        OrderItemFindDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId1, orderTestId);
 
         //then
         assertThat(findOrderItemById1.getItemFindDto().getId()).isEqualTo(itemTestId);
-        assertThat(findOrderItemById1.getPrice()).isEqualTo(10000);
+        assertThat(findOrderItemById1.getPrice()).isEqualTo(10000L);
         assertThat(findOrderItemById1.getCount()).isEqualTo(100);
 
         //주문 상품 개수 확인
@@ -249,30 +247,30 @@ public class OrderItemServiceTest {
         Long createdOrderItemId1 = orderItemService.createOrderItem(OrderItemCreationDto.builder()
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(10000)
-                .count(1)
+                .price(10000L)
+                .count(1L)
                 .build());
 
         //같은 상품으로 주문 상품 생성
         Long createdOrderItemId2 = orderItemService.createOrderItem(OrderItemCreationDto.builder()
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(8000)
-                .count(1)
+                .price(8000L)
+                .count(1L)
                 .build());
 
         //when
         //생성된 주문 상품 조회
-        OrderItemFindDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId1);
-        OrderItemFindDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId2);
+        OrderItemFindDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId1, orderTestId);
+        OrderItemFindDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId2, orderTestId);
 
         //then
         assertThat(findOrderItemById1.getItemFindDto().getId()).isEqualTo(itemTestId);
-        assertThat(findOrderItemById1.getPrice()).isEqualTo(10000);
+        assertThat(findOrderItemById1.getPrice()).isEqualTo(10000L);
         assertThat(findOrderItemById1.getCount()).isEqualTo(1);
 
         assertThat(findOrderItemById2.getItemFindDto().getId()).isEqualTo(itemTestId);
-        assertThat(findOrderItemById2.getPrice()).isEqualTo(8000);
+        assertThat(findOrderItemById2.getPrice()).isEqualTo(8000L);
         assertThat(findOrderItemById2.getCount()).isEqualTo(1);
 
         //주문 상품 개수 확인
@@ -292,29 +290,29 @@ public class OrderItemServiceTest {
         Long createdOrderItemId1 = orderItemService.createOrderItem(OrderItemCreationDto.builder()
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(10000)
-                .count(50)
+                .price(10000L)
+                .count(50L)
                 .build());
 
         Long createdOrderItemId2 = orderItemService.createOrderItem(OrderItemCreationDto.builder()
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(8000)
-                .count(50)
+                .price(8000L)
+                .count(50L)
                 .build());
 
         //when
         //생성된 주문 상품 조회
-        OrderItemFindDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId1);
-        OrderItemFindDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId2);
+        OrderItemFindDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId1, orderTestId);
+        OrderItemFindDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemDtoByIdWithItemFindDto(createdOrderItemId2, orderTestId);
 
         //then
         assertThat(findOrderItemById1.getItemFindDto().getId()).isEqualTo(itemTestId);
-        assertThat(findOrderItemById1.getPrice()).isEqualTo(10000);
+        assertThat(findOrderItemById1.getPrice()).isEqualTo(10000L);
         assertThat(findOrderItemById1.getCount()).isEqualTo(50);
 
         assertThat(findOrderItemById2.getItemFindDto().getId()).isEqualTo(itemTestId);
-        assertThat(findOrderItemById2.getPrice()).isEqualTo(8000);
+        assertThat(findOrderItemById2.getPrice()).isEqualTo(8000L);
         assertThat(findOrderItemById2.getCount()).isEqualTo(50);
 
         //주문 상품 개수 확인
@@ -331,8 +329,8 @@ public class OrderItemServiceTest {
         assertThatThrownBy(() -> orderItemService.createOrderItem(OrderItemCreationDto.builder()
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(8000)
-                .count(1)
+                .price(8000L)
+                .count(1L)
                 .build()))
         .isInstanceOf(NotEnoughStockException.class);
     }
@@ -351,8 +349,8 @@ public class OrderItemServiceTest {
         assertThatThrownBy(() -> orderItemService.createOrderItem(OrderItemCreationDto.builder()
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(10000)
-                .count(50)
+                .price(10000L)
+                .count(50L)
                 .build()))
                 .isInstanceOf(StoreClosedException.class);
     }
@@ -365,8 +363,8 @@ public class OrderItemServiceTest {
         Long createdOrderItemId = orderItemService.createOrderItem(OrderItemCreationDto.builder()
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(10000)
-                .count(50)
+                .price(10000L)
+                .count(50L)
                 .build());
 
         //주문 수정(수량 줄이기)
@@ -374,14 +372,14 @@ public class OrderItemServiceTest {
                 .id(createdOrderItemId)
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(10000)
-                .count(49)
+                .price(10000L)
+                .count(49L)
                 .build());
 
         //then
         //수정된 주문 조회
-        OrderItemFindDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(savedOrderItemId1);
-        assertThat(findOrderItemById1.getPrice()).isEqualTo(10000);
+        OrderItemFindDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(savedOrderItemId1, orderTestId);
+        assertThat(findOrderItemById1.getPrice()).isEqualTo(10000L);
         assertThat(findOrderItemById1.getCount()).isEqualTo(49);
 
         ItemFindDto findItemDtoById1 = itemService.findItemDtoById(itemTestId);
@@ -392,13 +390,13 @@ public class OrderItemServiceTest {
                 .id(createdOrderItemId)
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(10000)
-                .count(51)
+                .price(10000L)
+                .count(51L)
                 .build());
 
         //수정된 주문 조회
-        OrderItemFindDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemDtoByIdWithItemFindDto(savedOrderItemId2);
-        assertThat(findOrderItemById2.getPrice()).isEqualTo(10000);
+        OrderItemFindDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemDtoByIdWithItemFindDto(savedOrderItemId2, orderTestId);
+        assertThat(findOrderItemById2.getPrice()).isEqualTo(10000L);
         assertThat(findOrderItemById2.getCount()).isEqualTo(51);
 
         ItemFindDto findItemDtoById2 = itemService.findItemDtoById(itemTestId);
@@ -412,8 +410,8 @@ public class OrderItemServiceTest {
         Long createdOrderItemId = orderItemService.createOrderItem(OrderItemCreationDto.builder()
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(10000)
-                .count(50)
+                .price(10000L)
+                .count(50L)
                 .build());
 
         //주문 삭제
@@ -421,13 +419,13 @@ public class OrderItemServiceTest {
                 .id(createdOrderItemId)
                 .orderId(orderTestId)
                 .itemId(itemTestId)
-                .price(10000)
-                .count(50)
+                .price(10000L)
+                .count(50L)
                 .build());
 
         //then
         //주문 삭제 확인
-        assertThatThrownBy(() -> orderItemService.findOrderItemDtoById(createdOrderItemId)).isInstanceOf(OrderItemException.class);
+        assertThatThrownBy(() -> orderItemService.findOrderItemDtoById(createdOrderItemId, orderTestId)).isInstanceOf(OrderItemException.class);
 
         //재고 확인
         ItemFindDto findItemDtoById = itemService.findItemDtoById(itemTestId);
@@ -435,7 +433,7 @@ public class OrderItemServiceTest {
         
         //주문 삭제 확인
         OrderItem orderItem = orderItemRepository.findById(createdOrderItemId)
-                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
+                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderTestId));
         assertThat(orderItem.getOrderItemStatus()).isEqualTo(OrderItemStatus.DELETED);
     }
     

@@ -14,6 +14,7 @@ import site.mylittlestore.enumstorage.errormessage.OrderErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
+import site.mylittlestore.enumstorage.status.PaymentStatus;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.orderitem.OrderItemException;
 import site.mylittlestore.exception.payment.PaymentAlreadyExistException;
@@ -59,7 +60,7 @@ public class PaymentService {
         Store store = order.getStore();
 
         //가게가 열려있는지 확인
-        //정산 중인지 확인
+        //결제 중인지 확인
         validateOrderItemChangeAbility(order, store);
 
         //Payment가 비어있으면
@@ -68,7 +69,7 @@ public class PaymentService {
         List<OrderItem> allByOrderId = orderItemRepository.findAllByOrderId(orderId);
         //주문 상품이 없으면 예외 발생
         if (allByOrderId.isEmpty()) {
-            throw new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage());
+            throw new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), order.getId());
         }
 
         //합계 계산
@@ -91,14 +92,40 @@ public class PaymentService {
                 .build();
     }
 
+    @Transactional
+    public Long confirmPayment(Long paymentId, Long orderId, Long desiredPaymentAmount) {
+        Order order = findOrderWithStoreById(orderId);
+        Store store = order.getStore();
+
+        //가게가 열려있는지 확인
+        if (store.getStoreStatus().equals(StoreStatus.CLOSE)) {
+            throw new StoreClosedException(StoreErrorMessage.STORE_CLOSED.getMessage(), store.getId());
+        }
+
+        //결제를 찾는다.
+        Payment payment = paymentRepository.findNotSuccessById(paymentId)
+                //없으면 예외 발생
+                .orElseThrow(() -> new PaymentException(PaymentErrorMessage.NO_SUCH_PAYMENT.getMessage()));
+
+        //원하는 결제 금액 기록
+        //원하는 결제 금액이 초기 결제 금액과 같거나 작은지 확인
+        payment.setDesiredPaymentAmount(desiredPaymentAmount);
+
+        //문제 없으면
+        //결제 상태를 결제 중으로 변경
+        payment.changePaymentStatus(PaymentStatus.IN_PROCESS);
+
+        return payment.getId();
+    }
+
     private static void validateOrderItemChangeAbility(Order order, Store store) {
         //가게가 열려있는지 확인
         if (store.getStoreStatus().equals(StoreStatus.CLOSE)) {
             throw new StoreClosedException(StoreErrorMessage.STORE_CLOSED.getMessage(), store.getId());
         }
 
-        //정산 중인지 확인
-        //정산 중이면 예외 발생
+        //결제 중인지 확인
+        //결제 중이면 예외 발생
         if (order.getPayment() != null) {
             throw new PaymentAlreadyExistException(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage(), order.getPayment().getId(), order.getStoreTable().getId(), order.getId());
         }

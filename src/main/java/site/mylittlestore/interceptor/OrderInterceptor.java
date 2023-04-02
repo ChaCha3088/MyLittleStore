@@ -32,7 +32,7 @@ public class OrderInterceptor implements HandlerInterceptor {
         Long storeTableId = (Long) pathVariables.get("storeTableId");
         Long orderId = (Long) pathVariables.get("orderId");
 
-        //이미 정산중이면 정산 페이지로 redirect
+        //이미 결제중이면 결제 페이지로 redirect
         boolean paymentStarted = isPaymentStarted(memberId, storeId, storeTableId, orderId, response);
         if (!paymentStarted) {
             return false;
@@ -48,8 +48,8 @@ public class OrderInterceptor implements HandlerInterceptor {
     }
 
     private boolean isPaymentStarted(Long memberId, Long storeId, Long storeTableId, Long orderId, HttpServletResponse response) throws IOException {
-        //이미 정산중이면 정산 페이지로 redirect
-        //진행중인 정산이 존재하면
+        //이미 결제중이면 결제 페이지로 redirect
+        //진행중인 결제가 존재하면
         OrderDto orderDtoById = orderService.findOrderDtoById(orderId);
         if (orderDtoById.getPaymentId() != null) {
             Message message = Message.builder()

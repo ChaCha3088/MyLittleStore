@@ -89,15 +89,15 @@ public class OrderItemControllerTest {
         Long newItemId1 = storeService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest1")
-                .price(10000)
-                .stock(100)
+                .price(10000L)
+                .stock(100L)
                 .build());
 
         Long newItemId2 = storeService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest2")
-                .price(5000)
-                .stock(50)
+                .price(5000L)
+                .stock(50L)
                 .build());
 
         //가게 열기
@@ -177,7 +177,7 @@ public class OrderItemControllerTest {
                 .andExpect(view().name("orderItems/orderItemInfo"));
 
         //then
-        OrderItemFindDto findOrderItemFindDtoById = orderItemService.findOrderItemDtoById(6L);
+        OrderItemFindDto findOrderItemFindDtoById = orderItemService.findOrderItemDtoById(6L, orderTestId);
         assertThat(findOrderItemFindDtoById.getPrice()).isEqualTo(10000);
         assertThat(findOrderItemFindDtoById.getCount()).isEqualTo(100);
         assertThat(findOrderItemFindDtoById.getItemId()).isEqualTo(itemTestId1);
@@ -206,7 +206,7 @@ public class OrderItemControllerTest {
                 .andExpect(view().name("redirect:/members/"+memberTestId+"/stores/"+storeTestId+"/orders/"+orderTestId+"/orderItems/8"));
 
         //then
-        OrderItemFindDto findOrderItemDtoById1 = orderItemService.findOrderItemDtoById(8L);
+        OrderItemFindDto findOrderItemDtoById1 = orderItemService.findOrderItemDtoById(8L, orderTestId);
         assertThat(findOrderItemDtoById1.getPrice()).isEqualTo(5000);
         assertThat(findOrderItemDtoById1.getCount()).isEqualTo(50);
         assertThat(findOrderItemDtoById1.getItemId()).isEqualTo(itemTestId1);
@@ -223,7 +223,7 @@ public class OrderItemControllerTest {
                 .andExpect(view().name("redirect:/members/"+memberTestId+"/stores/"+storeTestId+"/orders/"+orderTestId+"/orderItems/8"));
 
         //then
-        OrderItemFindDto findOrderItemDtoById2 = orderItemService.findOrderItemDtoById(8L);
+        OrderItemFindDto findOrderItemDtoById2 = orderItemService.findOrderItemDtoById(8L, orderTestId);
         assertThat(findOrderItemDtoById2.getPrice()).isEqualTo(7500);
         assertThat(findOrderItemDtoById2.getCount()).isEqualTo(75);
 
@@ -254,7 +254,7 @@ public class OrderItemControllerTest {
                 .andExpect(view().name("redirect:/members/" + memberTestId + "/stores/" + storeTestId + "/orders/" + orderTestId));
 
         //then
-        assertThatThrownBy(() -> orderItemService.findOrderItemDtoById(orderItemId))
+        assertThatThrownBy(() -> orderItemService.findOrderItemDtoById(orderItemId, orderTestId))
                 .isInstanceOf(OrderItemException.class)
                 .hasMessageContaining(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage());
 

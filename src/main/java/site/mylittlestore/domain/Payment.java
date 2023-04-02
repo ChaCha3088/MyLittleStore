@@ -4,6 +4,7 @@ import lombok.*;
 import site.mylittlestore.dto.payment.PaymentDto;
 import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.status.PaymentStatus;
+import site.mylittlestore.exception.PaymentAmountException;
 import site.mylittlestore.exception.payment.PaymentException;
 
 import javax.persistence.*;
@@ -51,9 +52,13 @@ public class Payment {
     //-- 비즈니스 로직 --//
     public void setDesiredPaymentAmount(Long desiredPaymentAmount) {
         if (desiredPaymentAmount > this.initialPaymentAmount) {
-            throw new PaymentException(PaymentErrorMessage.DESIRED_PAYMENT_AMOUNT_CANNOT_BE_GREATER_THAN_INITIAL_PAYMENT_AMOUNT.getMessage());
+            throw new PaymentAmountException(PaymentErrorMessage.DESIRED_PAYMENT_AMOUNT_CANNOT_BE_GREATER_THAN_INITIAL_PAYMENT_AMOUNT.getMessage());
         }
         this.desiredPaymentAmount = desiredPaymentAmount;
+    }
+
+    public void changePaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
 
     public void finishPayment(Long paidPaymentAmount) {

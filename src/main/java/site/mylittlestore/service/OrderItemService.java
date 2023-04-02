@@ -37,10 +37,10 @@ public class OrderItemService {
 
     private final ItemRepository itemRepository;
 
-    public OrderItemFindDto findOrderItemDtoById(Long orderItemId) {
+    public OrderItemFindDto findOrderItemDtoById(Long orderItemId, Long orderId) {
         return orderItemRepository.findById(orderItemId)
                 //주문 상품이 없으면 예외 발생
-                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()))
+                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderId))
                 //Dto로 변환
                 .toOrderItemDto();
     }
@@ -53,12 +53,12 @@ public class OrderItemService {
                 .collect(Collectors.toList());
     }
 
-    public OrderItemFindDtoWithItemFindDto findOrderItemDtoByIdWithItemFindDto(Long orderItemId) throws OrderItemException {
+    public OrderItemFindDtoWithItemFindDto findOrderItemDtoByIdWithItemFindDto(Long orderItemId, Long orderId) throws OrderItemException {
         Optional<OrderItem> findOrderItemById = orderItemRepository.findWithItemById(orderItemId);
 
         return findOrderItemById
                 //주문 상품이 없으면 예외 발생
-                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()))
+                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderId))
                 //Dto로 변환
                 .toOrderItemDtoWithItemFindDto();
     }
@@ -88,7 +88,7 @@ public class OrderItemService {
         Store store = order.getStore();
 
         //가게가 열려있는지 확인
-        //정산 중인지 확인
+        //결제 중인지 확인
         validateOrderItemChangeAbility(order, store);
 
         try {
@@ -132,7 +132,7 @@ public class OrderItemService {
 
     /**
      * 가게가 열려있는지 확인
-     * 정산 중인지 확인
+     * 결제 중인지 확인
      * @param order
      * @param store
      */
@@ -142,8 +142,8 @@ public class OrderItemService {
             throw new StoreClosedException(StoreErrorMessage.STORE_CLOSED.getMessage(), store.getId());
         }
 
-        //정산 중인지 확인
-        //정산 중이면 예외 발생
+        //결제 중인지 확인
+        //결제 중이면 예외 발생
         if (order.getPayment() != null) {
             throw new PaymentAlreadyExistException(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage(), order.getPayment().getId(), order.getStoreTable().getId(), order.getId());
         }
@@ -166,7 +166,7 @@ public class OrderItemService {
         Store store = order.getStore();
 
         //가게가 열려있는지 확인
-        //정산 중인지 확인
+        //결제 중인지 확인
         validateOrderItemChangeAbility(order, store);
 
         //주문에 상품 Id와 가격이 같은 주문 상품이 존재하는지 확인
@@ -197,7 +197,7 @@ public class OrderItemService {
         Store store = order.getStore();
 
         //가게가 열려있는지 확인
-        //정산 중인지 확인
+        //결제 중인지 확인
         validateOrderItemChangeAbility(order, store);
 
         //주문에 상품 Id, 상품 가격이 같은 주문 상품이 존재하는지 확인하고 삭제
@@ -227,14 +227,14 @@ public class OrderItemService {
         //주문 상품에 주문 Id, 상품 Id, 가격이 같은 상품이 존재하는지 확인
         //해당 조건을 만족하는 주문 상품이 없으면 예외 발생
         return orderItemRepository.findByOrderIdAndItemIdAndPrice(orderId, itemId, price)
-                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
+                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderId));
     }
 
     private OrderItem validateOrderItemExistenceWithOrderIdAndOrderItemIdAndItemIdAndPrice(Long orderId, Long orderItemId, Long itemId, Long price) {
         //주문 상품에 주문 Id, 주문 상품 Id, 상품 Id, 가격이 같은 상품이 존재하는지 확인
         //해당 조건을 만족하는 상품이 없으면 예외 발생
         return orderItemRepository.findByOrderIdAndOrderItemIdAndItemIdAndPrice(orderId, orderItemId, itemId, price)
-                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage()));
+                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderId));
     }
 
 //    private OrderItem validateOrderItemExistenceWithItemIdAndPrice(Long orderId, Long itemId, Long price) throws NoSuchOrderException, NoSuchOrderItemException {

@@ -8,7 +8,7 @@
 
     <div>
         <div class="py-5 text-center">
-            <h2>정산 확인</h2>
+            <h2>주문 확인</h2>
         </div>
 
         <h3>주문 내역</h3>
@@ -39,7 +39,7 @@
             <p>할인을 원하는 경우 총 합계를 수정해주세요.</p>
             <p th:if="${#fields.hasErrors('desiredPaymentAmount')}" th:errors="*{desiredPaymentAmount}">부적절한 합계입니다.</p>
         </div>
-        <button class="btn btn-secondary" th:href="@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/payments/{paymentId}/cancel(memberId = ${memberId}, storeId = ${storeId}, storeTableId = ${storeTableId}, orderId = ${orderId}, paymentId = ${paymentViewDto.id})}">정산 취소</button>
+        <button class="btn btn-secondary" th:href="@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/payments/{paymentId}/cancel(memberId = ${memberId}, storeId = ${storeId}, storeTableId = ${storeTableId}, orderId = ${orderId}, paymentId = ${paymentViewDto.id})}">결제 취소</button>
         <button type="submit" class="btn btn-success">완료</button>
     </form>
 

@@ -32,7 +32,7 @@ public class OrderController {
         try {
             OrderDto orderDto = orderService.findOrderDtoById(orderId);
 
-            //Order가 정산 중이면 정산 페이지로 redirect
+            //Order가 결제 중이면 결제 페이지로 redirect
             if (orderDto.getPaymentId() != null) {
                 return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/payments/" + orderDto.getPaymentId();
             }
