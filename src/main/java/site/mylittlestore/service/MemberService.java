@@ -121,7 +121,11 @@ public class MemberService {
         Store createdStore = Store.builder()
                 .member(findMemberById)
                 .name(storeDtoWithStoreTableFindDtosAndItemFindDtos.getName())
-                .address(storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto())
+                .address(Address.builder()
+                        .city(storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto().getCity())
+                        .street(storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto().getStreet())
+                        .zipcode(storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto().getZipcode())
+                        .build())
                 .build();
 
         Member updatedMember = findMemberById.createStore(createdStore);
@@ -174,7 +178,7 @@ public class MemberService {
         //가게 상태 변경
         if (findStore.getStoreStatus() == StoreStatus.OPEN) {
             findStore.changeStoreStatus(StoreStatus.CLOSE);
-        } else if (findStore.getStoreStatus().equals(StoreStatus.CLOSE.toString()))) {
+        } else if (findStore.getStoreStatus().equals(StoreStatus.CLOSE.toString())) {
             findStore.changeStoreStatus(StoreStatus.OPEN);
         }
 

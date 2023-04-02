@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import site.mylittlestore.dto.order.OrderDto;
+import site.mylittlestore.dto.payment.PaymentViewDto;
 import site.mylittlestore.dto.store.StoreDto;
 import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
@@ -68,15 +69,5 @@ public class OrderController {
         } catch (OrderAlreadyExistException e) {
             return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + e.getOrderId();
         }
-    }
-
-    @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/payment/new")
-    public String createPaymentForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, Model model) {
-        //이미 정산중이면 정산 페이지로 redirect
-        OrderDto orderDtoById = orderService.findOrderDtoById(orderId);
-        if (orderDtoById.getPaymentId() != null) {
-            return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/payment/" + orderDtoById.getPaymentId();
-        }
-
     }
 }

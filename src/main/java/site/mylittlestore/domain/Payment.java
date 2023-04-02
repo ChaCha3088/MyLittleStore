@@ -1,6 +1,7 @@
 package site.mylittlestore.domain;
 
 import lombok.*;
+import site.mylittlestore.dto.payment.PaymentDto;
 import site.mylittlestore.enumstorage.status.PaymentStatus;
 
 import javax.persistence.*;
@@ -41,4 +42,17 @@ public class Payment {
         this.initialPaymentAmount = initialPaymentAmount;
         this.paymentStatus = PaymentStatus.INIT;
     }
+
+    //-- Dto --//
+    public PaymentDto toPaymentDto() {
+        return PaymentDto.builder()
+                .id(this.id)
+                .paymentMethods(this.paymentMethods)
+                .initialPaymentAmount(this.initialPaymentAmount)
+                .finalPaymentAmount(this.finalPaymentAmount)
+                .completeDateTime(this.completeDateTime)
+                .paymentStatus(this.paymentStatus)
+                .build();
+    }
+
 }

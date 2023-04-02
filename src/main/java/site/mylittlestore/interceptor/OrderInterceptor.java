@@ -2,7 +2,6 @@ package site.mylittlestore.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.ui.Model;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import site.mylittlestore.dto.order.OrderDto;
@@ -19,7 +18,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class OrderItemInterceptor implements HandlerInterceptor {
+public class OrderInterceptor implements HandlerInterceptor {
     private final OrderService orderService;
     private final StoreService storeService;
 
@@ -33,11 +32,13 @@ public class OrderItemInterceptor implements HandlerInterceptor {
         Long storeTableId = (Long) pathVariables.get("storeTableId");
         Long orderId = (Long) pathVariables.get("orderId");
 
+        //이미 정산중이면 정산 페이지로 redirect
         boolean paymentStarted = isPaymentStarted(memberId, storeId, storeTableId, orderId, response);
         if (!paymentStarted) {
             return false;
         }
 
+        //가게가 닫혀있으면, 가게 정보 페이지로 redirect
         boolean storeOpen = isStoreOpen(memberId, storeId, response);
         if (!storeOpen) {
             return false;
@@ -69,7 +70,7 @@ public class OrderItemInterceptor implements HandlerInterceptor {
     }
 
     private boolean isStoreOpen(Long memberId, Long storeId, HttpServletResponse response) throws IOException {
-        //가게가 닫혀있으면, 가게를 열어야합니다. 메시지 출력
+        //가게가 닫혀있으면, 가게 정보 페이지로 redirect
         if (storeService.findStoreDtoById(storeId).getStoreStatus().equals(StoreStatus.CLOSE.toString())) {
             Message message = Message.builder()
                     .message(StoreErrorMessage.STORE_CLOSED.getMessage())

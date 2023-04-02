@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.*;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.order.OrderDto;
+import site.mylittlestore.dto.payment.PaymentViewDto;
 import site.mylittlestore.enumstorage.errormessage.*;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.item.NoSuchItemException;
@@ -25,6 +26,7 @@ import site.mylittlestore.repository.storetable.StoreTableRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -96,44 +98,6 @@ public class OrderService {
         Order savedOrder = orderRepository.save(createOrder);
 
         return savedOrder.getId();
-    }
-
-    @Transactional
-    public Long startPayment(Long orderId) {
-        Order usingById = orderRepository.findUsingById(orderId)
-                .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
-
-        //Order안에 Payment가 있는지 확인
-
-        //Payment가 있으면
-        //결제가 이미 진행중이라는 뜻
-        //Payment Id 반환
-        if (usingById.getPayment() != null) {
-            return usingById.getPayment().getId();
-        }
-
-        //Payment가 비어있으면
-        //Payment 생성
-        //주문에 있는 주문 상품을 모두 찾는다.
-        List<OrderItem> allByOrderId = orderItemRepository.findAllByOrderId(orderId);
-        //주문 상품이 없으면 예외 발생
-        if (allByOrderId.isEmpty()) {
-            throw new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage());
-        }
-
-        //합계 계산
-        AtomicLong totalAmount = new AtomicLong(0);
-        allByOrderId.stream().map(orderItem -> totalAmount.getAndAdd(orderItem.getPrice() * orderItem.getPrice()));
-
-        //Payment 생성
-        Payment createdPayment = Payment.builder()
-                .initialPaymentAmount(totalAmount.get())
-                .build();
-
-        //저장
-        Payment payment = paymentRepository.save(createdPayment);
-
-        return payment.getId();
     }
 
     private Store findStoreByStoreId(Long storeId) throws NoSuchStoreException {

@@ -4,16 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import site.mylittlestore.interceptor.OrderItemInterceptor;
+import site.mylittlestore.interceptor.OrderInterceptor;
 
 @Configuration
 @RequiredArgsConstructor
 public class WebMvcConfiguration implements WebMvcConfigurer {
-    private final OrderItemInterceptor orderItemInterceptor;
+    private final OrderInterceptor orderInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(orderItemInterceptor)
-                .addPathPatterns("/members/*/stores/*/storeTables/*/orders/*/orderItems/*");
+        registry.addInterceptor(orderInterceptor)
+                .addPathPatterns("/members/*/stores/*/storeTables/*/orders/*");
     }
 }

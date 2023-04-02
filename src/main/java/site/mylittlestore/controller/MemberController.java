@@ -47,7 +47,7 @@ public class MemberController {
     }
 
     @GetMapping("/members/new")
-    public String createMemberForm(Model model) {
+    public String memberCreationForm(Model model) {
         model.addAttribute("memberCreationForm", new MemberCreationForm());
 
         return "members/memberCreationForm";
@@ -75,7 +75,7 @@ public class MemberController {
     }
 
     @GetMapping("/members/{memberId}/update")
-    public String updateMemberForm(@PathVariable("memberId") Long memberId, Model model) {
+    public String memberUpdateForm(@PathVariable("memberId") Long memberId, Model model) {
         model.addAttribute("memberFindDto", memberService.findMemberFindDtoByMemberId(memberId));
         model.addAttribute("memberUpdateForm", new MemberUpdateForm());
 
