@@ -5,14 +5,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
 
 import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class OrderItemDtoWithItemFindDto {
+public class OrderItemFindDtoWithItemFindDto {
 
     private Long id;
     private Long storeId;
@@ -21,12 +20,13 @@ public class OrderItemDtoWithItemFindDto {
     private String itemName;
     private Long price;
     private Long count;
-    private LocalDateTime time;
+    private LocalDateTime orderedTime;
+    private LocalDateTime updatedTime;
     private String orderItemStatus;
 
     @Builder
     @QueryProjection
-    public OrderItemDtoWithItemFindDto(Long id, Long storeId, Long orderId, ItemFindDto itemFindDto, String itemName, Long price, Long count, LocalDateTime time, String orderItemStatus) {
+    public OrderItemFindDtoWithItemFindDto(Long id, Long storeId, Long orderId, ItemFindDto itemFindDto, String itemName, Long price, Long count, LocalDateTime orderedTime, LocalDateTime updatedTime, String orderItemStatus) {
         this.id = id;
         this.storeId = storeId;
         this.orderId = orderId;
@@ -34,7 +34,8 @@ public class OrderItemDtoWithItemFindDto {
         this.itemName = itemName;
         this.price = price;
         this.count = count;
-        this.time = time;
+        this.orderedTime = orderedTime;
+        this.updatedTime = updatedTime;
         this.orderItemStatus = orderItemStatus;
     }
 }

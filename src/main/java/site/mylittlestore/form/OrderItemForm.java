@@ -7,7 +7,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Getter
-@Setter
 public class OrderItemForm {
     @NotNull(message = "주문 상품 Id는 필수입니다.")
     private Long id;

@@ -34,7 +34,7 @@ public class MemberController {
 
         model.addAttribute("memberFindDtos", findAllMemberFindDto);
 
-        return "members/memberList";
+        return "member/memberList";
     }
 
     @GetMapping("/members/{memberId}")
@@ -43,21 +43,21 @@ public class MemberController {
         List<StoreDtoWithStoreTableFindDtosAndItemFindDtos> findAllStoreDtoByMemberIdWithStoreTableFindDtosAndItemFindDtos = storeService.findAllStoreDtoByMemberId(memberId);
         model.addAttribute("memberFindDto", memberFindDto);
         model.addAttribute("storeDtos", findAllStoreDtoByMemberIdWithStoreTableFindDtosAndItemFindDtos);
-        return "members/memberInfo";
+        return "member/memberInfo";
     }
 
     @GetMapping("/members/new")
     public String memberCreationForm(Model model) {
         model.addAttribute("memberCreationForm", new MemberCreationForm());
 
-        return "members/memberCreationForm";
+        return "member/memberCreationForm";
     }
 
     @PostMapping("/members/new")
     public String createMember(@RequestBody @Valid MemberCreationForm memberCreationForm, BindingResult result) {
 
         if (result.hasErrors()) {
-            return "members/memberCreationForm";
+            return "member/memberCreationForm";
         }
 
         Long savedMemberId = memberService.joinMember(MemberCreationDto.builder()
@@ -79,7 +79,7 @@ public class MemberController {
         model.addAttribute("memberFindDto", memberService.findMemberFindDtoByMemberId(memberId));
         model.addAttribute("memberUpdateForm", new MemberUpdateForm());
 
-        return "members/memberUpdateForm";
+        return "member/memberUpdateForm";
     }
 
     @PostMapping("/members/{memberId}/update")
@@ -87,7 +87,7 @@ public class MemberController {
 
         if (result.hasErrors()) {
             model.addAttribute("memberFindDto", memberService.findMemberFindDtoByMemberId(memberId));
-            return "members/memberUpdateForm";
+            return "member/memberUpdateForm";
         }
 
         Long savedMemberId = memberService.updateMember(MemberUpdateDto.builder()

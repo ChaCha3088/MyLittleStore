@@ -6,15 +6,20 @@ import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Order;
 import site.mylittlestore.domain.OrderItem;
 import site.mylittlestore.domain.Payment;
+import site.mylittlestore.domain.Store;
 import site.mylittlestore.dto.payment.PaymentDto;
 import site.mylittlestore.dto.payment.PaymentViewDto;
 import site.mylittlestore.enumstorage.PaymentMethodType;
 import site.mylittlestore.enumstorage.errormessage.OrderErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
+import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
+import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.orderitem.OrderItemException;
+import site.mylittlestore.exception.payment.PaymentAlreadyExistException;
 import site.mylittlestore.exception.payment.PaymentException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
+import site.mylittlestore.exception.store.StoreClosedException;
 import site.mylittlestore.repository.order.OrderRepository;
 import site.mylittlestore.repository.orderitem.OrderItemRepository;
 import site.mylittlestore.repository.payment.PaymentRepository;
@@ -50,19 +55,12 @@ public class PaymentService {
 
     @Transactional
     public PaymentViewDto startPayment(Long orderId) {
-        Order usingById = orderRepository.findUsingById(orderId)
-                .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
+        Order order = findOrderWithStoreById(orderId);
+        Store store = order.getStore();
 
-        //Order안에 Payment가 있는지 확인
-
-        //Payment가 있으면
-        //결제가 이미 진행중이라는 뜻
-        //Payment Id 반환
-        if (usingById.getPayment() != null) {
-            return PaymentViewDto.builder()
-                    .id(usingById.getPayment().getId())
-                    .build();
-        }
+        //가게가 열려있는지 확인
+        //정산 중인지 확인
+        validateOrderItemChangeAbility(order, store);
 
         //Payment가 비어있으면
         //Payment 생성
@@ -87,9 +85,28 @@ public class PaymentService {
 
         return PaymentViewDto.builder()
                 .id(payment.getId())
-                .orderDto(usingById.toOrderDto())
+                .orderDto(order.toOrderDto())
                 .orderItemFindDtos(allByOrderId.stream().map(orderItem -> orderItem.toOrderItemDto()).collect(Collectors.toList()))
                 .initialPaymentAmount(initialPaymentAmount.get())
                 .build();
+    }
+
+    private static void validateOrderItemChangeAbility(Order order, Store store) {
+        //가게가 열려있는지 확인
+        if (store.getStoreStatus().equals(StoreStatus.CLOSE)) {
+            throw new StoreClosedException(StoreErrorMessage.STORE_CLOSED.getMessage(), store.getId());
+        }
+
+        //정산 중인지 확인
+        //정산 중이면 예외 발생
+        if (order.getPayment() != null) {
+            throw new PaymentAlreadyExistException(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage(), order.getPayment().getId(), order.getStoreTable().getId(), order.getId());
+        }
+    }
+
+    private Order findOrderWithStoreById(Long orderId) {
+        Order order = orderRepository.findOrderWithStoreById(orderId)
+                .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
+        return order;
     }
 }

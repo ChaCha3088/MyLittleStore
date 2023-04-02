@@ -53,7 +53,7 @@ public class OrderItemService {
                 .collect(Collectors.toList());
     }
 
-    public OrderItemDtoWithItemFindDto findOrderItemDtoByIdWithItemFindDto(Long orderItemId) throws OrderItemException {
+    public OrderItemFindDtoWithItemFindDto findOrderItemDtoByIdWithItemFindDto(Long orderItemId) throws OrderItemException {
         Optional<OrderItem> findOrderItemById = orderItemRepository.findWithItemById(orderItemId);
 
         return findOrderItemById
@@ -83,7 +83,7 @@ public class OrderItemService {
     @Transactional
     public Long createOrderItem(OrderItemCreationDto orderItemCreationDto) throws NoSuchStoreException, StoreClosedException, NoSuchOrderException, NotEnoughStockException {
         //주문 Id로 주문을 찾는다.
-        Order order = findOrder(orderItemCreationDto.getOrderId());
+        Order order = findOrderWithStoreById(orderItemCreationDto.getOrderId());
 
         Store store = order.getStore();
 
@@ -145,7 +145,7 @@ public class OrderItemService {
         //정산 중인지 확인
         //정산 중이면 예외 발생
         if (order.getPayment() != null) {
-            throw new PaymentAlreadyExistException(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage(), order.getStoreTable().getId(), order.getId());
+            throw new PaymentAlreadyExistException(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage(), order.getPayment().getId(), order.getStoreTable().getId(), order.getId());
         }
     }
 
@@ -161,7 +161,7 @@ public class OrderItemService {
     @Transactional
     public Long updateOrderItemCount(OrderItemDto orderItemDto) throws NoSuchStoreException, StoreClosedException, OrderItemException {
         //주문 Id로 주문을 찾는다.
-        Order order = findOrder(orderItemDto.getOrderId());
+        Order order = findOrderWithStoreById(orderItemDto.getOrderId());
 
         Store store = order.getStore();
 
@@ -193,7 +193,7 @@ public class OrderItemService {
     public void deleteOrderItem(OrderItemDto orderItemDto) throws EmptyResultDataAccessException {
         OrderItemDto orderItemDto1 = orderItemDto;
 
-        Order order = findOrder(orderItemDto.getOrderId());
+        Order order = findOrderWithStoreById(orderItemDto.getOrderId());
         Store store = order.getStore();
 
         //가게가 열려있는지 확인
@@ -217,7 +217,7 @@ public class OrderItemService {
         }
     }
 
-    private Order findOrder(Long orderId) {
+    private Order findOrderWithStoreById(Long orderId) {
         Order order = orderRepository.findOrderWithStoreById(orderId)
                 .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
         return order;

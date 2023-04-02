@@ -20,7 +20,7 @@ public class StoreTableController {
         model.addAttribute("storeId", storeId);
         model.addAttribute("storeTableFindDtoWithOrderFindDtos", storeTableService.findAllStoreTableFindDtoWithOrderFindDtoByStoreId(storeId));
 
-        return "storeTables/storeTableList";
+        return "storeTable/storeTableList";
     }
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}")
@@ -36,7 +36,7 @@ public class StoreTableController {
         model.addAttribute("storeId", storeId);
         model.addAttribute("storeTableId", storeTableId);
         model.addAttribute("storeTableFindDto", storeTableFindDtoById);
-        return "storeTables/storeTableInfo";
+        return "storeTable/storeTableInfo";
     }
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/new")

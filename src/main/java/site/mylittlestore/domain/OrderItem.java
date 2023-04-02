@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import site.mylittlestore.domain.item.Item;
-import site.mylittlestore.dto.orderitem.OrderItemDtoWithItemFindDto;
+import site.mylittlestore.dto.orderitem.OrderItemFindDtoWithItemFindDto;
 import site.mylittlestore.dto.orderitem.OrderItemFindDto;
 import site.mylittlestore.entity.BaseEntity;
 import site.mylittlestore.enumstorage.status.OrderItemStatus;
@@ -58,7 +58,10 @@ public class OrderItem extends BaseEntity {
     private Long count;
 
     @NotNull
-    private LocalDateTime time;
+    private LocalDateTime orderedDateTime;
+
+    @NotNull
+    private LocalDateTime updatedDateTime;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -72,7 +75,8 @@ public class OrderItem extends BaseEntity {
         this.itemName = item.getName();
         this.price = price;
         this.count = count;
-        this.time = LocalDateTime.now();
+        this.orderedDateTime = LocalDateTime.now();
+        this.updatedDateTime = LocalDateTime.now();
         this.orderItemStatus = OrderItemStatus.ORDERED;
 
         //OrderItem 생성시 Item의 stock 감소
@@ -91,6 +95,7 @@ public class OrderItem extends BaseEntity {
 
     public void updatePrice(Long price) {
         this.price = price;
+        this.updatedDateTime = LocalDateTime.now();
     }
 
     public void updateCount(Long count) {
@@ -103,6 +108,7 @@ public class OrderItem extends BaseEntity {
         }
 
         this.count = count;
+        this.updatedDateTime = LocalDateTime.now();
     }
 
     //==연관관계 메소드==//
@@ -120,13 +126,14 @@ public class OrderItem extends BaseEntity {
                 .itemName(itemName)
                 .price(price)
                 .count(count)
-                .time(time)
+                .orderedTime(orderedDateTime)
+                .updatedTime(updatedDateTime)
                 .orderItemStatus(orderItemStatus.toString())
                 .build();
     }
 
-    public OrderItemDtoWithItemFindDto toOrderItemDtoWithItemFindDto() {
-        return OrderItemDtoWithItemFindDto.builder()
+    public OrderItemFindDtoWithItemFindDto toOrderItemDtoWithItemFindDto() {
+        return OrderItemFindDtoWithItemFindDto.builder()
                 .id(id)
                 .storeId(store.getId())
                 .orderId(order.getId())
@@ -134,7 +141,8 @@ public class OrderItem extends BaseEntity {
                 .itemName(itemName)
                 .price(price)
                 .count(count)
-                .time(time)
+                .orderedTime(orderedDateTime)
+                .updatedTime(updatedDateTime)
                 .orderItemStatus(orderItemStatus.toString())
                 .build();
     }

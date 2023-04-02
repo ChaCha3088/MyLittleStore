@@ -44,7 +44,7 @@
                 <tbody>
                 <tr th:each="orderItemFindDto : ${orderItemFindDtos}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}(memberId = ${memberId}, storeId = ${orderDto.storeId}, storeTableId = ${orderDto.storeId}, orderId = ${orderItemFindDto.orderId}, orderItemId = ${orderItemFindDto.id})}'|">
                     <td th:text="${orderItemFindDto.itemName}"></td>
-                    <td th:text="${orderItemFindDto.time}"></td>
+                    <td th:text="${orderItemFindDto.getOrderedTime}"></td>
                     <td th:text="${orderItemFindDto.price}"></td>
                     <td th:text="${orderItemFindDto.count}"></td>
                 </tbody>

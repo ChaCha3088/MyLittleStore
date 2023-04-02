@@ -50,7 +50,7 @@ public class OrderItemController {
 //        model.addAttribute("orderId", orderId);
 //        model.addAttribute("orderItemDtos", orderItemService.findAllOrderItemDtoWithItemNameByOrderIdOrderByTime(orderId));
 //
-//        return "orderItems/orderItemList";
+//        return "orderItem/orderItemList";
 //    }
 
 
@@ -64,7 +64,7 @@ public class OrderItemController {
         model.addAttribute("orderItemDtoWithItemFindDto", orderItemService.findOrderItemDtoByIdWithItemFindDto(orderItemId));
         model.addAttribute("orderItemForm", new OrderItemForm());
 
-        return "orderItems/orderItemInfo";
+        return "orderItem/orderItemInfo";
     }
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new")
@@ -77,14 +77,14 @@ public class OrderItemController {
         model.addAttribute("itemDtos", findAllItemCreationDtoByStoreId);
         model.addAttribute("orderItemCreationForm", new OrderItemCreationForm());
 
-        return "orderItems/orderItemCreationForm";
+        return "orderItem/orderItemCreationForm";
     }
 
     @PostMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new")
     public String createOrderItem(@PathVariable("memberId") Long memberId, @PathVariable Long storeId, @PathVariable Long storeTableId, @PathVariable Long orderId, @RequestBody @Valid OrderItemCreationForm orderItemCreationForm, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
-            return "orderItems/orderItemCreationForm";
+            return "orderItem/orderItemCreationForm";
         }
 
         try {
@@ -99,17 +99,17 @@ public class OrderItemController {
         } catch (PaymentAlreadyExistException e) {  //진행중인 정산이 존재하면, 정산이 시작되어 변경이 불가능합니다.
             //팝업 알림창
             model.addAttribute("messages", Message.builder()
-.message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage())
-.href("/members/" + memberId + "/stores/" + storeId + "/storeTables/" + e.getStoreTableId() + "/orders/" + e.getOrderId())
-.build());
-            return "messages/message";
+                    .message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage())
+                    .href("/members/" + memberId + "/stores/" + storeId + "/storeTables/" + e.getStoreTableId() + "/orders/" + e.getOrderId())
+                    .build());
+            return "message/message";
         } catch (StoreClosedException e) {  //가게가 닫혀있으면, 가게를 열어야합니다.
             //팝업 알림창
             model.addAttribute("messages", Message.builder()
-.message(StoreErrorMessage.STORE_CLOSED.getMessage())
-.href("/members/" + memberId + "/stores/" + storeId)
-.build());
-            return "messages/message";
+                    .message(StoreErrorMessage.STORE_CLOSED.getMessage())
+                    .href("/members/" + memberId + "/stores/" + storeId)
+                    .build());
+            return "message/message";
         }
     }
 
@@ -120,7 +120,7 @@ public class OrderItemController {
         model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
         model.addAttribute("orderItemForm", new OrderItemForm());
 
-        return "orderItems/orderItemUpdateForm";
+        return "orderItem/orderItemUpdateForm";
     }
 
 
@@ -129,7 +129,7 @@ public class OrderItemController {
     public String updateOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @RequestBody @Valid OrderItemForm orderItemForm, BindingResult result, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
-            return "orderItems/orderItemUpdateForm";
+            return "orderItem/orderItemUpdateForm";
         }
 
         try {
@@ -148,14 +148,14 @@ public class OrderItemController {
                     .message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage())
                     .href("/members/" + memberId + "/stores/" + storeId + "/storeTables/" + e.getStoreTableId() + "/orders/" + e.getOrderId())
                     .build());
-            return "messages/message";
+            return "message/message";
         } catch (StoreClosedException e) {  //가게가 닫혀있으면, 가게를 열어야합니다.
             //팝업 알림창
             model.addAttribute("messages", Message.builder()
 .message(StoreErrorMessage.STORE_CLOSED.getMessage())
 .href("/members/" + memberId + "/stores/" + storeId)
 .build());
-            return "messages/message";
+            return "message/message";
         }
     }
 
@@ -166,14 +166,14 @@ public class OrderItemController {
 //        model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId));
 //        model.addAttribute("orderItemDeleteForm", new OrderItemForm());
 //
-//        return "orderItems/orderItemDeleteForm";
+//        return "orderItem/orderItemDeleteForm";
 //    }
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/delete")
     public String orderItemDeleteConfirm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, Model model) {
         //팝업 확인창(주문 상품 삭제 확인창)
         model.addAttribute("messages", new Confirm(OrderItemErrorMessage.CONFIRM_DELETE_ORDER_ITEM.getMessage(), "/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/orderItems/" + orderItemId + "/delete", "/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId));
-        return "messages/confirm";
+        return "message/confirm";
     }
 
     @PostMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/delete")
@@ -195,14 +195,14 @@ public class OrderItemController {
 .message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage())
 .href("/members/" + memberId + "/stores/" + storeId + "/storeTables/" + e.getStoreTableId() + "/orders/" + e.getOrderId())
 .build());
-            return "messages/message";
+            return "message/message";
         } catch (StoreClosedException e) {  //가게가 닫혀있으면, 가게를 열어야합니다.
             //팝업 알림창
             model.addAttribute("messages", Message.builder()
 .message(StoreErrorMessage.STORE_CLOSED.getMessage())
 .href("/members/" + memberId + "/stores/" + storeId)
 .build());
-            return "messages/message";
+            return "message/message";
         }
     }
 }

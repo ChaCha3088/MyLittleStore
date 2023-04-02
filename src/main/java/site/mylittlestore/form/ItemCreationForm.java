@@ -8,7 +8,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
-@Setter
 public class ItemCreationForm {
     @NotBlank(message = "이름은 필수입니다.")
     private String name;

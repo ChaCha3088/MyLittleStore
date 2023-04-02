@@ -34,14 +34,14 @@ public class OrderController {
 
             //Order가 정산 중이면 정산 페이지로 redirect
             if (orderDto.getPaymentId() != null) {
-                return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/payment/" + orderDto.getPaymentId();
+                return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/payments/" + orderDto.getPaymentId();
             }
 
             model.addAttribute("memberId", memberId);
             model.addAttribute("orderDto", orderDto);
             model.addAttribute("orderItemFindDtos", orderItemService.findAllOrderItemFindDtoByOrderId(orderId));
 
-            return "orders/orderInfo";
+            return "order/orderInfo";
         } catch (NoSuchOrderException e) {
             return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId;
         }
@@ -58,7 +58,7 @@ public class OrderController {
                     .message(StoreErrorMessage.STORE_CLOSED.getMessage())
                     .href("/members/" + memberId + "/stores/" + storeId)
                     .build());
-            return "messages/message";
+            return "message/message";
         }
 
         //테이블에 주문이 이미 존재하면, 해당 주문으로 redirect

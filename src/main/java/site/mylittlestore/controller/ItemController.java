@@ -30,7 +30,7 @@ public class ItemController {
         model.addAttribute("memberId", memberId);
         model.addAttribute("itemDtos", findAllItemFindDtoByStoreId);
 
-        return "items/itemList";
+        return "item/itemList";
     }
 
     @GetMapping("/members/{memberId}/stores/{storeId}/items/{itemId}")
@@ -40,7 +40,7 @@ public class ItemController {
         model.addAttribute("itemId", itemId);
         model.addAttribute("itemFindDto", itemService.findItemDtoById(itemId));
 
-        return "items/itemInfo";
+        return "item/itemInfo";
     }
 
     @GetMapping("/members/{memberId}/stores/{storeId}/items/new")
@@ -49,14 +49,14 @@ public class ItemController {
         model.addAttribute("storeId", storeId);
         model.addAttribute("itemCreationForm", new ItemCreationForm());
 
-        return "items/itemCreationForm";
+        return "item/itemCreationForm";
     }
 
     @PostMapping("/members/{memberId}/stores/{storeId}/items/new")
     public String createItem(@PathVariable Long memberId, @PathVariable Long storeId, @RequestBody @Valid ItemCreationForm itemCreationForm, BindingResult result) {
 
         if (result.hasErrors()) {
-            return "items/itemCreationForm";
+            return "item/itemCreationForm";
         }
 
         Long createdItemId = storeService.createItem(ItemCreationDto.builder()
@@ -75,7 +75,7 @@ public class ItemController {
         model.addAttribute("itemFindDto", itemService.findItemDtoById(itemId));
         model.addAttribute("itemUpdateForm", new ItemUpdateForm());
 
-        return "items/itemUpdateForm";
+        return "item/itemUpdateForm";
     }
 
     @PostMapping("/members/{memberId}/stores/{storeId}/items/{itemId}/update")
@@ -83,7 +83,7 @@ public class ItemController {
 
         if (result.hasErrors()) {
             model.addAttribute("itemFindDto", itemService.findItemDtoById(storeId));
-            return "items/itemUpdateForm";
+            return "item/itemUpdateForm";
         }
 
         Long updatedItemId = storeService.updateItem(ItemUpdateDto.builder()

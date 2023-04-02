@@ -6,7 +6,6 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 
 @Getter
-@Setter
 public class StoreCreationForm {
     @NotBlank(message = "가게 이름은 필수입니다.")
     private String name;

@@ -38,14 +38,17 @@ public class OrderItemFindDto {
     private Long count;
 
     @NotNull
-    private LocalDateTime time;
+    private LocalDateTime orderedTime;
+
+    @NotNull
+    private LocalDateTime updatedTime;
 
     @NotBlank
     private String orderItemStatus;
 
     @Builder
     @QueryProjection
-    public OrderItemFindDto(Long id, Long storeId, Long orderId, Long itemId, String itemName, Long price, Long count, LocalDateTime time, String orderItemStatus) {
+    public OrderItemFindDto(Long id, Long storeId, Long orderId, Long itemId, String itemName, Long price, Long count, LocalDateTime orderedTime, LocalDateTime updatedTime, String orderItemStatus) {
         this.id = id;
         this.storeId = storeId;
         this.orderId = orderId;
@@ -53,7 +56,8 @@ public class OrderItemFindDto {
         this.itemName = itemName;
         this.price = price;
         this.count = count;
-        this.time = time;
+        this.orderedTime = orderedTime;
+        this.updatedTime = updatedTime;
         this.orderItemStatus = orderItemStatus;
     }
 }

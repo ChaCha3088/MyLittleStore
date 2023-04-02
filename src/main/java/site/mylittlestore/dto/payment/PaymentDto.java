@@ -25,7 +25,10 @@ public class PaymentDto {
     private Long initialPaymentAmount;
 
     @Min(value = 1, message = "가격은 0보다 커야합니다.")
-    private Long finalPaymentAmount;
+    private Long desiredPaymentAmount;
+
+    @Min(value = 1, message = "가격은 0보다 커야합니다.")
+    private Long paidPaymentAmount;
 
     private LocalDateTime completeDateTime;
 
@@ -33,11 +36,12 @@ public class PaymentDto {
     private String paymentStatus;
 
     @Builder
-    protected PaymentDto(Long id, List<PaymentMethod> paymentMethods, Long initialPaymentAmount, Long finalPaymentAmount, LocalDateTime completeDateTime, PaymentStatus paymentStatus) {
+    protected PaymentDto(Long id, List<PaymentMethod> paymentMethods, Long initialPaymentAmount, Long desiredPaymentAmount, Long paidPaymentAmount, LocalDateTime completeDateTime, PaymentStatus paymentStatus) {
         this.id = id;
         this.paymentMethodIds = paymentMethods.stream().map(paymentMethod -> paymentMethod.getId()).collect(Collectors.toList());
         this.initialPaymentAmount = initialPaymentAmount;
-        this.finalPaymentAmount = finalPaymentAmount;
+        this.desiredPaymentAmount = desiredPaymentAmount;
+        this.paidPaymentAmount = paidPaymentAmount;
         this.completeDateTime = completeDateTime;
         this.paymentStatus = paymentStatus.toString();
     }

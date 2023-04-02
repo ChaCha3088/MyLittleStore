@@ -36,7 +36,7 @@ public class StoreController {
         model.addAttribute("storeId", storeId);
         model.addAttribute("storeDto", storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeId));
 
-        return "stores/storeInfo";
+        return "store/storeInfo";
     }
 
     @GetMapping("/members/{memberId}/stores/new")
@@ -44,14 +44,14 @@ public class StoreController {
         model.addAttribute("memberId", memberId);
         model.addAttribute("storeCreationForm", new StoreCreationForm());
 
-        return "stores/storeCreationForm";
+        return "store/storeCreationForm";
     }
 
     @PostMapping("/members/{memberId}/stores/new")
     public String createStore(@PathVariable("memberId") Long memberId, @RequestBody @Valid StoreCreationForm storeCreationForm, BindingResult result) {
 
         if (result.hasErrors()) {
-            return "stores/storeCreationForm";
+            return "store/storeCreationForm";
         }
 
         Long createdStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
@@ -72,7 +72,7 @@ public class StoreController {
         model.addAttribute("storeFindDto", storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeId));
         model.addAttribute("storeUpdateForm", new StoreUpdateForm());
 
-        return "stores/storeUpdateForm";
+        return "store/storeUpdateForm";
     }
 
     @PostMapping("/members/{memberId}/stores/{storeId}/update")
@@ -81,7 +81,7 @@ public class StoreController {
         if (result.hasErrors()) {
             model.addAttribute("storeFindDto", storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeId));
             model.addAttribute("storeUpdateForm", new StoreUpdateForm());
-            return "stores/storeUpdateForm";
+            return "store/storeUpdateForm";
         }
 
         Long updatedStoreId = memberService.updateStore(StoreUpdateDto.builder()
