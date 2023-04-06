@@ -10,6 +10,7 @@ import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.member.MemberFindDto;
 import site.mylittlestore.dto.member.MemberPasswordUpdateDto;
 import site.mylittlestore.dto.member.MemberUpdateDto;
+import site.mylittlestore.dto.store.StoreCreationDto;
 import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.MemberErrorMessage;
@@ -67,7 +68,9 @@ public class MemberService {
                         .name(memberCreationDto.getName())
                         .email(memberCreationDto.getEmail())
                         .password(memberCreationDto.getPassword())
-                        .address(memberCreationDto.getAddress())
+                        .city(memberCreationDto.getCity())
+                        .street(memberCreationDto.getStreet())
+                        .zipcode(memberCreationDto.getZipcode())
                 .build());
 
         return saveMember.getId();
@@ -108,24 +111,22 @@ public class MemberService {
     }
 
     @Transactional
-    public Long createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos storeDtoWithStoreTableFindDtosAndItemFindDtos) throws DuplicateStoreNameException, NoSuchMemberException {
+    public Long createStore(StoreCreationDto storeCreationDto) throws DuplicateStoreNameException, NoSuchMemberException {
         //이미 있는 가게인지 확인
-        validateDuplicateStoreWithStoreName(storeDtoWithStoreTableFindDtosAndItemFindDtos.getName());
+        validateDuplicateStoreWithStoreName(storeCreationDto.getName());
 
 //        //회원이 이미 가지고 있는 가게인지 검증
 //        Member findMemberById = validateMemberAlreadyHaveThatStoreWithSameStoreName(storeDto.getMemberId(), storeDto.getName());
 
         //가게 생성
-        Member findMemberById = findById(storeDtoWithStoreTableFindDtosAndItemFindDtos.getMemberId());
+        Member findMemberById = findById(storeCreationDto.getMemberId());
 
         Store createdStore = Store.builder()
                 .member(findMemberById)
-                .name(storeDtoWithStoreTableFindDtosAndItemFindDtos.getName())
-                .address(Address.builder()
-                        .city(storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto().getCity())
-                        .street(storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto().getStreet())
-                        .zipcode(storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto().getZipcode())
-                        .build())
+                .name(storeCreationDto.getName())
+                .city(storeCreationDto.getCity())
+                .street(storeCreationDto.getStreet())
+                .zipcode(storeCreationDto.getZipcode())
                 .build();
 
         Member updatedMember = findMemberById.createStore(createdStore);
@@ -178,7 +179,7 @@ public class MemberService {
         //가게 상태 변경
         if (findStore.getStoreStatus() == StoreStatus.OPEN) {
             findStore.changeStoreStatus(StoreStatus.CLOSE);
-        } else if (findStore.getStoreStatus().equals(StoreStatus.CLOSE.toString())) {
+        } else if (findStore.getStoreStatus() == StoreStatus.CLOSE) {
             findStore.changeStoreStatus(StoreStatus.OPEN);
         }
 

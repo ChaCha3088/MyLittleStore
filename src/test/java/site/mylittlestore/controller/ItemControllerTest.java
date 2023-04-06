@@ -13,6 +13,7 @@ import site.mylittlestore.domain.Address;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
+import site.mylittlestore.dto.store.StoreCreationDto;
 import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
@@ -62,22 +63,18 @@ public class ItemControllerTest {
                 .name("memberTest")
                 .email("memberTest@gmail.com")
                 .password("password")
-                .address(Address.builder()
-                        .city("city")
-                        .street("street")
-                        .zipcode("zipcode")
-                        .build())
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
                 .build());
 
         //가게 등록
-        Long newStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
+        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
-                .address(Address.builder()
-                        .city("city")
-                        .street("street")
-                        .zipcode("zipcode")
-                        .build())
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
                 .build());
 
         //테이블 추가
@@ -189,8 +186,8 @@ public class ItemControllerTest {
         ItemFindDto findItemDtoById = itemService.findItemDtoById(4L);
 
         assertThat(findItemDtoById.getName()).isEqualTo("newItemTest");
-        assertThat(findItemDtoById.getPrice()).isEqualTo(9999);
-        assertThat(findItemDtoById.getStock()).isEqualTo(9);
+        assertThat(findItemDtoById.getPrice()).isEqualTo(9999L);
+        assertThat(findItemDtoById.getStock()).isEqualTo(9L);
     }
 
     @Test

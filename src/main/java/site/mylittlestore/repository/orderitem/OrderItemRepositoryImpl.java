@@ -93,7 +93,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
                         .join(orderItem.item, item).fetchJoin()
                         .where(orderItem.order.id.eq(orderId)
                                 .and(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED)))
-                        .orderBy(orderItem.time.asc())
+                        .orderBy(orderItem.orderedDateTime.asc())
                         .fetch();
     }
 

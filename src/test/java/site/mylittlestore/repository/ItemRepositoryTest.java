@@ -12,6 +12,7 @@ import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
+import site.mylittlestore.dto.store.StoreCreationDto;
 import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.repository.item.ItemRepository;
 import site.mylittlestore.repository.member.MemberRepository;
@@ -56,28 +57,24 @@ class ItemRepositoryTest {
                 .name("memberTest")
                 .email("memberTest@gmail.com")
                 .password("password")
-                .address(Address.builder()
                         .city("city")
                         .street("street")
                         .zipcode("zipcode")
-                        .build())
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
+        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
-                .address(Address.builder()
-                        .city("city")
-                        .street("street")
-                        .zipcode("zipcode")
-                        .build())
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
                 .build());
 
         Long newItemId = storeService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest")
-                .price(10000)
-                .stock(100)
+                .price(10000L)
+                .stock(100L)
                 .build());
 
         memberTestId = newMemberId;
@@ -88,10 +85,10 @@ class ItemRepositoryTest {
     @Test
     void findItemDtoById() {
         //조회
-        Optional<ItemFindDto> findItemDto = itemRepository.findItemDtoById(itemTestId);
+        Optional<Item> findItem = itemRepository.findItemById(itemTestId);
 
         //검증
-        assertThat(findItemDto.get().getId()).isEqualTo(itemTestId);
+        assertThat(findItem.get().getId()).isEqualTo(itemTestId);
     }
 
     @Test
@@ -100,8 +97,8 @@ class ItemRepositoryTest {
         Long newItemId = storeService.createItem(ItemCreationDto.builder()
                 .storeId(storeTestId)
                 .name("newitemTest")
-                .price(9999)
-                .stock(99)
+                .price(9999L)
+                .stock(99L)
                 .build());
 
         //영속성 컨텍스트 초기화
@@ -121,7 +118,7 @@ class ItemRepositoryTest {
     void findItemByName() {
         Optional<Item> findItem = itemRepository.findItemByName("itemTest");
 
-        assertThat(findItem.get().getStock()).isEqualTo(100);
+        assertThat(findItem.get().getStock()).isEqualTo(100L);
     }
 
 }

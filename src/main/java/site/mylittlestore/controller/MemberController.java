@@ -64,11 +64,9 @@ public class MemberController {
                 .name(memberCreationForm.getName())
                 .email(memberCreationForm.getEmail())
                 .password(memberCreationForm.getPassword())
-                .address(Address.builder().
-                        city(memberCreationForm.getCity())
-                        .street(memberCreationForm.getStreet())
-                        .zipcode(memberCreationForm.getZipcode())
-                        .build())
+                .city(memberCreationForm.getCity())
+                .street(memberCreationForm.getStreet())
+                .zipcode(memberCreationForm.getZipcode())
                 .build());
 
         return "redirect:/members/"+savedMemberId;

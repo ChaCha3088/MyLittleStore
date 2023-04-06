@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long>, ItemRepositoryQueryDsl {
-    Optional<ItemFindDto> findItemDtoById(Long id);
+    Optional<Item> findItemById(Long id);
 
     Optional<Item> findItemByName(@Param("newItemName") String newItemName);
 

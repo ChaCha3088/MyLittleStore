@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.order.OrderDto;
+import site.mylittlestore.dto.store.StoreCreationDto;
 import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.enumstorage.status.OrderStatus;
 import site.mylittlestore.service.MemberService;
@@ -48,21 +49,17 @@ class OrderControllerTest {
                 .name("memberTest")
                 .email("memberTest@gmail.com")
                 .password("password")
-                .address(Address.builder()
-                        .city("city")
+                                        .city("city")
                         .street("street")
                         .zipcode("zipcode")
-                        .build())
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
+        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
-                .address(Address.builder()
-                        .city("city")
-                        .street("street")
-                        .zipcode("zipcode")
-                        .build())
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
                 .build());
 
         memberTestId = newMemberId;
@@ -93,8 +90,9 @@ class OrderControllerTest {
 
         String[] split = redirectedUrl.split("/");
         Long orderId = Long.parseLong(split[split.length - 1]);
+        Long storeId = Long.parseLong(split[split.length - 5]);
 
-        OrderDto orderDto = orderService.findOrderDtoById(orderId);
+        OrderDto orderDto = orderService.findOrderDtoById(orderId, storeId);
         assertThat(orderDto.getOrderStatus()).isEqualTo(OrderStatus.USING.toString());
     }
 }

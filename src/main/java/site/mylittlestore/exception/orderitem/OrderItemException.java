@@ -6,10 +6,8 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 public class OrderItemException extends RuntimeException {
-    @NotNull
-    private Long orderId;
-    public OrderItemException(String message, Long orderId) {
+
+    public OrderItemException(String message) {
         super(message);
-        this.orderId = orderId;
     }
 }

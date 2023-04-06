@@ -51,11 +51,9 @@ class StoreControllerTest {
                 .name("memberTest")
                 .email("memberTest@gmail.com")
                 .password("password")
-                .address(Address.builder()
-                        .city("city")
+                                        .city("city")
                         .street("street")
                         .zipcode("zipcode")
-                        .build())
                 .build());
 
         memberTestId = savedMemberId;

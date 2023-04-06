@@ -6,12 +6,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class OrderItemCreationDto {
+    @NotNull
     private Long orderId;
+    @NotNull
     private Long itemId;
+    @NotNull
     private Long price;
+    @NotNull
     private Long count;
 
     @Builder

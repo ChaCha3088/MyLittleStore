@@ -6,11 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.*;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.order.OrderDto;
-import site.mylittlestore.dto.payment.PaymentViewDto;
 import site.mylittlestore.enumstorage.errormessage.*;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.item.NoSuchItemException;
-import site.mylittlestore.exception.orderitem.OrderItemException;
 import site.mylittlestore.exception.store.NoSuchStoreException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
 import site.mylittlestore.exception.store.StoreClosedException;
@@ -23,10 +21,7 @@ import site.mylittlestore.repository.store.StoreRepository;
 import site.mylittlestore.repository.order.OrderRepository;
 import site.mylittlestore.repository.storetable.StoreTableRepository;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -39,8 +34,8 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final PaymentRepository paymentRepository;
 
-    public OrderDto findOrderDtoById(Long orderId) throws NoSuchOrderException {
-        Optional<Order> findOrderById = orderRepository.findUsingById(orderId);
+    public OrderDto findOrderDtoById(Long id, Long storeId) throws NoSuchOrderException {
+        Optional<Order> findOrderById = orderRepository.findNotDeletedAndPaidByIdAndStoreId(id, storeId);
 
         //주문이 없으면 예외 발생
         //Dto로 변환
@@ -69,11 +64,10 @@ public class OrderService {
 
     @Transactional
     public Long createOrder(Long storeId, Long storeTableId) throws NoSuchStoreException, StoreClosedException {
-        Optional<StoreTable> storeTableWithStoreByIdAndStoreId = storeTableRepository.findStoreTableWithStoreByIdAndStoreId(storeTableId, storeId);
-
-        //테이블이 없으면 예외 발생
-        StoreTable storeTable = storeTableWithStoreByIdAndStoreId.orElseThrow(()
-                -> new NoSuchStoreTableException(StoreTableErrorMessage.NO_SUCH_STORE_TABLE.getMessage()));
+        //테이블 상태가 EMPTY인 테이블 조회
+        StoreTable storeTable = storeTableRepository.findEmptyWithStoreByIdAndStoreId(storeTableId, storeId)
+                //테이블이 없으면 예외 발생
+                .orElseThrow(() -> new NoSuchStoreTableException(StoreTableErrorMessage.NO_SUCH_STORE_TABLE.getMessage()));
 
         Order order = storeTable.getOrder();
         Store store = storeTable.getStore();

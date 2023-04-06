@@ -42,11 +42,15 @@ public class Member extends BaseEntity {
     private List<Store> stores = new ArrayList<>();
 
     @Builder
-    protected Member(String name, String email, String password, Address address) {
+    protected Member(String name, String email, String password, String city, String street, String zipcode) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.address = address;
+        this.address = Address.builder()
+                .city(city)
+                .street(street)
+                .zipcode(zipcode)
+            .build();
     }
 
     public void updateMemberName(String name) {

@@ -5,31 +5,32 @@ import lombok.*;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.domain.Store;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Getter
 public class MemberCreationDto {
-
-    private Long id;
-
+    @NotBlank
     private String name;
-
+    @NotBlank
     private String email;
-
+    @NotBlank
     private String password;
-
-    private Address address;
-
-    private List<Store> stores;
+    @NotBlank
+    private String city;
+    @NotBlank
+    private String street;
+    @NotBlank
+    private String zipcode;
 
     @Builder
     @QueryProjection
-    public MemberCreationDto(Long id, String name, String email, String password, Address address, List<Store> stores) {
-        this.id = id;
+    public MemberCreationDto(String name, String email, String password, String city, String street, String zipcode) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.address = address;
-        this.stores = stores;
+        this.city = city;
+        this.street = street;
+        this.zipcode = zipcode;
     }
 }

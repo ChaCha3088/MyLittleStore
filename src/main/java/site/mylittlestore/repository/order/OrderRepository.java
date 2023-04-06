@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long>, OrderRepositoryQueryDsl {
-    Optional<Order> findUsingById(Long orderId);
+    Optional<Order> findNotDeletedAndPaidByIdAndStoreId(Long id, Long storeId);
 
-    List<Order> findAllUsingByStoreId(Long storeId);
+    List<Order> findAllNotDeletedAndPaidByStoreId(Long storeId);
 
-    Optional<Order> findOrderWithStoreById(Long orderId);
+    Optional<Order> findNotDeletedAndPaidWithStoreById(Long orderId);
 }

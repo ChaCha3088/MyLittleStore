@@ -14,6 +14,7 @@ import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.orderitem.OrderItemFindDto;
+import site.mylittlestore.dto.store.StoreCreationDto;
 import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
@@ -64,22 +65,18 @@ public class OrderItemControllerTest {
                 .name("memberTest")
                 .email("memberTest@gmail.com")
                 .password("password")
-                .address(Address.builder()
-                        .city("city")
+                                        .city("city")
                         .street("street")
                         .zipcode("zipcode")
-                        .build())
                 .build());
 
         //가게 등록
-        Long newStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
+        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
-                .address(Address.builder()
-                        .city("city")
-                        .street("street")
-                        .zipcode("zipcode")
-                        .build())
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
                 .build());
 
         //테이블 추가
@@ -124,7 +121,7 @@ public class OrderItemControllerTest {
 //                        .storeId(storeTestId)
 //                        .orderId(orderTestId)
 //                        .itemId(itemTestId1)
-//                        .price(10000)
+//                        .price(10000L)
 //                        .count(1)
 //
 //        //then
@@ -178,12 +175,12 @@ public class OrderItemControllerTest {
 
         //then
         OrderItemFindDto findOrderItemFindDtoById = orderItemService.findOrderItemDtoById(6L, orderTestId);
-        assertThat(findOrderItemFindDtoById.getPrice()).isEqualTo(10000);
-        assertThat(findOrderItemFindDtoById.getCount()).isEqualTo(100);
+        assertThat(findOrderItemFindDtoById.getPrice()).isEqualTo(10000L);
+        assertThat(findOrderItemFindDtoById.getCount()).isEqualTo(100L);
         assertThat(findOrderItemFindDtoById.getItemId()).isEqualTo(itemTestId1);
 
         ItemFindDto findItemDtoById = itemService.findItemDtoById(itemTestId1);
-        assertThat(findItemDtoById.getStock()).isEqualTo(0);
+        assertThat(findItemDtoById.getStock()).isEqualTo(0L);
     }
 
     @Test
@@ -207,12 +204,12 @@ public class OrderItemControllerTest {
 
         //then
         OrderItemFindDto findOrderItemDtoById1 = orderItemService.findOrderItemDtoById(8L, orderTestId);
-        assertThat(findOrderItemDtoById1.getPrice()).isEqualTo(5000);
-        assertThat(findOrderItemDtoById1.getCount()).isEqualTo(50);
+        assertThat(findOrderItemDtoById1.getPrice()).isEqualTo(5000L);
+        assertThat(findOrderItemDtoById1.getCount()).isEqualTo(50L);
         assertThat(findOrderItemDtoById1.getItemId()).isEqualTo(itemTestId1);
 
         ItemFindDto findItemDtoById1 = itemService.findItemDtoById(itemTestId1);
-        assertThat(findItemDtoById1.getStock()).isEqualTo(50);
+        assertThat(findItemDtoById1.getStock()).isEqualTo(50L);
 
         //when
         //주문 수정(수량 늘리기)
@@ -224,11 +221,11 @@ public class OrderItemControllerTest {
 
         //then
         OrderItemFindDto findOrderItemDtoById2 = orderItemService.findOrderItemDtoById(8L, orderTestId);
-        assertThat(findOrderItemDtoById2.getPrice()).isEqualTo(7500);
-        assertThat(findOrderItemDtoById2.getCount()).isEqualTo(75);
+        assertThat(findOrderItemDtoById2.getPrice()).isEqualTo(7500L);
+        assertThat(findOrderItemDtoById2.getCount()).isEqualTo(75L);
 
         ItemFindDto findItemDtoById2 = itemService.findItemDtoById(itemTestId1);
-        assertThat(findItemDtoById2.getStock()).isEqualTo(25);
+        assertThat(findItemDtoById2.getStock()).isEqualTo(25L);
     }
 
     @Test
@@ -246,7 +243,7 @@ public class OrderItemControllerTest {
         Long orderItemId = Long.parseLong(split[split.length - 1]);
 
         ItemFindDto findItemDtoById1 = itemService.findItemDtoById(itemTestId1);
-        assertThat(findItemDtoById1.getStock()).isEqualTo(50);
+        assertThat(findItemDtoById1.getStock()).isEqualTo(50L);
 
         //when
         mockMvc.perform(get("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/delete", memberTestId, storeTestId, orderTestId, orderItemId))
@@ -259,6 +256,6 @@ public class OrderItemControllerTest {
                 .hasMessageContaining(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage());
 
         ItemFindDto findItemDtoById2 = itemService.findItemDtoById(itemTestId1);
-        assertThat(findItemDtoById2.getStock()).isEqualTo(100);
+        assertThat(findItemDtoById2.getStock()).isEqualTo(100L);
     }
 }

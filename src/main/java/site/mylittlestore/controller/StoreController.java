@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import site.mylittlestore.domain.Address;
+import site.mylittlestore.dto.store.StoreCreationDto;
 import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.form.StoreCreationForm;
@@ -54,14 +55,12 @@ public class StoreController {
             return "store/storeCreationForm";
         }
 
-        Long createdStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
+        Long createdStoreId = memberService.createStore(StoreCreationDto.builder()
                 .memberId(memberId)
                 .name(storeCreationForm.getName())
-                .address(Address.builder()
-                        .city(storeCreationForm.getCity())
-                        .street(storeCreationForm.getStreet())
-                        .zipcode(storeCreationForm.getZipcode())
-                        .build())
+                .city(storeCreationForm.getCity())
+                .street(storeCreationForm.getStreet())
+                .zipcode(storeCreationForm.getZipcode())
                 .build());
 
         return "redirect:/members/"+memberId;

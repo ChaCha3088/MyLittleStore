@@ -2,6 +2,7 @@ package site.mylittlestore.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import site.mylittlestore.dto.order.OrderDto;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
+@Component
 @RequiredArgsConstructor
 public class OrderInterceptor implements HandlerInterceptor {
     private final OrderService orderService;
@@ -50,7 +52,7 @@ public class OrderInterceptor implements HandlerInterceptor {
     private boolean isPaymentStarted(Long memberId, Long storeId, Long storeTableId, Long orderId, HttpServletResponse response) throws IOException {
         //이미 결제중이면 결제 페이지로 redirect
         //진행중인 결제가 존재하면
-        OrderDto orderDtoById = orderService.findOrderDtoById(orderId);
+        OrderDto orderDtoById = orderService.findOrderDtoById(orderId, storeId);
         if (orderDtoById.getPaymentId() != null) {
             Message message = Message.builder()
                     .message(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage())

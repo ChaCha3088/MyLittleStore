@@ -22,19 +22,21 @@ public class OrderRepositoryImpl implements OrderRepositoryQueryDsl {
     private final EntityManager em;
 
     @Override
-    public Optional<Order> findUsingById(Long orderId) {
+    public Optional<Order> findNotDeletedAndPaidByIdAndStoreId(Long id, Long storeId) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return Optional.ofNullable(queryFactory
                 .select(order)
                 .from(order)
-                .where(order.id.eq(orderId)
-                        .and(order.orderStatus.eq(OrderStatus.USING)))
+                .where(order.id.eq(id)
+                        .and(order.store.id.eq(storeId))
+                        .and(order.orderStatus.ne(OrderStatus.DELETED))
+                        .and(order.orderStatus.ne(OrderStatus.PAID)))
                 .fetchOne());
     }
 
     @Override
-    public List<Order> findAllUsingByStoreId(Long storeId) {
+    public List<Order> findAllNotDeletedAndPaidByStoreId(Long storeId) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return queryFactory
@@ -42,13 +44,14 @@ public class OrderRepositoryImpl implements OrderRepositoryQueryDsl {
                 .distinct()
                 .from(order)
                 .where(order.store.id.eq(storeId)
-                        .and(order.orderStatus.eq(OrderStatus.USING)))
+                        .and(order.orderStatus.ne(OrderStatus.DELETED))
+                        .and(order.orderStatus.ne(OrderStatus.PAID)))
                 .fetch();
     }
 
 
     @Override
-    public Optional<Order> findOrderWithStoreById(Long orderId) {
+    public Optional<Order> findNotDeletedAndPaidWithStoreById(Long orderId) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return Optional.ofNullable(queryFactory
@@ -56,24 +59,8 @@ public class OrderRepositoryImpl implements OrderRepositoryQueryDsl {
                 .from(order)
                 .join(order.store, store).fetchJoin()
                 .where(order.id.eq(orderId)
-                        .and(order.orderStatus.eq(OrderStatus.USING)))
+                        .and(order.orderStatus.ne(OrderStatus.DELETED))
+                        .and(order.orderStatus.ne(OrderStatus.PAID)))
                 .fetchOne());
-    }
-
-    @Override
-    public List<Order> findAllOrderByStoreIdOrderByOrderNumber(Long storeId) {
-        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
-
-        return queryFactory
-                .select(order)
-                .distinct()
-                .from(order)
-                .leftJoin(order.orderItems, orderItem).fetchJoin()
-                    .on(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED)
-                            .or(orderItem.isNull()))
-                .where(order.store.id.eq(storeId)
-                        .and(order.orderStatus.eq(OrderStatus.USING)))
-                .orderBy(order.createdDate.asc())
-                .fetch();
     }
 }

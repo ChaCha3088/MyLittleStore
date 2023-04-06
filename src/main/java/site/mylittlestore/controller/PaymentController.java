@@ -13,6 +13,7 @@ import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.exception.PaymentAmountException;
+import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.exception.orderitem.OrderItemException;
 import site.mylittlestore.exception.payment.PaymentAlreadyExistException;
 import site.mylittlestore.exception.store.StoreClosedException;
@@ -50,7 +51,7 @@ public class PaymentController {
                     .href("/members/" + memberId + "/stores/" + storeId + "/storeTables/" + e.getStoreTableId() + "/orders/" + e.getOrderId())
                     .build());
             return "message/message";
-        } catch (OrderItemException e) {
+        } catch (NoSuchOrderItemException e) {
             //주문 상품이 없으면
             //주문 페이지로 redirect
             //팝업 알림창

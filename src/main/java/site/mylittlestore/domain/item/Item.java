@@ -38,14 +38,13 @@ public class Item extends BaseEntity {
     private Long price;
 
     @NotNull
-    @Min(value = 1, message = "재고는 0보다 커야합니다.")
+    @Min(value = 0, message = "재고는 0 이상이어야 합니다.")
     private Long stock;
 
     /**
      * 이미지는 url로 저장
      * url이 없는 경우, ""로 저장
      */
-    @NotNull
     private String image;
 
     @NotNull
@@ -58,7 +57,6 @@ public class Item extends BaseEntity {
         this.name = name;
         this.price = price;
         this.stock = stock;
-        this.image = "";
         this.itemStatus = ItemStatus.ONSALE;
     }
 

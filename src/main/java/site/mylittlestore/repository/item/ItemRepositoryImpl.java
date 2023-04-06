@@ -19,19 +19,12 @@ public class ItemRepositoryImpl implements ItemRepositoryQueryDsl {
     private final EntityManager em;
 
     @Override
-    public Optional<ItemFindDto> findItemDtoById(Long id) {
+    public Optional<Item> findItemById(Long id) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return Optional.ofNullable(
                 queryFactory
-                        .select(new QItemFindDto(
-                                item.id,
-                                item.store.id,
-                                item.name,
-                                item.price,
-                                item.stock,
-                                item.image
-                        ))
+                        .select(item)
                         .from(item)
                         .where(item.id.eq(id), item.itemStatus.eq(ItemStatus.ONSALE))
                         .fetchOne()

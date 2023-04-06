@@ -30,7 +30,7 @@ public class OrderController {
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}")
     public String orderInfo(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, Model model) {
         try {
-            OrderDto orderDto = orderService.findOrderDtoById(orderId);
+            OrderDto orderDto = orderService.findOrderDtoById(orderId, storeId);
 
             //Order가 결제 중이면 결제 페이지로 redirect
             if (orderDto.getPaymentId() != null) {

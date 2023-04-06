@@ -10,7 +10,7 @@ public interface StoreTableRepository extends JpaRepository<StoreTable, Long>, S
 
     Optional<StoreTable> findNotDeletedById(Long id);
     Optional<StoreTable> findNotDeletedByIdAndStoreId(Long id, Long storeId);
-    Optional<StoreTable> findStoreTableWithStoreByIdAndStoreId(Long id, Long storeId);
+    Optional<StoreTable> findEmptyWithStoreByIdAndStoreId(Long id, Long storeId);
 
     Optional<StoreTable> findStoreTableWithStoreAndOrderByIdAndStoreId(Long id, Long storeId);
 

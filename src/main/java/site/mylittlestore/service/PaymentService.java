@@ -16,7 +16,7 @@ import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.enumstorage.status.PaymentStatus;
 import site.mylittlestore.enumstorage.status.StoreStatus;
-import site.mylittlestore.exception.orderitem.OrderItemException;
+import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.exception.payment.PaymentAlreadyExistException;
 import site.mylittlestore.exception.payment.PaymentException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
@@ -69,7 +69,7 @@ public class PaymentService {
         List<OrderItem> allByOrderId = orderItemRepository.findAllByOrderId(orderId);
         //주문 상품이 없으면 예외 발생
         if (allByOrderId.isEmpty()) {
-            throw new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), order.getId());
+            throw new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), order.getId());
         }
 
         //합계 계산
@@ -132,7 +132,7 @@ public class PaymentService {
     }
 
     private Order findOrderWithStoreById(Long orderId) {
-        Order order = orderRepository.findOrderWithStoreById(orderId)
+        Order order = orderRepository.findNotDeletedAndPaidWithStoreById(orderId)
                 .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
         return order;
     }

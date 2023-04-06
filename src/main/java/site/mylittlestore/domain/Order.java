@@ -32,8 +32,7 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "STORE_ID")
     private Store store;
 
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "PAYMENT_ID")
+    @OneToOne(mappedBy = "order")
     private Payment payment;
 
     @OneToOne(mappedBy = "order")
@@ -62,7 +61,30 @@ public class Order extends BaseEntity {
         storeTable.setOrder(this);
     }
 
-    //==DTO==//
+    //== 연관관계 메소드 ==//
+    public void createPayment(Payment payment) {
+        this.orderStatus = OrderStatus.IN_PROGRESS;
+        this.payment = payment;
+    }
+
+    //== 테스트 로직 ==//
+    public void changeOrderStatusDeleted() {
+        this.orderStatus = OrderStatus.DELETED;
+    }
+
+    public void changeOrderStatusUsing() {
+        this.orderStatus = OrderStatus.USING;
+    }
+
+    public void changeOrderStatusInProgress() {
+        this.orderStatus = OrderStatus.IN_PROGRESS;
+    }
+
+    public void changeOrderStatusPaid() {
+        this.orderStatus = OrderStatus.PAID;
+    }
+
+    //== DTO ==//
 
     public OrderDto toOrderDto() {
         return OrderDto.builder()

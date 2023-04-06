@@ -13,6 +13,7 @@ import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.item.ItemUpdateDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
+import site.mylittlestore.dto.store.StoreCreationDto;
 import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
@@ -63,28 +64,24 @@ class StoreServiceTest {
                 .name("memberTest")
                 .email("memberTest@gmail.com")
                 .password("password")
-                .address(Address.builder()
-                        .city("city")
+                                        .city("city")
                         .street("street")
                         .zipcode("zipcode")
-                        .build())
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
+        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
-                .address(Address.builder()
-                        .city("city")
-                        .street("street")
-                        .zipcode("zipcode")
-                        .build())
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
                 .build());
 
         Long newItemId = storeService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest")
-                .price(10000)
-                .stock(100)
+                .price(10000L)
+                .stock(100L)
                 .build());
 
         memberTestId = newMemberId;
@@ -113,14 +110,12 @@ class StoreServiceTest {
     @Test
     public void findAllStoreByMemberId() {
         //given
-        Long savedStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
+        Long savedStoreId = memberService.createStore(StoreCreationDto.builder()
                 .memberId(memberTestId)
                 .name("newStoreTest")
-                .address(Address.builder()
-                        .city("city")
-                        .street("street")
-                        .zipcode("zipcode")
-                        .build())
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
                 .build());
 
         //영속성 컨텍스트 초기화
@@ -144,8 +139,8 @@ class StoreServiceTest {
         Long newItemTestId = storeService.createItem(ItemCreationDto.builder()
                 .storeId(storeTestId)
                 .name("newItemTest")
-                .price(9999)
-                .stock(99)
+                .price(9999L)
+                .stock(99L)
                 .build());
 
         //영속성 컨텍스트 초기화
@@ -159,8 +154,8 @@ class StoreServiceTest {
         //then
         assertThat(itemById.getImage()).isEqualTo("");
         assertThat(itemById.getName()).isEqualTo("newItemTest");
-        assertThat(itemById.getPrice()).isEqualTo(9999);
-        assertThat(itemById.getStock()).isEqualTo(99);
+        assertThat(itemById.getPrice()).isEqualTo(9999L);
+        assertThat(itemById.getStock()).isEqualTo(99L);
         assertThat(itemById.getItemStatus()).isEqualTo(ItemStatus.ONSALE);
     }
 
@@ -171,8 +166,8 @@ class StoreServiceTest {
                         .id(itemTestId)
                         .storeId(storeTestId)
                         .newItemName("newItemTest")
-                        .newPrice(9999)
-                        .newStock(99)
+                        .newPrice(9999L)
+                        .newStock(99L)
                 .build());
 
         //영속성 컨텍스트 초기화
@@ -189,8 +184,8 @@ class StoreServiceTest {
 //                .orElseThrow(() -> new NoSuchItemException(ItemErrorMessageEnum.NO_SUCH_ITEM.getMessage()));
         ItemFindDto findItemFindDtoById = itemService.findItemDtoById(findItemId);
         assertThat(findItemFindDtoById.getName()).isEqualTo("newItemTest");
-        assertThat(findItemFindDtoById.getPrice()).isEqualTo(9999);
-        assertThat(findItemFindDtoById.getStock()).isEqualTo(99);
+        assertThat(findItemFindDtoById.getPrice()).isEqualTo(9999L);
+        assertThat(findItemFindDtoById.getStock()).isEqualTo(99L);
     }
 
     @Test
@@ -200,8 +195,8 @@ class StoreServiceTest {
                 .id(itemTestId)
                 .storeId(storeTestId)
                 .newItemName("itemTest")
-                .newPrice(9999)
-                .newStock(99)
+                .newPrice(9999L)
+                .newStock(99L)
                 .build());
 
         //영속성 컨텍스트 초기화
@@ -211,7 +206,7 @@ class StoreServiceTest {
         //then
         ItemFindDto findItemFindDtoById = itemService.findItemDtoById(itemTestId);
         assertThat(findItemFindDtoById.getName()).isEqualTo("itemTest");
-        assertThat(findItemFindDtoById.getPrice()).isEqualTo(9999);
-        assertThat(findItemFindDtoById.getStock()).isEqualTo(99);
+        assertThat(findItemFindDtoById.getPrice()).isEqualTo(9999L);
+        assertThat(findItemFindDtoById.getStock()).isEqualTo(99L);
     }
 }

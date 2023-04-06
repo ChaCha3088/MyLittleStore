@@ -11,6 +11,7 @@ import org.springframework.test.context.jdbc.Sql;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
+import site.mylittlestore.dto.store.StoreCreationDto;
 import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.dto.storetable.StoreTableFindDto;
@@ -55,28 +56,24 @@ public class StoreTableServiceTest {
                 .name("memberTest")
                 .email("memberTest@gmail.com")
                 .password("password")
-                .address(Address.builder()
-                        .city("city")
+                                        .city("city")
                         .street("street")
                         .zipcode("zipcode")
-                        .build())
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
+        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
-                .address(Address.builder()
-                        .city("city")
-                        .street("street")
-                        .zipcode("zipcode")
-                        .build())
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
                 .build());
 
         Long newItemId = storeService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest")
-                .price(10000)
-                .stock(100)
+                .price(10000L)
+                .stock(100L)
                 .build());
 
         //가게 열기

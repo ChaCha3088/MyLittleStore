@@ -24,6 +24,10 @@ public class Payment {
     private Long id;
 
     @NotNull
+    @OneToOne(fetch = FetchType.LAZY)
+    private Order order;
+
+    @NotNull
     @OneToMany(mappedBy = "payment")
     private List<PaymentMethod> paymentMethods = new ArrayList<>();
 
@@ -44,9 +48,11 @@ public class Payment {
     private PaymentStatus paymentStatus;
 
     @Builder
-    protected Payment(Long initialPaymentAmount) {
+    protected Payment(Order order, Long initialPaymentAmount) {
         this.initialPaymentAmount = initialPaymentAmount;
         this.paymentStatus = PaymentStatus.INIT;
+        this.order = order;
+        order.createPayment(this);
     }
 
     //-- 비즈니스 로직 --//
@@ -67,6 +73,8 @@ public class Payment {
         }
         this.paidPaymentAmount = paidPaymentAmount;
     }
+
+    //-- 연관관계 메소드 --//
 
     //-- Dto --//
     public PaymentDto toPaymentDto() {

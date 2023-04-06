@@ -78,4 +78,9 @@ public class StoreTable extends BaseEntity {
                 .storeTableStatus(storeTableStatus.toString())
                 .build();
     }
+
+    //-- 테스트 로직 --//
+    public void changeStoreTableStatusUsing() {
+        this.storeTableStatus = StoreTableStatus.USING;
+    }
 }

@@ -52,10 +52,14 @@ public class Store extends BaseEntity {
     private List<Item> items;
 
     @Builder
-    protected Store(Member member, String name, Address address) {
+    protected Store(Member member, String name, String city, String street, String zipcode) {
         this.member = member;
         this.name = name;
-        this.address = address;
+        this.address = Address.builder()
+                .city(city)
+                .street(street)
+                .zipcode(zipcode)
+            .build();
         this.storeTables = new ArrayList<>();
         this.items = new ArrayList<>();
         this.storeStatus = StoreStatus.CLOSE;

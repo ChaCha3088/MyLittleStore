@@ -61,7 +61,7 @@ public class StoreTableRepositoryImpl implements StoreTableRepositoryQueryDsl {
 
 
     @Override
-    public Optional<StoreTable> findStoreTableWithStoreByIdAndStoreId(Long id, Long storeId) {
+    public Optional<StoreTable> findEmptyWithStoreByIdAndStoreId(Long id, Long storeId) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return Optional.ofNullable(queryFactory
@@ -71,7 +71,7 @@ public class StoreTableRepositoryImpl implements StoreTableRepositoryQueryDsl {
 //                        .join(storeTable.order, order).fetchJoin()
                 .where(storeTable.id.eq(id)
                         .and(storeTable.store.id.eq(storeId))
-                        .and(storeTable.storeTableStatus.ne(StoreTableStatus.DELETED)))
+                        .and(storeTable.storeTableStatus.eq(StoreTableStatus.EMPTY)))
                 .fetchOne());
     }
 

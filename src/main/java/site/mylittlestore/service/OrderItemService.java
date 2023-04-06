@@ -13,6 +13,7 @@ import site.mylittlestore.enumstorage.errormessage.*;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.item.NoSuchItemException;
 import site.mylittlestore.exception.item.NotEnoughStockException;
+import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.exception.orderitem.OrderItemException;
 import site.mylittlestore.exception.payment.PaymentAlreadyExistException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
@@ -40,7 +41,7 @@ public class OrderItemService {
     public OrderItemFindDto findOrderItemDtoById(Long orderItemId, Long orderId) {
         return orderItemRepository.findById(orderItemId)
                 //주문 상품이 없으면 예외 발생
-                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderId))
+                .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderId))
                 //Dto로 변환
                 .toOrderItemDto();
     }
@@ -58,7 +59,7 @@ public class OrderItemService {
 
         return findOrderItemById
                 //주문 상품이 없으면 예외 발생
-                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderId))
+                .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderId))
                 //Dto로 변환
                 .toOrderItemDtoWithItemFindDto();
     }
@@ -106,7 +107,7 @@ public class OrderItemService {
 
             return savedOrderItem.getId();
 
-        } catch (OrderItemException e) {
+        } catch (NoSuchOrderItemException e) {
             //주문에 상품이 없으면,
 
             //가게 Id와 상품 Id로 상품을 찾는다.
@@ -218,7 +219,7 @@ public class OrderItemService {
     }
 
     private Order findOrderWithStoreById(Long orderId) {
-        Order order = orderRepository.findOrderWithStoreById(orderId)
+        Order order = orderRepository.findNotDeletedAndPaidWithStoreById(orderId)
                 .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
         return order;
     }
@@ -227,14 +228,14 @@ public class OrderItemService {
         //주문 상품에 주문 Id, 상품 Id, 가격이 같은 상품이 존재하는지 확인
         //해당 조건을 만족하는 주문 상품이 없으면 예외 발생
         return orderItemRepository.findByOrderIdAndItemIdAndPrice(orderId, itemId, price)
-                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderId));
+                .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderId));
     }
 
     private OrderItem validateOrderItemExistenceWithOrderIdAndOrderItemIdAndItemIdAndPrice(Long orderId, Long orderItemId, Long itemId, Long price) {
         //주문 상품에 주문 Id, 주문 상품 Id, 상품 Id, 가격이 같은 상품이 존재하는지 확인
         //해당 조건을 만족하는 상품이 없으면 예외 발생
         return orderItemRepository.findByOrderIdAndOrderItemIdAndItemIdAndPrice(orderId, orderItemId, itemId, price)
-                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderId));
+                .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderId));
     }
 
 //    private OrderItem validateOrderItemExistenceWithItemIdAndPrice(Long orderId, Long itemId, Long price) throws NoSuchOrderException, NoSuchOrderItemException {

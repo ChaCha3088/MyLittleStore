@@ -10,7 +10,6 @@ import site.mylittlestore.exception.item.NoSuchItemException;
 import site.mylittlestore.repository.item.ItemRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -20,10 +19,11 @@ public class ItemService {
     private final ItemRepository itemRepository;
 
     public ItemFindDto findItemDtoById(Long id) throws NoSuchItemException {
-        Optional<ItemFindDto> findItemDtoById = itemRepository.findItemDtoById(id);
-
-        //아이템이 없으면 예외 발생
-        return findItemDtoById.orElseThrow(() -> new NoSuchItemException(ItemErrorMessage.NO_SUCH_ITEM.getMessage()));
+        return itemRepository.findItemById(id)
+                //상품이 없으면 예외 발생
+                .orElseThrow(() -> new NoSuchItemException(ItemErrorMessage.NO_SUCH_ITEM.getMessage()))
+                //Dto로 변환
+                .toItemFindDto();
     }
 
     public List<ItemFindDto> findAllItemDtoByStoreId(Long storeId) {

@@ -11,6 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.member.MemberUpdateDto;
+import site.mylittlestore.dto.store.StoreCreationDto;
 import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.dto.member.MemberCreationDto;
@@ -59,21 +60,17 @@ class MemberServiceTest {
                 .name("memberTest")
                 .email("memberTest@gmail.com")
                 .password("password")
-                .address(Address.builder()
-                        .city("city")
+                                        .city("city")
                         .street("street")
                         .zipcode("zipcode")
-                        .build())
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
+        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
                 .name("storeTest")
                 .memberId(newMemberId)
-                .address(Address.builder()
-                        .city("city")
-                        .street("street")
-                        .zipcode("zipcode")
-                        .build())
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
                 .build());
 
         memberTestId = newMemberId;
@@ -125,22 +122,18 @@ class MemberServiceTest {
                 .name("memberTestA")
                 .email("memberTestA@gmail.com")
                 .password("password")
-                .address(Address.builder()
-                        .city("city")
+                                        .city("city")
                         .street("street")
                         .zipcode("zipcode")
-                        .build())
                 .build());
 
         memberService.joinMember(MemberCreationDto.builder()
                 .name("memberTestB")
                 .email("memberTestB@gmail.com")
                 .password("password")
-                .address(Address.builder()
-                        .city("city")
+                                        .city("city")
                         .street("street")
                         .zipcode("zipcode")
-                        .build())
                 .build());
 
         //when
@@ -160,11 +153,9 @@ class MemberServiceTest {
                 .name("memberTestB")
                 .email("memberTestB@gmail.com")
                 .password("password")
-                .address(Address.builder()
-                        .city("city")
+                                        .city("city")
                         .street("street")
                         .zipcode("zipcode")
-                        .build())
                 .build();
 
         //when
@@ -192,11 +183,9 @@ class MemberServiceTest {
                 .name("memberTest")
                 .email("memberTest@gmail.com")
                 .password("password")
-                .address(Address.builder()
-                        .city("city")
+                                        .city("city")
                         .street("street")
                         .zipcode("zipcode")
-                        .build())
                 .build();
 
         //then
@@ -260,14 +249,12 @@ class MemberServiceTest {
     @Test
     void createStore() {
         //when
-        Long createdStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
+        Long createdStoreId = memberService.createStore(StoreCreationDto.builder()
                 .name("storeTestB")
                 .memberId(memberTestId)
-                .address(Address.builder()
-                        .city("city")
-                        .street("street")
-                        .zipcode("zipcode")
-                        .build())
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
                 .build());
 
         //영속성 컨텍스트 초기화
@@ -289,14 +276,12 @@ class MemberServiceTest {
     void createStoreDuplicateStoreException() {
         //이름이 같은 가게를 생성하면, 예외 발생
         Assertions.assertThatThrownBy(() -> {
-            memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
+            memberService.createStore(StoreCreationDto.builder()
                     .name("storeTest")
                     .memberId(memberTestId)
-                    .address(Address.builder()
-                            .city("city")
-                            .street("street")
-                            .zipcode("zipcode")
-                            .build())
+                    .city("city")
+                    .street("street")
+                    .zipcode("zipcode")
                     .build());
         }).isInstanceOf(DuplicateStoreNameException.class);
     }
@@ -329,14 +314,12 @@ class MemberServiceTest {
     @Test
     public void updateStoreNameAndAddressDuplicateStoreNameException(){
         //given
-        Long createdStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
+        Long createdStoreId = memberService.createStore(StoreCreationDto.builder()
                 .name("storeTestB")
                 .memberId(memberTestId)
-                .address(Address.builder()
-                        .city("city")
-                        .street("street")
-                        .zipcode("zipcode")
-                        .build())
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
                 .build());
 
         //영속성 컨텍스트 초기화
@@ -469,11 +452,9 @@ class MemberServiceTest {
                 .name("Cha Cha")
                 .email("cha3088@gmail.com")
                 .password("password")
-                .address(Address.builder()
-                        .city("city")
+                                        .city("city")
                         .street("street")
                         .zipcode("zipcode")
-                        .build())
                 .build());
 
         //then

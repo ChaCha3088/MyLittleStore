@@ -16,6 +16,7 @@ import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.enumstorage.status.StoreStatus;
+import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.exception.orderitem.OrderItemException;
 import site.mylittlestore.exception.payment.PaymentAlreadyExistException;
 import site.mylittlestore.exception.store.StoreClosedException;
@@ -157,7 +158,7 @@ public class OrderItemController {
                     .href("/members/" + memberId + "/stores/" + storeId)
                     .build());
             return "message/message";
-        } catch (OrderItemException e) {
+        } catch (NoSuchOrderItemException e) {
             //팝업 알림창
             model.addAttribute("messages", Message.builder()
                     .message(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage())

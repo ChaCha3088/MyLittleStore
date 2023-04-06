@@ -14,11 +14,13 @@ import site.mylittlestore.dto.orderitem.OrderItemCreationDto;
 import site.mylittlestore.dto.orderitem.OrderItemDto;
 import site.mylittlestore.dto.orderitem.OrderItemFindDtoWithItemFindDto;
 import site.mylittlestore.dto.orderitem.OrderItemFindDto;
+import site.mylittlestore.dto.store.StoreCreationDto;
 import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.enumstorage.status.OrderItemStatus;
 import site.mylittlestore.exception.item.NotEnoughStockException;
+import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.exception.orderitem.OrderItemException;
 import site.mylittlestore.exception.store.StoreClosedException;
 import site.mylittlestore.repository.orderitem.OrderItemRepository;
@@ -60,21 +62,17 @@ public class OrderItemServiceTest {
                 .name("memberTest")
                 .email("memberTest@gmail.com")
                 .password("password")
-                .address(Address.builder()
-                        .city("city")
+                                        .city("city")
                         .street("street")
                         .zipcode("zipcode")
-                        .build())
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
+        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
-                .address(Address.builder()
-                        .city("city")
-                        .street("street")
-                        .zipcode("zipcode")
-                        .build())
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
                 .build());
 
         Long newItemId = storeService.createItem(ItemCreationDto.builder()
@@ -145,7 +143,7 @@ public class OrderItemServiceTest {
 
         //상품 재고 어떻게 되는지도 확인
         ItemFindDto itemFindDto = itemService.findItemDtoById(itemTestId);
-        assertThat(itemFindDto.getStock()).isEqualTo(94);
+        assertThat(itemFindDto.getStock()).isEqualTo(94L);
     }
 
     @Test
@@ -182,11 +180,11 @@ public class OrderItemServiceTest {
         //then
         assertThat(findOrderItemById1.getItemFindDto().getId()).isEqualTo(itemTestId);
         assertThat(findOrderItemById1.getPrice()).isEqualTo(10000L);
-        assertThat(findOrderItemById1.getCount()).isEqualTo(1);
+        assertThat(findOrderItemById1.getCount()).isEqualTo(1L);
 
         assertThat(findOrderItemById2.getItemFindDto().getId()).isEqualTo(itemTestId);
         assertThat(findOrderItemById2.getPrice()).isEqualTo(9999L);
-        assertThat(findOrderItemById2.getCount()).isEqualTo(10);
+        assertThat(findOrderItemById2.getCount()).isEqualTo(10L);
 
         //주문 상품 개수 확인
         List<OrderItemFindDto> findAllOrderItemByOrderId = orderItemService.findAllOrderItemByOrderId(orderTestId);
@@ -194,10 +192,10 @@ public class OrderItemServiceTest {
 
         //재고 관련 확인
         ItemFindDto itemfindDto = itemService.findItemDtoById(itemTestId);
-        assertThat(itemfindDto.getStock()).isEqualTo(89);
+        assertThat(itemfindDto.getStock()).isEqualTo(89L);
 
         ItemFindDto newItemFindDto = itemService.findItemDtoById(newItemId);
-        assertThat(newItemFindDto.getStock()).isEqualTo(99);
+        assertThat(newItemFindDto.getStock()).isEqualTo(99L);
     }
 
     @Test
@@ -236,7 +234,7 @@ public class OrderItemServiceTest {
 
         //재고 관련 확인
         ItemFindDto itemFindDto = itemService.findItemDtoById(itemTestId);
-        assertThat(itemFindDto.getStock()).isEqualTo(0);
+        assertThat(itemFindDto.getStock()).isEqualTo(0L);
     }
 
     @Test
@@ -267,11 +265,11 @@ public class OrderItemServiceTest {
         //then
         assertThat(findOrderItemById1.getItemFindDto().getId()).isEqualTo(itemTestId);
         assertThat(findOrderItemById1.getPrice()).isEqualTo(10000L);
-        assertThat(findOrderItemById1.getCount()).isEqualTo(1);
+        assertThat(findOrderItemById1.getCount()).isEqualTo(1L);
 
         assertThat(findOrderItemById2.getItemFindDto().getId()).isEqualTo(itemTestId);
         assertThat(findOrderItemById2.getPrice()).isEqualTo(8000L);
-        assertThat(findOrderItemById2.getCount()).isEqualTo(1);
+        assertThat(findOrderItemById2.getCount()).isEqualTo(1L);
 
         //주문 상품 개수 확인
         List<OrderItemFindDto> findAllOrderItemByOrderId = orderItemService.findAllOrderItemByOrderId(orderTestId);
@@ -280,7 +278,7 @@ public class OrderItemServiceTest {
 
         //재고 관련 확인
         ItemFindDto itemFindDto = itemService.findItemDtoById(itemTestId);
-        assertThat(itemFindDto.getStock()).isEqualTo(98);
+        assertThat(itemFindDto.getStock()).isEqualTo(98L);
     }
 
     @Test
@@ -309,11 +307,11 @@ public class OrderItemServiceTest {
         //then
         assertThat(findOrderItemById1.getItemFindDto().getId()).isEqualTo(itemTestId);
         assertThat(findOrderItemById1.getPrice()).isEqualTo(10000L);
-        assertThat(findOrderItemById1.getCount()).isEqualTo(50);
+        assertThat(findOrderItemById1.getCount()).isEqualTo(50L);
 
         assertThat(findOrderItemById2.getItemFindDto().getId()).isEqualTo(itemTestId);
         assertThat(findOrderItemById2.getPrice()).isEqualTo(8000L);
-        assertThat(findOrderItemById2.getCount()).isEqualTo(50);
+        assertThat(findOrderItemById2.getCount()).isEqualTo(50L);
 
         //주문 상품 개수 확인
         List<OrderItemFindDto> findAllOrderItemByOrderId = orderItemService.findAllOrderItemByOrderId(orderTestId);
@@ -322,7 +320,7 @@ public class OrderItemServiceTest {
 
         //재고 관련 확인
         ItemFindDto itemFindDto = itemService.findItemDtoById(itemTestId);
-        assertThat(itemFindDto.getStock()).isEqualTo(0);
+        assertThat(itemFindDto.getStock()).isEqualTo(0L);
 
         //then
         //재고 부족 예외 발생
@@ -380,10 +378,10 @@ public class OrderItemServiceTest {
         //수정된 주문 조회
         OrderItemFindDtoWithItemFindDto findOrderItemById1 = orderItemService.findOrderItemDtoByIdWithItemFindDto(savedOrderItemId1, orderTestId);
         assertThat(findOrderItemById1.getPrice()).isEqualTo(10000L);
-        assertThat(findOrderItemById1.getCount()).isEqualTo(49);
+        assertThat(findOrderItemById1.getCount()).isEqualTo(49L);
 
         ItemFindDto findItemDtoById1 = itemService.findItemDtoById(itemTestId);
-        assertThat(findItemDtoById1.getStock()).isEqualTo(51);
+        assertThat(findItemDtoById1.getStock()).isEqualTo(51L);
 
         //주문 수정(수량 늘리기)
         Long savedOrderItemId2 = orderItemService.updateOrderItemCount(OrderItemDto.builder()
@@ -397,10 +395,10 @@ public class OrderItemServiceTest {
         //수정된 주문 조회
         OrderItemFindDtoWithItemFindDto findOrderItemById2 = orderItemService.findOrderItemDtoByIdWithItemFindDto(savedOrderItemId2, orderTestId);
         assertThat(findOrderItemById2.getPrice()).isEqualTo(10000L);
-        assertThat(findOrderItemById2.getCount()).isEqualTo(51);
+        assertThat(findOrderItemById2.getCount()).isEqualTo(51L);
 
         ItemFindDto findItemDtoById2 = itemService.findItemDtoById(itemTestId);
-        assertThat(findItemDtoById2.getStock()).isEqualTo(49);
+        assertThat(findItemDtoById2.getStock()).isEqualTo(49L);
     }
 
     @Test
@@ -429,11 +427,11 @@ public class OrderItemServiceTest {
 
         //재고 확인
         ItemFindDto findItemDtoById = itemService.findItemDtoById(itemTestId);
-        assertThat(findItemDtoById.getStock()).isEqualTo(100);
+        assertThat(findItemDtoById.getStock()).isEqualTo(100L);
         
         //주문 삭제 확인
         OrderItem orderItem = orderItemRepository.findById(createdOrderItemId)
-                .orElseThrow(() -> new OrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderTestId));
+                .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderTestId));
         assertThat(orderItem.getOrderItemStatus()).isEqualTo(OrderItemStatus.DELETED);
     }
     
