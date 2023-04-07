@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface OrderRepositoryQueryDsl {
     Optional<Order> findNotDeletedAndPaidByIdAndStoreId(Long id, Long storeId);
-    List<Order> findAllNotDeletedAndPaidByStoreId(Long storeId);
     Optional<Order> findNotDeletedAndPaidWithStoreById(Long orderId);
+    Optional<Order> findNotDeletedAndPaidWithStoreAndOrderItemsById(Long orderId);
+    List<Order> findAllNotDeletedAndPaidByStoreId(Long storeId);
 }

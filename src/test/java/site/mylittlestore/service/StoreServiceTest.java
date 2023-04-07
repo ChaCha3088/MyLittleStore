@@ -1,24 +1,19 @@
 package site.mylittlestore.service;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import site.mylittlestore.domain.Address;
-import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemCreationDto;
-import site.mylittlestore.dto.item.ItemFindDto;
-import site.mylittlestore.dto.item.ItemUpdateDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
-import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
+import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTablesAndItems;
+import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
-import site.mylittlestore.enumstorage.status.ItemStatus;
-import site.mylittlestore.exception.item.NoSuchItemException;
+import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.store.NoSuchStoreException;
 import site.mylittlestore.repository.item.ItemRepository;
 
@@ -57,19 +52,22 @@ class StoreServiceTest {
     private Long memberTestId;
     private Long storeTestId;
     private Long itemTestId;
+    private Long storeTableTestId;
 
-    @BeforeAll
+    @BeforeEach
     void setUp() {
+        //회원 생성
         Long newMemberId = memberService.joinMember(MemberCreationDto.builder()
                 .name("memberTest")
                 .email("memberTest@gmail.com")
                 .password("password")
-                                        .city("city")
-                        .street("street")
-                        .zipcode("zipcode")
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
+        //가게 생성
+        Long newStoreId = storeService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .city("city")
@@ -77,6 +75,7 @@ class StoreServiceTest {
                 .zipcode("zipcode")
                 .build());
 
+        //상품 생성
         Long newItemId = storeService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest")
@@ -84,33 +83,51 @@ class StoreServiceTest {
                 .stock(100L)
                 .build());
 
+        //테이블 생성
+        Long newStoreTableId = storeTableService.createStoreTable(newStoreId);
+
         memberTestId = newMemberId;
         storeTestId = newStoreId;
         itemTestId = newItemId;
+        storeTableTestId = newStoreTableId;
     }
 
     @Test
+    @DisplayName("가게를 조회한다.")
     void findStoreDtoById() {
         //when
-        StoreDtoWithStoreTableFindDtosAndItemFindDtos findStoreById = storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeTestId);
+        StoreDto storeDtoById = storeService.findStoreDtoById(storeTestId);
+
+        //then
+        assertThat(storeDtoById.getName()).isEqualTo("storeTest");
+    }
+
+    @Test
+    @DisplayName("테이블, 상품과 함께 가게를 조회한다.")
+    void findStoreDtoWithStoreTablesAndItemsById() {
+        //when
+        StoreDtoWithStoreTablesAndItems findStoreById = storeService.findStoreDtoWithStoreTablesAndItemsById(storeTestId);
 
         //then
         assertThat(findStoreById.getName()).isEqualTo("storeTest");
+        assertThat(findStoreById.getStoreTableFindDtos().size()).isEqualTo(1);
+        assertThat(findStoreById.getItemFindDtos().size()).isEqualTo(1);
     }
 
     @Test
-    void findStoreByIdException() {
+    @DisplayName("해당하는 가게가 없으면, 예외를 발생시킨다.")
+    void findStoreDtoWithStoreTablesAndItemsByIdException() {
         //then
-        assertThatThrownBy(() -> storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(123456789L))
+        assertThatThrownBy(() -> storeService.findStoreDtoWithStoreTablesAndItemsById(123456789L))
                 .isInstanceOf(NoSuchStoreException.class)
                 .hasMessageContaining(StoreErrorMessage.NO_SUCH_STORE.getMessage());
-
     }
 
     @Test
-    public void findAllStoreByMemberId() {
+    @DisplayName("회원의 가게를 모두 조회한다.")
+    public void findAllStoreDtoById() {
         //given
-        Long savedStoreId = memberService.createStore(StoreCreationDto.builder()
+        Long savedStoreId = storeService.createStore(StoreCreationDto.builder()
                 .memberId(memberTestId)
                 .name("newStoreTest")
                 .city("city")
@@ -118,95 +135,126 @@ class StoreServiceTest {
                 .zipcode("zipcode")
                 .build());
 
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
-
         //when
-        List<StoreDtoWithStoreTableFindDtosAndItemFindDtos> findAllStoreByMemberId = storeService.findAllStoreDtoByMemberId(memberTestId);
+        List<StoreDto> allStoreDtoById = storeService.findAllStoreDtoById(memberTestId);
 
         //then
-        assertThat(findAllStoreByMemberId.size()).isEqualTo(2);
-        assertThat(findAllStoreByMemberId.stream()
+        assertThat(allStoreDtoById.size()).isEqualTo(2);
+        assertThat(allStoreDtoById.stream()
                 .filter(s -> s.getId().equals(savedStoreId))
                 .findFirst()
-                .get()).isNotNull();
+                .orElseThrow(() -> new NoSuchStoreException(StoreErrorMessage.NO_SUCH_STORE.getMessage()))
+        ).isNotNull();
     }
 
     @Test
-    public void createItem() {
+    @DisplayName("가게 생성")
+    void createStore() {
         //given
-        Long newItemTestId = storeService.createItem(ItemCreationDto.builder()
-                .storeId(storeTestId)
-                .name("newItemTest")
-                .price(9999L)
-                .stock(99L)
+        Long createdStoreId = storeService.createStore(StoreCreationDto.builder()
+                .name("storeTestB")
+                .memberId(memberTestId)
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
                 .build());
 
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
-
         //when
-        Item itemById = itemRepository.findById(newItemTestId)
-                .orElseThrow(() -> new NoSuchItemException(ItemErrorMessage.NO_SUCH_ITEM.getMessage()));
+        StoreDto storeDtoById = storeService.findStoreDtoById(createdStoreId);
 
         //then
-        assertThat(itemById.getImage()).isEqualTo("");
-        assertThat(itemById.getName()).isEqualTo("newItemTest");
-        assertThat(itemById.getPrice()).isEqualTo(9999L);
-        assertThat(itemById.getStock()).isEqualTo(99L);
-        assertThat(itemById.getItemStatus()).isEqualTo(ItemStatus.ONSALE);
+        //가게 생성 잘 됐는지 확인
+        assertThat(storeDtoById.getName()).isEqualTo("storeTestB");
     }
 
     @Test
-    public void updateItem() {
+    @DisplayName("가게 이름과 주소 수정")
+    public void updateStore(){
         //when
-        storeService.updateItem(ItemUpdateDto.builder()
-                        .id(itemTestId)
-                        .storeId(storeTestId)
-                        .newItemName("newItemTest")
-                        .newPrice(9999L)
-                        .newStock(99L)
+        Long updateStoreId = storeService.updateStore(StoreUpdateDto.builder()
+                .id(storeTestId)
+                .memberId(memberTestId)
+                .name("newStoreTest")
+                .city("newCity")
+                .street("newStreet")
+                .zipcode("newZipcode")
                 .build());
 
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
+        StoreDto storeDtoById = storeService.findStoreDtoById(updateStoreId);
 
         //then
-        //아이템을 업데이트하면 store에서 item을 찾았을 때, 업데이트된 아이템이 나와야 한다.
-//        Long findItemId = storeService.findStoreDtoById(storeTestId).getItems().stream()
-        Long findItemId = storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeTestId).getItemFindDtos().stream()
-                .filter(i -> i.getId().equals(itemTestId))
-                .findFirst()
-                .get().getId();
-//                .orElseThrow(() -> new NoSuchItemException(ItemErrorMessageEnum.NO_SUCH_ITEM.getMessage()));
-        ItemFindDto findItemFindDtoById = itemService.findItemDtoById(findItemId);
-        assertThat(findItemFindDtoById.getName()).isEqualTo("newItemTest");
-        assertThat(findItemFindDtoById.getPrice()).isEqualTo(9999L);
-        assertThat(findItemFindDtoById.getStock()).isEqualTo(99L);
+        assertThat(storeDtoById.getName()).isEqualTo("newStoreTest");
+        assertThat(storeDtoById.getAddressDto().getCity()).isEqualTo("newCity");
     }
 
     @Test
-    public void updateItemPartially(){
-        //when
-        storeService.updateItem(ItemUpdateDto.builder()
-                .id(itemTestId)
-                .storeId(storeTestId)
-                .newItemName("itemTest")
-                .newPrice(9999L)
-                .newStock(99L)
+    @DisplayName("가게 상태 변경(CLOSE -> OPEN)")
+    public void changeStoreStatusCloseToOpen() {
+        //given
+        //가게 열기
+        storeService.changeStoreStatus(StoreUpdateDto.builder()
+                .id(storeTestId)
+                .memberId(memberTestId)
                 .build());
 
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
+        //when
+        StoreDto storeDtoById = storeService.findStoreDtoById(storeTestId);
 
         //then
-        ItemFindDto findItemFindDtoById = itemService.findItemDtoById(itemTestId);
-        assertThat(findItemFindDtoById.getName()).isEqualTo("itemTest");
-        assertThat(findItemFindDtoById.getPrice()).isEqualTo(9999L);
-        assertThat(findItemFindDtoById.getStock()).isEqualTo(99L);
+        assertThat(storeDtoById.getStoreStatus()).isEqualTo(StoreStatus.OPEN.toString());
+    }
+
+    @Test
+    @DisplayName("가게 상태 변경(OPEN -> CLOSE)")
+    public void changeStoreStatusOpenToClose() {
+        //given
+        //가게 열기
+        storeService.changeStoreStatus(StoreUpdateDto.builder()
+                .id(storeTestId)
+                .memberId(memberTestId)
+                .build());
+
+        //when
+        StoreDto storeDtoById1 = storeService.findStoreDtoById(storeTestId);
+
+        //then
+        assertThat(storeDtoById1.getStoreStatus()).isEqualTo(StoreStatus.OPEN.toString());
+
+        //given
+        //가게 닫기
+        storeService.changeStoreStatus(StoreUpdateDto.builder()
+                .id(storeTestId)
+                .memberId(memberTestId)
+                .build());
+
+        //when
+        StoreDto storeDtoById2 = storeService.findStoreDtoById(storeTestId);
+
+        //then
+        assertThat(storeDtoById2.getStoreStatus()).isEqualTo(StoreStatus.CLOSE.toString());
+    }
+
+    @Test
+    public void changeStoreStatusIsNotMembersStoreException() {
+        //given
+        //새로운 회원 생성
+        Long newMemberId = memberService.joinMember(MemberCreationDto.builder()
+                .name("Cha Cha")
+                .email("cha3088@gmail.com")
+                .password("password")
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
+                .build());
+
+        //when
+        //회원이 가지고 있지 않은 가게의 상태를 변경하려고 할 때
+
+        //then
+        Assertions.assertThatThrownBy(() -> storeService.changeStoreStatus(StoreUpdateDto.builder()
+                        .id(storeTestId)
+                        .memberId(newMemberId)
+                        .build())).isInstanceOf(NoSuchStoreException.class)
+                .hasMessageContaining(StoreErrorMessage.IS_NOT_MEMBERS_STORE.getMessage());
     }
 }

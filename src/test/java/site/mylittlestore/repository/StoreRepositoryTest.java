@@ -7,14 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
-import site.mylittlestore.domain.Address;
 import site.mylittlestore.domain.Store;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.repository.member.MemberRepository;
 import site.mylittlestore.repository.store.StoreRepository;
 import site.mylittlestore.service.MemberService;
+import site.mylittlestore.service.StoreService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -34,6 +33,8 @@ class StoreRepositoryTest {
     MemberRepository memberRepository;
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private StoreService storeService;
 
     @PersistenceContext
     EntityManager em;
@@ -52,7 +53,7 @@ class StoreRepositoryTest {
                 .zipcode("zipcode")
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
+        Long newStoreId = storeService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .city("city")

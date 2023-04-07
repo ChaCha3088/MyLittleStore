@@ -9,15 +9,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import site.mylittlestore.dto.item.ItemFindDto;
-import site.mylittlestore.dto.order.OrderDto;
 import site.mylittlestore.dto.orderitem.OrderItemCreationDto;
+import site.mylittlestore.dto.orderitem.OrderItemDeleteDto;
 import site.mylittlestore.dto.orderitem.OrderItemDto;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
-import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
-import site.mylittlestore.exception.orderitem.OrderItemException;
 import site.mylittlestore.exception.payment.PaymentAlreadyExistException;
 import site.mylittlestore.exception.store.StoreClosedException;
 import site.mylittlestore.form.OrderItemCreationForm;
@@ -63,7 +61,7 @@ public class OrderItemController {
         model.addAttribute("storeTableId", storeTableId);
         model.addAttribute("orderId", orderId);
         model.addAttribute("orderItemId", orderItemId);
-        model.addAttribute("orderItemDtoWithItemFindDto", orderItemService.findOrderItemDtoByIdWithItemFindDto(orderItemId, orderId));
+        model.addAttribute("orderItemDtoWithItemFindDto", orderItemService.findOrderItemDtoWithItemByIdAndOrderId(orderItemId, orderId));
         model.addAttribute("orderItemForm", new OrderItemForm());
 
         return "orderItem/orderItemInfo";
@@ -119,7 +117,7 @@ public class OrderItemController {
     public String orderItemUpdateForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, Model model) {
         model.addAttribute("memberId", memberId);
         model.addAttribute("storeId", storeId);
-        model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId, orderId));
+        model.addAttribute("orderItemFindDto", orderItemService.findOrderItemFindDtoByIdAndOrderId(orderItemId, orderId));
         model.addAttribute("orderItemForm", new OrderItemForm());
 
         return "orderItem/orderItemUpdateForm";
@@ -131,7 +129,7 @@ public class OrderItemController {
     public String updateOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @RequestBody @Valid OrderItemForm orderItemForm, BindingResult result, Model model) {
         try {
             if (result.hasErrors()) {
-                model.addAttribute("orderItemFindDto", orderItemService.findOrderItemDtoById(orderItemId, orderId));
+                model.addAttribute("orderItemFindDto", orderItemService.findOrderItemFindDtoByIdAndOrderId(orderItemId, orderId));
                 return "orderItem/orderItemUpdateForm";
             }
 
@@ -189,12 +187,11 @@ public class OrderItemController {
     public String deleteOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @RequestBody @Valid OrderItemForm orderItemForm, BindingResult result, Model model) {
 
         try {
-            orderItemService.deleteOrderItem(OrderItemDto.builder()
+            orderItemService.deleteOrderItem(OrderItemDeleteDto.builder()
                     .id(orderItemId)
                     .orderId(orderId) //나중에 orderId 검증할 것
                     .itemId(orderItemForm.getItemId()) //나중에 itemId 검증할 것
                     .price(orderItemForm.getPrice()) //나중에 price 검증할 것
-                    .count(orderItemForm.getCount()) //나중에 count 검증할 것
                     .build());
 
             return "redirect:/members/"+memberId+"/stores/"+storeId+"/storeTables/"+storeTableId+"/orders/"+orderId;

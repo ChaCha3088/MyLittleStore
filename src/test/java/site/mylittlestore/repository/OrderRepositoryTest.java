@@ -7,10 +7,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import site.mylittlestore.domain.*;
 import site.mylittlestore.domain.Order;
-import site.mylittlestore.dto.item.ItemCreationDto;
-import site.mylittlestore.dto.member.MemberCreationDto;
-import site.mylittlestore.dto.store.StoreCreationDto;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.enumstorage.errormessage.OrderErrorMessage;
 import site.mylittlestore.enumstorage.status.OrderStatus;
 import site.mylittlestore.exception.store.NoSuchOrderException;
@@ -19,14 +15,10 @@ import site.mylittlestore.repository.member.MemberRepository;
 import site.mylittlestore.repository.store.StoreRepository;
 import site.mylittlestore.repository.order.OrderRepository;
 import site.mylittlestore.repository.storetable.StoreTableRepository;
-import site.mylittlestore.service.MemberService;
-import site.mylittlestore.service.StoreService;
-import site.mylittlestore.service.StoreTableService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

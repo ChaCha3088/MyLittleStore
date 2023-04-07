@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import site.mylittlestore.domain.item.Item;
-import site.mylittlestore.dto.orderitem.OrderItemFindDtoWithItemFindDto;
+import site.mylittlestore.dto.orderitem.OrderItemFindDtoWithItem;
 import site.mylittlestore.dto.orderitem.OrderItemFindDto;
 import site.mylittlestore.entity.BaseEntity;
 import site.mylittlestore.enumstorage.status.OrderItemStatus;
@@ -117,7 +117,7 @@ public class OrderItem extends BaseEntity {
     }
 
     //==Dto==//
-    public OrderItemFindDto toOrderItemDto() {
+    public OrderItemFindDto toOrderItemFindDto() {
         return OrderItemFindDto.builder()
                 .id(id)
                 .storeId(store.getId())
@@ -132,8 +132,8 @@ public class OrderItem extends BaseEntity {
                 .build();
     }
 
-    public OrderItemFindDtoWithItemFindDto toOrderItemDtoWithItemFindDto() {
-        return OrderItemFindDtoWithItemFindDto.builder()
+    public OrderItemFindDtoWithItem toOrderItemFindDtoWithItem() {
+        return OrderItemFindDtoWithItem.builder()
                 .id(id)
                 .storeId(store.getId())
                 .orderId(order.getId())
@@ -143,7 +143,7 @@ public class OrderItem extends BaseEntity {
                 .count(count)
                 .orderedTime(orderedDateTime)
                 .updatedTime(updatedDateTime)
-                .orderItemStatus(orderItemStatus.toString())
+                .orderItemStatus(orderItemStatus)
                 .build();
     }
 }

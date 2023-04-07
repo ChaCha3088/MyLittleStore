@@ -5,19 +5,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import site.mylittlestore.domain.Address;
+import site.mylittlestore.domain.StoreTable;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.order.OrderDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
+import site.mylittlestore.dto.orderitem.OrderItemCreationDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.dto.storetable.StoreTableFindDtoWithOrderFindDto;
+import site.mylittlestore.enumstorage.errormessage.StoreTableErrorMessage;
 import site.mylittlestore.enumstorage.status.OrderStatus;
 import site.mylittlestore.exception.store.NoSuchOrderException;
+import site.mylittlestore.exception.store.StoreClosedException;
+import site.mylittlestore.exception.storetable.NoSuchStoreTableException;
+import site.mylittlestore.exception.storetable.OrderAlreadyExistException;
+import site.mylittlestore.repository.storetable.StoreTableRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -40,6 +47,8 @@ class OrderServiceTest {
     private StoreTableService storeTableService;
     @Autowired
     private StoreService storeService;
+    @Autowired
+    private StoreTableRepository storeTableRepository;
 
     @PersistenceContext
     EntityManager em;
@@ -49,6 +58,7 @@ class OrderServiceTest {
     private Long itemTestId;
     private Long storeTableTestId;
     private Long orderTestId;
+    private Long orderItemTestId;
 
     @BeforeEach
     void setUp() {
@@ -61,7 +71,7 @@ class OrderServiceTest {
                 .zipcode("zipcode")
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
+        Long newStoreId = storeService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .city("city")
@@ -77,7 +87,7 @@ class OrderServiceTest {
                 .build());
 
         //가게 열기
-        memberService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.changeStoreStatus(StoreUpdateDto.builder()
                 .id(newStoreId)
                 .memberId(newMemberId)
                 .build());
@@ -86,31 +96,44 @@ class OrderServiceTest {
         Long createdStoreTableId = storeTableService.createStoreTable(newStoreId);
 
         //주문 생성
-        Long createdOrderId = orderService.createOrder(newStoreId, createdStoreTableId);
+        Long newOrderId = orderService.createOrder(newStoreId, createdStoreTableId);
+
+        //주문 상품 생성
+        Long newOrderItem = orderItemService.createOrderItem(OrderItemCreationDto.builder()
+                .orderId(newOrderId)
+                .itemId(newItemId)
+                .price(10000L)
+                .count(1L)
+                .build());
+
+
 
         memberTestId = newMemberId;
         storeTestId = newStoreId;
         itemTestId = newItemId;
         storeTableTestId = createdStoreTableId;
-        orderTestId = createdOrderId;
+        orderTestId = newOrderId;
+        orderItemTestId = newOrderItem;
     }
 
     @Test
-    void findOrderById() {
+    @DisplayName("orderId와 storeId로 DELETED와 PAID가 아닌 OrderDto을 조회한다.")
+    void findOrderDtoByIdAndStoreId() {
         //when
-        OrderDto findOrderWithOrderItemIdById = orderService.findOrderDtoById(orderTestId, storeTestId);
+        OrderDto findOrderWithOrderItemIdById = orderService.findOrderDtoByIdAndStoreId(orderTestId, storeTestId);
 
         //then
-        assertThat(findOrderWithOrderItemIdById.getOrderStatus()).isEqualTo(OrderStatus.USING);
+        assertThat(findOrderWithOrderItemIdById.getOrderStatus()).isEqualTo(OrderStatus.USING.toString());
     }
 
     @Test
+    @DisplayName("해당하는 주문이 없을 경우, 예외 발생")
     void findOrderByIdNoSuchOrderException() {
         //then
-        assertThatThrownBy(() -> orderService.findOrderDtoById(100L, storeTestId))
+        assertThatThrownBy(() -> orderService.findOrderDtoByIdAndStoreId(100L, storeTestId))
                 .isInstanceOf(NoSuchOrderException.class);
 
-        assertThatThrownBy(() -> orderService.findOrderDtoById(orderTestId, 100L))
+        assertThatThrownBy(() -> orderService.findOrderDtoByIdAndStoreId(orderTestId, 100L))
                 .isInstanceOf(NoSuchOrderException.class);
     }
 
@@ -118,7 +141,7 @@ class OrderServiceTest {
 //    void findOrderDtoById() {
 //        //given
 //        //가게 열기
-//        memberService.changeStoreStatus(StoreUpdateDto.builder()
+//        storeService.changeStoreStatus(StoreUpdateDto.builder()
 //                .id(storeTestId)
 //                .memberId(memberTestId)
 //                .build());
@@ -147,16 +170,13 @@ class OrderServiceTest {
     @Test
     @DisplayName("주문 생성")
     void createOrder() {
-        //when
+        //given
         //테이블 생성
         Long createdStoreTableId = storeTableService.createStoreTable(storeTestId);
 
+        //when
         //주문 생성
         Long createdOrderId = orderService.createOrder(storeTestId, createdStoreTableId);
-
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
         
         //then
         StoreTableFindDtoWithOrderFindDto storeTableFindDtoWithOrderFindDtoByStoreId = storeTableService.findStoreTableFindDtoWithOrderFindDtoByStoreId(storeTableTestId, storeTestId);
@@ -165,43 +185,39 @@ class OrderServiceTest {
 
     @Test
     @DisplayName("테이블의 상태가 EMPTY가 아닐 때, 예외 발생")
-    void createOrderNotEmptyException() {
-        //given
-
-
+    void createOrderExceptionWhenTableNotEmpty() {
         //when
+        //테이블 생성
+        Long createdStoreTableId = storeTableService.createStoreTable(storeTestId);
 
+        //테이블 상태 USING으로 변경
+        StoreTable storeTable = storeTableRepository.findById(createdStoreTableId)
+                .orElseThrow(() -> new NoSuchStoreTableException(StoreTableErrorMessage.NO_SUCH_STORE_TABLE.getMessage()));
+        storeTable.changeStoreTableStatusUsing();
+        storeTableRepository.save(storeTable);
 
         //then
-
-        assertThat(1).isEqualTo(2);
+        //주문 생성
+        assertThatThrownBy(() -> orderService.createOrder(storeTestId, createdStoreTableId))
+                .isInstanceOf(NoSuchStoreTableException.class);
     }
 
     @Test
-    @DisplayName("결제가 없을 때, 결제 시작")
-    void startPaymentWhenNoPayment() {
+    @DisplayName("가게가 닫혀있을 때, 주문 생성 시 예외 발생")
+    void createOrderExceptionWhenStoreClosed() {
         //given
-
+        //테이블 생성
+        Long createdStoreTableId = storeTableService.createStoreTable(storeTestId);
 
         //when
-
-
-        //then
-
-        assertThat(1).isEqualTo(2);
-    }
-
-    @Test
-    @DisplayName("결제가 이미 있을 때, 결제 시작")
-    void startPaymentWhenPayment() {
-        //given
-
-
-        //when
-
+        //가게 닫기
+        storeService.changeStoreStatus(StoreUpdateDto.builder()
+                .id(storeTestId)
+                .memberId(memberTestId)
+                .build());
 
         //then
-
-        assertThat(1).isEqualTo(2);
+        assertThatThrownBy(() -> orderService.createOrder(storeTestId, createdStoreTableId))
+                .isInstanceOf(StoreClosedException.class);
     }
 }

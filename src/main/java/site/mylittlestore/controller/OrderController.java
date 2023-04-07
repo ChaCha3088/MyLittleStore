@@ -6,9 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import site.mylittlestore.dto.order.OrderDto;
-import site.mylittlestore.dto.payment.PaymentViewDto;
 import site.mylittlestore.dto.store.StoreDto;
-import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.store.NoSuchOrderException;
@@ -30,7 +28,7 @@ public class OrderController {
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}")
     public String orderInfo(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, Model model) {
         try {
-            OrderDto orderDto = orderService.findOrderDtoById(orderId, storeId);
+            OrderDto orderDto = orderService.findOrderDtoByIdAndStoreId(orderId, storeId);
 
             //Order가 결제 중이면 결제 페이지로 redirect
             if (orderDto.getPaymentId() != null) {
@@ -39,7 +37,7 @@ public class OrderController {
 
             model.addAttribute("memberId", memberId);
             model.addAttribute("orderDto", orderDto);
-            model.addAttribute("orderItemFindDtos", orderItemService.findAllOrderItemFindDtoByOrderId(orderId));
+            model.addAttribute("orderItemFindDtos", orderItemService.findAllOrderItemFindDtosByOrderId(orderId));
 
             return "order/orderInfo";
         } catch (NoSuchOrderException e) {

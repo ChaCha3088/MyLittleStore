@@ -9,13 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.orderitem.OrderItemFindDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.exception.orderitem.OrderItemException;
@@ -71,7 +69,7 @@ public class OrderItemControllerTest {
                 .build());
 
         //가게 등록
-        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
+        Long newStoreId = storeService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .city("city")
@@ -98,7 +96,7 @@ public class OrderItemControllerTest {
                 .build());
 
         //가게 열기
-        memberService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.changeStoreStatus(StoreUpdateDto.builder()
                 .id(newStoreId)
                 .memberId(newMemberId)
                 .build());
@@ -174,7 +172,7 @@ public class OrderItemControllerTest {
                 .andExpect(view().name("orderItems/orderItemInfo"));
 
         //then
-        OrderItemFindDto findOrderItemFindDtoById = orderItemService.findOrderItemDtoById(6L, orderTestId);
+        OrderItemFindDto findOrderItemFindDtoById = orderItemService.findOrderItemFindDtoByIdAndOrderId(6L, orderTestId);
         assertThat(findOrderItemFindDtoById.getPrice()).isEqualTo(10000L);
         assertThat(findOrderItemFindDtoById.getCount()).isEqualTo(100L);
         assertThat(findOrderItemFindDtoById.getItemId()).isEqualTo(itemTestId1);
@@ -203,7 +201,7 @@ public class OrderItemControllerTest {
                 .andExpect(view().name("redirect:/members/"+memberTestId+"/stores/"+storeTestId+"/orders/"+orderTestId+"/orderItems/8"));
 
         //then
-        OrderItemFindDto findOrderItemDtoById1 = orderItemService.findOrderItemDtoById(8L, orderTestId);
+        OrderItemFindDto findOrderItemDtoById1 = orderItemService.findOrderItemFindDtoByIdAndOrderId(8L, orderTestId);
         assertThat(findOrderItemDtoById1.getPrice()).isEqualTo(5000L);
         assertThat(findOrderItemDtoById1.getCount()).isEqualTo(50L);
         assertThat(findOrderItemDtoById1.getItemId()).isEqualTo(itemTestId1);
@@ -220,7 +218,7 @@ public class OrderItemControllerTest {
                 .andExpect(view().name("redirect:/members/"+memberTestId+"/stores/"+storeTestId+"/orders/"+orderTestId+"/orderItems/8"));
 
         //then
-        OrderItemFindDto findOrderItemDtoById2 = orderItemService.findOrderItemDtoById(8L, orderTestId);
+        OrderItemFindDto findOrderItemDtoById2 = orderItemService.findOrderItemFindDtoByIdAndOrderId(8L, orderTestId);
         assertThat(findOrderItemDtoById2.getPrice()).isEqualTo(7500L);
         assertThat(findOrderItemDtoById2.getCount()).isEqualTo(75L);
 
@@ -251,7 +249,7 @@ public class OrderItemControllerTest {
                 .andExpect(view().name("redirect:/members/" + memberTestId + "/stores/" + storeTestId + "/orders/" + orderTestId));
 
         //then
-        assertThatThrownBy(() -> orderItemService.findOrderItemDtoById(orderItemId, orderTestId))
+        assertThatThrownBy(() -> orderItemService.findOrderItemFindDtoByIdAndOrderId(orderItemId, orderTestId))
                 .isInstanceOf(OrderItemException.class)
                 .hasMessageContaining(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage());
 

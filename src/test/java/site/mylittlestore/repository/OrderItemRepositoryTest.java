@@ -76,7 +76,7 @@ public class OrderItemRepositoryTest {
                 .zipcode("zipcode")
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
+        Long newStoreId = storeService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .city("city")
@@ -100,7 +100,7 @@ public class OrderItemRepositoryTest {
                 .build());
 
         //가게 열기
-        memberService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.changeStoreStatus(StoreUpdateDto.builder()
                 .id(newStoreId)
                 .memberId(newMemberId)
                 .build());

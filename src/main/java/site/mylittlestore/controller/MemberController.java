@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.member.MemberFindDto;
 import site.mylittlestore.dto.member.MemberUpdateDto;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
+import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTablesAndItems;
 import site.mylittlestore.form.MemberCreationForm;
 import site.mylittlestore.form.MemberUpdateForm;
 import site.mylittlestore.service.MemberService;
@@ -39,10 +39,10 @@ public class MemberController {
 
     @GetMapping("/members/{memberId}")
     public String memberInfo(@PathVariable("memberId") Long memberId, Model model) {
-        MemberFindDto memberFindDto = memberService.findMemberFindDtoByMemberId(memberId);
-        List<StoreDtoWithStoreTableFindDtosAndItemFindDtos> findAllStoreDtoByMemberIdWithStoreTableFindDtosAndItemFindDtos = storeService.findAllStoreDtoByMemberId(memberId);
+        MemberFindDto memberFindDto = memberService.findMemberFindDtoById(memberId);
+        List<StoreDto> storeDtos = storeService.findAllStoreDtoById(memberId);
         model.addAttribute("memberFindDto", memberFindDto);
-        model.addAttribute("storeDtos", findAllStoreDtoByMemberIdWithStoreTableFindDtosAndItemFindDtos);
+        model.addAttribute("storeDtos", storeDtos);
         return "member/memberInfo";
     }
 
@@ -74,7 +74,7 @@ public class MemberController {
 
     @GetMapping("/members/{memberId}/update")
     public String memberUpdateForm(@PathVariable("memberId") Long memberId, Model model) {
-        model.addAttribute("memberFindDto", memberService.findMemberFindDtoByMemberId(memberId));
+        model.addAttribute("memberFindDto", memberService.findMemberFindDtoById(memberId));
         model.addAttribute("memberUpdateForm", new MemberUpdateForm());
 
         return "member/memberUpdateForm";
@@ -84,18 +84,16 @@ public class MemberController {
     public String updateMember(@PathVariable("memberId") Long memberId, @RequestBody @Valid MemberUpdateForm memberUpdateForm, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
-            model.addAttribute("memberFindDto", memberService.findMemberFindDtoByMemberId(memberId));
+            model.addAttribute("memberFindDto", memberService.findMemberFindDtoById(memberId));
             return "member/memberUpdateForm";
         }
 
         Long savedMemberId = memberService.updateMember(MemberUpdateDto.builder()
                 .id(memberId)   //나중에 memberId 검증할 것
                 .name(memberUpdateForm.getName())
-                .address(Address.builder().
-                        city(memberUpdateForm.getCity())
-                        .street(memberUpdateForm.getStreet())
-                        .zipcode(memberUpdateForm.getZipcode())
-                        .build())
+                .city(memberUpdateForm.getCity())
+                .street(memberUpdateForm.getStreet())
+                .zipcode(memberUpdateForm.getZipcode())
                 .build());
 
         return "redirect:/members/"+savedMemberId;

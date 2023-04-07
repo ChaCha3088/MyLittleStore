@@ -41,10 +41,6 @@ public class Item extends BaseEntity {
     @Min(value = 0, message = "재고는 0 이상이어야 합니다.")
     private Long stock;
 
-    /**
-     * 이미지는 url로 저장
-     * url이 없는 경우, ""로 저장
-     */
     private String image;
 
     @NotNull

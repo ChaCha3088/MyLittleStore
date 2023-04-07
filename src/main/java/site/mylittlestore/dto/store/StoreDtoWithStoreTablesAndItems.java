@@ -11,20 +11,26 @@ import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.storetable.StoreTableFindDto;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-public class StoreDtoWithStoreTableFindDtosAndItemFindDtos {
-
+public class StoreDtoWithStoreTablesAndItems {
+    @NotNull
     private Long id;
-
+    @NotNull
     private Long memberId;
-
+    @NotBlank
     private String name;
-
-    private AddressDto addressDto;
-
+    @NotBlank
+    private String city;
+    @NotBlank
+    private String street;
+    @NotBlank
+    private String zipcode;
+    @NotBlank
     private String storeStatus;
 
     private List<StoreTableFindDto> storeTableFindDtos;
@@ -32,16 +38,13 @@ public class StoreDtoWithStoreTableFindDtosAndItemFindDtos {
     private List<ItemFindDto> itemFindDtos;
 
     @Builder
-    @QueryProjection
-    public StoreDtoWithStoreTableFindDtosAndItemFindDtos(Long id, Long memberId, String name, Address address, StoreStatus storeStatus, List<StoreTable> storeTables, List<Item> items) {
+    protected StoreDtoWithStoreTablesAndItems(Long id, Long memberId, String name, String city, String street, String zipcode, StoreStatus storeStatus, List<StoreTable> storeTables, List<Item> items) {
         this.id = id;
         this.memberId = memberId;
         this.name = name;
-        this.addressDto = AddressDto.builder()
-                .city(address.getCity())
-                .street(address.getStreet())
-                .zipcode(address.getZipcode())
-                .build();
+        this.city = city;
+        this.street = street;
+        this.zipcode = zipcode;
         this.storeStatus = storeStatus.toString();
         this.storeTableFindDtos = storeTables.stream()
                 .map(storeTable -> storeTable.toStoreTableFindDto())

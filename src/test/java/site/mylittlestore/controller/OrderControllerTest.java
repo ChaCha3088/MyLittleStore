@@ -10,14 +10,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.order.OrderDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.enumstorage.status.OrderStatus;
 import site.mylittlestore.service.MemberService;
 import site.mylittlestore.service.OrderService;
+import site.mylittlestore.service.StoreService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -29,13 +28,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class OrderControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private MemberService memberService;
-
+    @Autowired
+    private StoreService storeService;
     @Autowired
     private OrderService orderService;
 
@@ -54,7 +52,7 @@ class OrderControllerTest {
                         .zipcode("zipcode")
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
+        Long newStoreId = storeService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .city("city")
@@ -92,7 +90,7 @@ class OrderControllerTest {
         Long orderId = Long.parseLong(split[split.length - 1]);
         Long storeId = Long.parseLong(split[split.length - 5]);
 
-        OrderDto orderDto = orderService.findOrderDtoById(orderId, storeId);
+        OrderDto orderDto = orderService.findOrderDtoByIdAndStoreId(orderId, storeId);
         assertThat(orderDto.getOrderStatus()).isEqualTo(OrderStatus.USING.toString());
     }
 }

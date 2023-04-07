@@ -61,16 +61,17 @@ public class Member extends BaseEntity {
         this.password = password;
     }
 
-    public void updateMemberAddress(Address address) {
-        this.address = address;
+    public void updateMemberAddress(String city, String street, String zipcode) {
+        this.address = Address.builder()
+                .city(city)
+                .street(street)
+                .zipcode(zipcode)
+                .build();
     }
 
     //==연관관계 메소드==//
-    public Member createStore(Store store) {
+    public void setStore(Store store) {
         stores.add(store);
-        store.setMember(this);
-
-        return this;
     }
 
 //    public void updateStoreName(String originalName, String newStoreName) throws IllegalStateException {
@@ -87,7 +88,9 @@ public class Member extends BaseEntity {
                 .id(id)
                 .name(name)
                 .email(email)
-                .address(address)
+                .city(address.getCity())
+                .street(address.getStreet())
+                .zipcode(address.getZipcode())
                 .build();
     }
 }

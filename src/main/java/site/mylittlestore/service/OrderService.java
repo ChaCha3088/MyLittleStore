@@ -34,7 +34,7 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final PaymentRepository paymentRepository;
 
-    public OrderDto findOrderDtoById(Long id, Long storeId) throws NoSuchOrderException {
+    public OrderDto findOrderDtoByIdAndStoreId(Long id, Long storeId) throws NoSuchOrderException {
         Optional<Order> findOrderById = orderRepository.findNotDeletedAndPaidByIdAndStoreId(id, storeId);
 
         //주문이 없으면 예외 발생

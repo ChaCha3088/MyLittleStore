@@ -9,12 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import site.mylittlestore.domain.Address;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
 import site.mylittlestore.enumstorage.status.ItemStatus;
@@ -22,6 +20,7 @@ import site.mylittlestore.exception.item.NoSuchItemException;
 import site.mylittlestore.repository.item.ItemRepository;
 import site.mylittlestore.service.ItemService;
 import site.mylittlestore.service.MemberService;
+import site.mylittlestore.service.StoreService;
 import site.mylittlestore.service.StoreTableService;
 
 import java.util.Optional;
@@ -42,15 +41,15 @@ public class ItemControllerTest {
 
     @Autowired
     private MemberService memberService;
-
+    @Autowired
+    private StoreService storeService;
     @Autowired
     private StoreTableService storeTableService;
+    @Autowired
+    private ItemService itemService;
 
     @Autowired
     private ItemRepository itemRepository;
-
-    @Autowired
-    private ItemService itemService;
 
     private Long memberTestId;
     private Long storeTestId;
@@ -69,7 +68,7 @@ public class ItemControllerTest {
                 .build());
 
         //가게 등록
-        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
+        Long newStoreId = storeService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .city("city")
@@ -81,7 +80,7 @@ public class ItemControllerTest {
         Long newOrderId = storeTableService.createStoreTable(storeTestId);
 
         //가게 열기
-        memberService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.changeStoreStatus(StoreUpdateDto.builder()
                 .id(newStoreId)
                 .memberId(newMemberId)
                 .build());

@@ -1,19 +1,18 @@
 package site.mylittlestore.service;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import site.mylittlestore.domain.Address;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
+import site.mylittlestore.dto.item.ItemUpdateDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
 import site.mylittlestore.enumstorage.status.ItemStatus;
 import site.mylittlestore.exception.item.NoSuchItemException;
@@ -51,7 +50,7 @@ class ItemServiceTest {
     private Long storeTestId;
     private Long itemTestId;
 
-    @BeforeAll
+    @BeforeEach
     void setUp() {
         Long newMemberId = memberService.joinMember(MemberCreationDto.builder()
                 .name("memberTest")
@@ -62,7 +61,7 @@ class ItemServiceTest {
                         .zipcode("zipcode")
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
+        Long newStoreId = storeService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .city("city")
@@ -127,13 +126,74 @@ class ItemServiceTest {
     }
 
     @Test
+    public void createItem() {
+        //given
+        Long newItemTestId = storeService.createItem(ItemCreationDto.builder()
+                .storeId(storeTestId)
+                .name("newItemTest")
+                .price(9999L)
+                .stock(99L)
+                .build());
+
+        //when
+        Item itemById = itemRepository.findById(newItemTestId)
+                .orElseThrow(() -> new NoSuchItemException(ItemErrorMessage.NO_SUCH_ITEM.getMessage()));
+
+        //then
+        assertThat(itemById.getImage()).isEqualTo(null);
+        assertThat(itemById.getName()).isEqualTo("newItemTest");
+        assertThat(itemById.getPrice()).isEqualTo(9999L);
+        assertThat(itemById.getStock()).isEqualTo(99L);
+        assertThat(itemById.getItemStatus()).isEqualTo(ItemStatus.ONSALE);
+    }
+
+    @Test
+    public void updateItem() {
+        //when
+        storeService.updateItem(ItemUpdateDto.builder()
+                .id(itemTestId)
+                .storeId(storeTestId)
+                .newItemName("newItemTest")
+                .newPrice(9999L)
+                .newStock(99L)
+                .build());
+
+        //then
+        //아이템을 업데이트하면 store에서 item을 찾았을 때, 업데이트된 아이템이 나와야 한다.
+//        Long findItemId = storeService.findStoreDtoById(storeTestId).getItems().stream()
+        Long findItemId = storeService.findStoreDtoWithStoreTablesAndItemsById(storeTestId).getItemFindDtos().stream()
+                .filter(i -> i.getId().equals(itemTestId))
+                .findFirst()
+                .get().getId();
+//                .orElseThrow(() -> new NoSuchItemException(ItemErrorMessageEnum.NO_SUCH_ITEM.getMessage()));
+        ItemFindDto findItemFindDtoById = itemService.findItemDtoById(findItemId);
+        assertThat(findItemFindDtoById.getName()).isEqualTo("newItemTest");
+        assertThat(findItemFindDtoById.getPrice()).isEqualTo(9999L);
+        assertThat(findItemFindDtoById.getStock()).isEqualTo(99L);
+    }
+
+    @Test
+    public void updateItemPartially(){
+        //when
+        storeService.updateItem(ItemUpdateDto.builder()
+                .id(itemTestId)
+                .storeId(storeTestId)
+                .newItemName("itemTest")
+                .newPrice(9999L)
+                .newStock(99L)
+                .build());
+
+        //then
+        ItemFindDto findItemFindDtoById = itemService.findItemDtoById(itemTestId);
+        assertThat(findItemFindDtoById.getName()).isEqualTo("itemTest");
+        assertThat(findItemFindDtoById.getPrice()).isEqualTo(9999L);
+        assertThat(findItemFindDtoById.getStock()).isEqualTo(99L);
+    }
+
+    @Test
     void deleteItemById() {
         //when
         itemService.deleteItemById(itemTestId);
-
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
 
         //then
         assertThatThrownBy(() -> itemService.findItemDtoById(itemTestId))

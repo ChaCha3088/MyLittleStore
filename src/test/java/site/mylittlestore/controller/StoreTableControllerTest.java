@@ -10,13 +10,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.storetable.StoreTableFindDto;
 import site.mylittlestore.service.MemberService;
-import site.mylittlestore.service.OrderService;
+import site.mylittlestore.service.StoreService;
 import site.mylittlestore.service.StoreTableService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +35,7 @@ public class StoreTableControllerTest {
     private MemberService memberService;
 
     @Autowired
-    private OrderService orderService;
+    private StoreService storeService;
 
     @Autowired
     private StoreTableService storeTableService;
@@ -57,7 +55,7 @@ public class StoreTableControllerTest {
                         .zipcode("zipcode")
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
+        Long newStoreId = storeService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .city("city")

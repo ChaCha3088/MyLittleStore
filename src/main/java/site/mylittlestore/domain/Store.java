@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.store.StoreDto;
+import site.mylittlestore.dto.store.StoreDtoWithStoreTablesAndItems;
 import site.mylittlestore.enumstorage.status.StoreStatus;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.entity.BaseEntity;
 
 import javax.persistence.*;
@@ -13,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.FetchType.LAZY;
 
@@ -63,6 +64,8 @@ public class Store extends BaseEntity {
         this.storeTables = new ArrayList<>();
         this.items = new ArrayList<>();
         this.storeStatus = StoreStatus.CLOSE;
+
+        member.setStore(this);
     }
 
     public StoreTable createStoreTable() {
@@ -85,8 +88,12 @@ public class Store extends BaseEntity {
         this.name = newStoreName;
     }
 
-    public void updateStoreAddress(Address address) {
-        this.address = address;
+    public void updateStoreAddress(String city, String street, String zipcode) {
+        this.address = Address.builder()
+                .city(city)
+                .street(street)
+                .zipcode(zipcode)
+                .build();
     }
 
     public void changeStoreStatus(StoreStatus storeStatus) {
@@ -94,17 +101,16 @@ public class Store extends BaseEntity {
     }
 
     //==연관관계 메소드==//
-    public void setMember(Member member) {
-        this.member = member;
-    }
 
     //==DTO==//
-    public StoreDtoWithStoreTableFindDtosAndItemFindDtos toStoreDtoWithStoreTableFindDtosAndItemFindDtos() {
-        return StoreDtoWithStoreTableFindDtosAndItemFindDtos.builder()
+    public StoreDtoWithStoreTablesAndItems toStoreDtoWithStoreTablesAndItems() {
+        return StoreDtoWithStoreTablesAndItems.builder()
                 .id(this.id)
                 .memberId(this.member.getId())
                 .name(this.name)
-                .address(this.address)
+                .city(this.address.getCity())
+                .street(this.address.getStreet())
+                .zipcode(this.address.getZipcode())
                 .storeStatus(this.storeStatus)
                 .storeTables(this.storeTables)
                 .items(this.items)
@@ -118,6 +124,12 @@ public class Store extends BaseEntity {
                 .name(this.name)
                 .address(this.address)
                 .storeStatus(this.storeStatus)
+                .storeTableIds(this.storeTables.stream()
+                        .map(storeTable -> storeTable.getId())
+                        .collect(Collectors.toList()))
+                .itemIds(this.items.stream()
+                        .map(item -> item.getId())
+                        .collect(Collectors.toList()))
                 .build();
     }
 }

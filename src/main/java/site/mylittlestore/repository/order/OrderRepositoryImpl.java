@@ -36,21 +36,6 @@ public class OrderRepositoryImpl implements OrderRepositoryQueryDsl {
     }
 
     @Override
-    public List<Order> findAllNotDeletedAndPaidByStoreId(Long storeId) {
-        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
-
-        return queryFactory
-                .select(order)
-                .distinct()
-                .from(order)
-                .where(order.store.id.eq(storeId)
-                        .and(order.orderStatus.ne(OrderStatus.DELETED))
-                        .and(order.orderStatus.ne(OrderStatus.PAID)))
-                .fetch();
-    }
-
-
-    @Override
     public Optional<Order> findNotDeletedAndPaidWithStoreById(Long orderId) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
@@ -62,5 +47,35 @@ public class OrderRepositoryImpl implements OrderRepositoryQueryDsl {
                         .and(order.orderStatus.ne(OrderStatus.DELETED))
                         .and(order.orderStatus.ne(OrderStatus.PAID)))
                 .fetchOne());
+    }
+
+    @Override
+    public Optional<Order> findNotDeletedAndPaidWithStoreAndOrderItemsById(Long orderId) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return Optional.ofNullable(queryFactory
+                .select(order)
+                .from(order)
+                .join(order.store, store).fetchJoin()
+                .join(order.orderItems, orderItem).fetchJoin()
+                .where(order.id.eq(orderId)
+                        .and(order.orderStatus.ne(OrderStatus.DELETED))
+                        .and(order.orderStatus.ne(OrderStatus.PAID)))
+                .fetchOne());
+    }
+
+
+    @Override
+    public List<Order> findAllNotDeletedAndPaidByStoreId(Long storeId) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return queryFactory
+                .select(order)
+                .distinct()
+                .from(order)
+                .where(order.store.id.eq(storeId)
+                        .and(order.orderStatus.ne(OrderStatus.DELETED))
+                        .and(order.orderStatus.ne(OrderStatus.PAID)))
+                .fetch();
     }
 }

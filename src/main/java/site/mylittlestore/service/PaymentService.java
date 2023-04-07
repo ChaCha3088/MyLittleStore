@@ -56,8 +56,14 @@ public class PaymentService {
 
     @Transactional
     public PaymentViewDto startPayment(Long orderId) {
-        Order order = findOrderWithStoreById(orderId);
+        Order order = findOrderWithStoreAndOrderItemsById(orderId);
         Store store = order.getStore();
+        List<OrderItem> orderItems = order.getOrderItems();
+
+        //주문 상품이 없으면 예외 발생
+        if (orderItems.isEmpty()) {
+            throw new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), order.getId());
+        }
 
         //가게가 열려있는지 확인
         //결제 중인지 확인
@@ -65,16 +71,9 @@ public class PaymentService {
 
         //Payment가 비어있으면
         //Payment 생성
-        //주문에 있는 주문 상품을 모두 찾는다.
-        List<OrderItem> allByOrderId = orderItemRepository.findAllByOrderId(orderId);
-        //주문 상품이 없으면 예외 발생
-        if (allByOrderId.isEmpty()) {
-            throw new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), order.getId());
-        }
-
         //합계 계산
         AtomicLong initialPaymentAmount = new AtomicLong(0);
-        allByOrderId.stream().map(orderItem -> initialPaymentAmount.getAndAdd(orderItem.getPrice() * orderItem.getPrice()));
+        orderItems.stream().map(orderItem -> initialPaymentAmount.getAndAdd(orderItem.getPrice() * orderItem.getPrice()));
 
         //Payment 생성
         Payment createdPayment = Payment.builder()
@@ -87,7 +86,7 @@ public class PaymentService {
         return PaymentViewDto.builder()
                 .id(payment.getId())
                 .orderDto(order.toOrderDto())
-                .orderItemFindDtos(allByOrderId.stream().map(orderItem -> orderItem.toOrderItemDto()).collect(Collectors.toList()))
+                .orderItemFindDtos(orderItems.stream().map(orderItem -> orderItem.toOrderItemFindDto()).collect(Collectors.toList()))
                 .initialPaymentAmount(initialPaymentAmount.get())
                 .build();
     }
@@ -133,6 +132,12 @@ public class PaymentService {
 
     private Order findOrderWithStoreById(Long orderId) {
         Order order = orderRepository.findNotDeletedAndPaidWithStoreById(orderId)
+                .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
+        return order;
+    }
+
+    private Order findOrderWithStoreAndOrderItemsById(Long orderId) {
+        Order order = orderRepository.findNotDeletedAndPaidWithStoreAndOrderItemsById(orderId)
                 .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
         return order;
     }

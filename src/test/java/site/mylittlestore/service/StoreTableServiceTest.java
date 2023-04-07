@@ -1,18 +1,13 @@
 package site.mylittlestore.service;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.dto.storetable.StoreTableFindDto;
 import site.mylittlestore.dto.storetable.StoreTableFindDtoWithOrderFindDto;
@@ -29,16 +24,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class StoreTableServiceTest {
-
     @Autowired
     private MemberService memberService;
-
-    @Autowired
-    private StoreTableService storeTableService;
-
     @Autowired
     private StoreService storeService;
-
+    @Autowired
+    private StoreTableService storeTableService;
     @Autowired
     private OrderService orderService;
 
@@ -49,19 +40,20 @@ public class StoreTableServiceTest {
     private Long storeTestId;
     private Long itemTestId;
     private Long storeTableTestId;
+    private Long orderTestId;
 
-    @BeforeAll
+    @BeforeEach
     void setUp() {
         Long newMemberId = memberService.joinMember(MemberCreationDto.builder()
                 .name("memberTest")
                 .email("memberTest@gmail.com")
                 .password("password")
-                                        .city("city")
-                        .street("street")
-                        .zipcode("zipcode")
+                .city("city")
+                .street("street")
+                .zipcode("zipcode")
                 .build());
 
-        Long newStoreId = memberService.createStore(StoreCreationDto.builder()
+        Long newStoreId = storeService.createStore(StoreCreationDto.builder()
                 .memberId(newMemberId)
                 .name("storeTest")
                 .city("city")
@@ -77,7 +69,7 @@ public class StoreTableServiceTest {
                 .build());
 
         //가게 열기
-        memberService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.changeStoreStatus(StoreUpdateDto.builder()
                 .id(newStoreId)
                 .memberId(newMemberId)
                 .build());
@@ -92,6 +84,7 @@ public class StoreTableServiceTest {
         storeTestId = newStoreId;
         itemTestId = newItemId;
         storeTableTestId = newStoreTableId;
+        orderTestId = newOrderId;
     }
 
     @Test
@@ -134,10 +127,6 @@ public class StoreTableServiceTest {
         Long createdOrderId1 = orderService.createOrder(storeTestId, createdStoreTable1);
         Long createdOrderId2 = orderService.createOrder(storeTestId, createdStoreTable2);
 
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
-
         //when
         List<StoreTableFindDtoWithOrderFindDto> allStoreTableFindDtoWithOrderFindDtoByStoreId = storeTableService.findAllStoreTableFindDtoWithOrderFindDtoByStoreId(storeTestId);
 
@@ -158,10 +147,6 @@ public class StoreTableServiceTest {
         storeTableService.createStoreTable(storeTestId);
         storeTableService.createStoreTable(storeTestId);
         storeTableService.createStoreTable(storeTestId);
-
-        //영속성 컨텍스트 초기화
-        em.flush();
-        em.clear();
 
         //when
         List<StoreTableFindDto> allStoreTableFindDtoByStoreId = storeTableService.findAllStoreTableFindDtoByStoreId(storeTestId);

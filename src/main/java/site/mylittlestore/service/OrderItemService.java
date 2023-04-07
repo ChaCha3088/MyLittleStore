@@ -38,31 +38,35 @@ public class OrderItemService {
 
     private final ItemRepository itemRepository;
 
-    public OrderItemFindDto findOrderItemDtoById(Long orderItemId, Long orderId) {
-        return orderItemRepository.findById(orderItemId)
+    public OrderItemFindDto findOrderItemFindDtoByIdAndOrderId(Long orderItemId, Long orderId) {
+        return orderItemRepository.findOrderedById(orderItemId)
                 //주문 상품이 없으면 예외 발생
                 .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderId))
                 //Dto로 변환
-                .toOrderItemDto();
+                .toOrderItemFindDto();
     }
 
-    public List<OrderItemFindDto> findAllOrderItemFindDtoByOrderId(Long orderId) {
-        return orderItemRepository.findAllByOrderId(orderId)
+    public OrderItemFindDtoWithItem findOrderItemDtoWithItemByIdAndOrderId(Long orderItemId, Long orderId) throws OrderItemException {
+        return orderItemRepository.findWithItemById(orderItemId)
+                //주문 상품이 없으면 예외 발생
+                .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderId))
                 //Dto로 변환
-                .stream()
-                .map(orderItem -> orderItem.toOrderItemDto())
+                .toOrderItemFindDtoWithItem();
+    }
+
+    /**
+     * 테이블에 속한 주문 상품 모두 조회
+     * orderId로 ORDERED인 주문 상품을 모두 조회
+     * @param orderId
+     * @return
+     */
+    public List<OrderItemFindDto> findAllOrderItemFindDtosByOrderId(Long orderId) {
+        return orderItemRepository.findAllByOrderId(orderId).stream()
+                //Dto로 변환
+                .map(orderItem -> orderItem.toOrderItemFindDto())
                 .collect(Collectors.toList());
     }
 
-    public OrderItemFindDtoWithItemFindDto findOrderItemDtoByIdWithItemFindDto(Long orderItemId, Long orderId) throws OrderItemException {
-        Optional<OrderItem> findOrderItemById = orderItemRepository.findWithItemById(orderItemId);
-
-        return findOrderItemById
-                //주문 상품이 없으면 예외 발생
-                .orElseThrow(() -> new NoSuchOrderItemException(OrderItemErrorMessage.NO_SUCH_ORDER_ITEM.getMessage(), orderId))
-                //Dto로 변환
-                .toOrderItemDtoWithItemFindDto();
-    }
 
 //    public List<OrderItemDtoWithItemNameDto> findAllOrderItemDtoWithItemNameByOrderIdOrderByTime(Long orderId) {
 //        List<OrderItem> findOrderItemByOrderId = orderItemRepository.findAllOrderItemByOrderIdOrderByTime(orderId);
@@ -71,13 +75,17 @@ public class OrderItemService {
 //        return findOrderItemByOrderId.stream().map(OrderItem::toOrderItemDtoWithItemNameDto).collect(Collectors.toList());
 //    }
 
-    public List<OrderItemFindDto> findAllOrderItemByOrderId(Long orderId) {
-        //테이블에 속한 주문 상품만 찾아야지.
-        List<OrderItem> findOrderItemByOrderId = orderItemRepository.findAllOrderItemByOrderIdOrderByTime(orderId);
+    /**
+     * 테이블에 속한 주문 상품을 상품과 함께 모두 조회
+     * orderId로 ORDERED인 주문 상품을 찾아서, 상품과 함께 모두 조회
+     * @param orderId
+     * @return
+     */
+    public List<OrderItemFindDtoWithItem> findAllOrderItemFindDtosWithItemByOrderId(Long orderId) {
 
-        //Dto로 변환
-        return findOrderItemByOrderId.stream()
-                .map(m -> m.toOrderItemDto())
+        return orderItemRepository.findAllWithItemByOrderId(orderId).stream()
+                //Dto로 변환
+                .map(m -> m.toOrderItemFindDtoWithItem())
                 .collect(Collectors.toList());
     }
 
@@ -132,25 +140,6 @@ public class OrderItemService {
     }
 
     /**
-     * 가게가 열려있는지 확인
-     * 결제 중인지 확인
-     * @param order
-     * @param store
-     */
-    private static void validateOrderItemChangeAbility(Order order, Store store) {
-        //가게가 열려있는지 확인
-        if (store.getStoreStatus().equals(StoreStatus.CLOSE)) {
-            throw new StoreClosedException(StoreErrorMessage.STORE_CLOSED.getMessage(), store.getId());
-        }
-
-        //결제 중인지 확인
-        //결제 중이면 예외 발생
-        if (order.getPayment() != null) {
-            throw new PaymentAlreadyExistException(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage(), order.getPayment().getId(), order.getStoreTable().getId(), order.getId());
-        }
-    }
-
-    /**
      * 주문 상품을 수정하기 위해서는 상품 Id, 상품 가격이 같아야 한다.
      * 따라서 가격이 한번 정해지면, 수량만 변경 가능하다.
      * @param orderItemDto
@@ -187,14 +176,12 @@ public class OrderItemService {
 
     /**
      * 주문 상품을 삭제하기 위해서는 상품 Id, 상품 가격이 같아야 한다.
-     * @param orderItemDto
+     * @param orderItemDeleteDto
      * @throws EmptyResultDataAccessException
      */
     @Transactional
-    public void deleteOrderItem(OrderItemDto orderItemDto) throws EmptyResultDataAccessException {
-        OrderItemDto orderItemDto1 = orderItemDto;
-
-        Order order = findOrderWithStoreById(orderItemDto.getOrderId());
+    public void deleteOrderItem(OrderItemDeleteDto orderItemDeleteDto) throws EmptyResultDataAccessException {
+        Order order = findOrderWithStoreById(orderItemDeleteDto.getOrderId());
         Store store = order.getStore();
 
         //가게가 열려있는지 확인
@@ -202,7 +189,7 @@ public class OrderItemService {
         validateOrderItemChangeAbility(order, store);
 
         //주문에 상품 Id, 상품 가격이 같은 주문 상품이 존재하는지 확인하고 삭제
-        OrderItem orderItem = validateOrderItemExistenceWithOrderIdAndOrderItemIdAndItemIdAndPrice(order.getId(), orderItemDto.getId(), orderItemDto.getItemId(), orderItemDto.getPrice());
+        OrderItem orderItem = validateOrderItemExistenceWithOrderIdAndOrderItemIdAndItemIdAndPrice(order.getId(), orderItemDeleteDto.getId(), orderItemDeleteDto.getItemId(), orderItemDeleteDto.getPrice());
 
         try {
             //해당 상품의 재고를 늘려주고, 주문 상품을 삭제한다.
@@ -215,6 +202,25 @@ public class OrderItemService {
             //상품이 없으면, 주문 상품만 삭제
         } finally {
             orderItemRepository.deleteByChangingStatus(orderItem.getId());
+        }
+    }
+
+    /**
+     * 가게가 열려있는지 확인
+     * 결제 중인지 확인
+     * @param order
+     * @param store
+     */
+    private static void validateOrderItemChangeAbility(Order order, Store store) {
+        //가게가 열려있는지 확인
+        if (store.getStoreStatus().equals(StoreStatus.CLOSE)) {
+            throw new StoreClosedException(StoreErrorMessage.STORE_CLOSED.getMessage(), store.getId());
+        }
+
+        //결제 중인지 확인
+        //결제 중이면 예외 발생
+        if (order.getPayment() != null) {
+            throw new PaymentAlreadyExistException(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage(), order.getPayment().getId(), order.getStoreTable().getId(), order.getId());
         }
     }
 

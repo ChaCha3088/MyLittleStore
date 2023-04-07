@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.store.StoreCreationDto;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.form.StoreCreationForm;
 import site.mylittlestore.form.StoreUpdateForm;
@@ -35,7 +33,7 @@ public class StoreController {
     public String storeInfo(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, Model model) {
         model.addAttribute("memberId", memberId);
         model.addAttribute("storeId", storeId);
-        model.addAttribute("storeDto", storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeId));
+        model.addAttribute("storeDto", storeService.findStoreDtoWithStoreTablesAndItemsById(storeId));
 
         return "store/storeInfo";
     }
@@ -55,7 +53,7 @@ public class StoreController {
             return "store/storeCreationForm";
         }
 
-        Long createdStoreId = memberService.createStore(StoreCreationDto.builder()
+        Long createdStoreId = storeService.createStore(StoreCreationDto.builder()
                 .memberId(memberId)
                 .name(storeCreationForm.getName())
                 .city(storeCreationForm.getCity())
@@ -68,7 +66,7 @@ public class StoreController {
 
     @GetMapping("/members/{memberId}/stores/{storeId}/update")
     public String updateStoreForm(@PathVariable("storeId") Long storeId, Model model) {
-        model.addAttribute("storeFindDto", storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeId));
+        model.addAttribute("storeFindDto", storeService.findStoreDtoWithStoreTablesAndItemsById(storeId));
         model.addAttribute("storeUpdateForm", new StoreUpdateForm());
 
         return "store/storeUpdateForm";
@@ -78,20 +76,18 @@ public class StoreController {
     public String updateStore(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @RequestBody @Valid StoreUpdateForm storeUpdateForm, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
-            model.addAttribute("storeFindDto", storeService.findStoreDtoWithStoreTableFindDtosAndItemFindDtosById(storeId));
+            model.addAttribute("storeFindDto", storeService.findStoreDtoWithStoreTablesAndItemsById(storeId));
             model.addAttribute("storeUpdateForm", new StoreUpdateForm());
             return "store/storeUpdateForm";
         }
 
-        Long updatedStoreId = memberService.updateStore(StoreUpdateDto.builder()
+        Long updatedStoreId = storeService.updateStore(StoreUpdateDto.builder()
                 .memberId(memberId) //나중에 memberId 검증할 것
                 .id(storeId) //나중에 storeId 검증할 것
-                .newName(storeUpdateForm.getName())
-                .newAddress(Address.builder()
-                        .city(storeUpdateForm.getCity())
-                        .street(storeUpdateForm.getStreet())
-                        .zipcode(storeUpdateForm.getZipcode())
-                        .build())
+                .name(storeUpdateForm.getName())
+                .city(storeUpdateForm.getCity())
+                .street(storeUpdateForm.getStreet())
+                .zipcode(storeUpdateForm.getZipcode())
                 .build());
 
         return "redirect:/members/"+memberId+"/stores/"+updatedStoreId;
@@ -99,7 +95,7 @@ public class StoreController {
     
     @GetMapping("/members/{memberId}/stores/{storeId}/changeStoreStatus")
     public String changeStoreStatus(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId) {
-        memberService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.changeStoreStatus(StoreUpdateDto.builder()
                 .id(storeId)
                 .memberId(memberId)
                 .build());

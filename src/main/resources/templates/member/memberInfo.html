@@ -24,9 +24,9 @@
                 <tbody th:onclick="|location.href='@{/members/{memberId}/update(memberId = ${memberFindDto.id})}'|">
                     <td th:text="${memberFindDto.email}"></td>
                     <td th:text="${memberFindDto.name}"></td>
-                    <td th:text="${memberFindDto.address.city}"></td>
-                    <td th:text="${memberFindDto.address.street}"></td>
-                    <td th:text="${memberFindDto.address.zipcode}"></td>
+                    <td th:text="${memberFindDto.city}"></td>
+                    <td th:text="${memberFindDto.street}"></td>
+                    <td th:text="${memberFindDto.zipcode}"></td>
                 </tbody>
             </table>
 
@@ -46,12 +46,12 @@
                 </tr>
             </thead>
 
-            <tbody th:each="storeDtoWithStoreTableFindDtosAndItemFindDtos : ${storeDtos}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}(memberId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.memberId}, storeId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.id})}'|">
-                <td th:text="${storeDtoWithStoreTableFindDtosAndItemFindDtos.name}"></td>
-                <td th:text="${storeDtoWithStoreTableFindDtosAndItemFindDtos.storeStatus}"></td>
-                <td th:text="${storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto.city}"></td>
-                <td th:text="${storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto.street}"></td>
-                <td th:text="${storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto.zipcode}"></td>
+            <tbody th:each="storeDtoWithStoreTablesAndItems : ${storeDtos}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}(memberId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.memberId}, storeId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.id})}'|">
+                <td th:text="${storeDtoWithStoreTablesAndItems.name}"></td>
+                <td th:text="${storeDtoWithStoreTablesAndItems.storeStatus}"></td>
+                <td th:text="${storeDtoWithStoreTablesAndItems.getAddressDto.city}"></td>
+                <td th:text="${storeDtoWithStoreTablesAndItems.getAddressDto.street}"></td>
+                <td th:text="${storeDtoWithStoreTablesAndItems.getAddressDto.zipcode}"></td>
             </tbody>
         </table>
 

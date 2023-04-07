@@ -7,24 +7,32 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.mylittlestore.domain.Address;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class MemberFindDto {
-
+    @NotNull
     private Long id;
-
+    @NotBlank
     private String name;
-
+    @NotBlank
     private String email;
-
-    private Address address;
+    @NotBlank
+    private String city;
+    @NotBlank
+    private String street;
+    @NotBlank
+    private String zipcode;
 
     @Builder
-    @QueryProjection
-    public MemberFindDto(Long id, String name, String email, Address address) {
+    protected MemberFindDto(Long id, String name, String email, String city, String street, String zipcode) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.address = address;
+        this.city = city;
+        this.street = street;
+        this.zipcode = zipcode;
     }
 }

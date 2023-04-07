@@ -20,7 +20,7 @@ public class PaymentServiceTest {
     }
 
     @Test
-    @DisplayName("결제 시작")
+    @DisplayName("결제가 없을 때, 정상적으로 결제 시작")
     void startPayment() {
         //given
 
@@ -34,7 +34,35 @@ public class PaymentServiceTest {
     }
 
     @Test
-    @DisplayName("결제 확정")
+    @DisplayName("가게가 닫혀있을 때, 결제 시작 시 예외 발생")
+    void startPaymentExceptionWhenStoreClosed() {
+        //given
+
+
+        //when
+
+
+        //then
+
+        assertThat(1).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("결제가 이미 있을 때, 결제 시작")
+    void startPaymentExceptionWhenPaymentAlreadyExists() {
+        //given
+
+
+        //when
+
+
+        //then
+
+        assertThat(1).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("할인 적용 후 결제 니용 확정")
     void confirmPayment() {
         //given
 

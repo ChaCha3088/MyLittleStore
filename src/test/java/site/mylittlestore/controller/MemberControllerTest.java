@@ -7,12 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import site.mylittlestore.domain.Address;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.member.MemberFindDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTableFindDtosAndItemFindDtos;
 import site.mylittlestore.service.MemberService;
+import site.mylittlestore.service.StoreService;
 
 import java.util.List;
 
@@ -30,6 +29,8 @@ class MemberControllerTest {
 
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private StoreService storeService;
 
     @Test
     void memberList() throws Exception {
@@ -76,7 +77,7 @@ class MemberControllerTest {
                         .zipcode("zipcode")
                 .build());
 
-        Long savedStoreId = memberService.createStore(StoreCreationDto.builder()
+        Long savedStoreId = storeService.createStore(StoreCreationDto.builder()
                 .memberId(savedMemberId)
                 .name("storeTest")
                 .city("city")
@@ -112,12 +113,12 @@ class MemberControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/members/1"));
 
-        MemberFindDto findMemberByMemberEmail = memberService.findMemberByMemberEmail("memberTest@email.com");
+        MemberFindDto findMemberByMemberEmail = memberService.findMemberFindDtoByEmail("memberTest@email.com");
         assertThat(findMemberByMemberEmail.getName()).isEqualTo("memberTest");
         assertThat(findMemberByMemberEmail.getEmail()).isEqualTo("memberTest@email.com");
-        assertThat(findMemberByMemberEmail.getAddress().getCity()).isEqualTo("city");
-        assertThat(findMemberByMemberEmail.getAddress().getStreet()).isEqualTo("street");
-        assertThat(findMemberByMemberEmail.getAddress().getZipcode()).isEqualTo("zipcode");
+        assertThat(findMemberByMemberEmail.getCity()).isEqualTo("city");
+        assertThat(findMemberByMemberEmail.getStreet()).isEqualTo("street");
+        assertThat(findMemberByMemberEmail.getZipcode()).isEqualTo("zipcode");
     }
 
     @Test
@@ -174,11 +175,11 @@ class MemberControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/members/1"));
 
-        MemberFindDto findMemberByMemberEmail = memberService.findMemberByMemberEmail("memberTest@email.com");
+        MemberFindDto findMemberByMemberEmail = memberService.findMemberFindDtoByEmail("memberTest@email.com");
         assertThat(findMemberByMemberEmail.getName()).isEqualTo("updateMemberTestName");
-        assertThat(findMemberByMemberEmail.getAddress().getCity()).isEqualTo("updateCity");
-        assertThat(findMemberByMemberEmail.getAddress().getStreet()).isEqualTo("updateStreet");
-        assertThat(findMemberByMemberEmail.getAddress().getZipcode()).isEqualTo("updateZipcode");
+        assertThat(findMemberByMemberEmail.getCity()).isEqualTo("updateCity");
+        assertThat(findMemberByMemberEmail.getStreet()).isEqualTo("updateStreet");
+        assertThat(findMemberByMemberEmail.getZipcode()).isEqualTo("updateZipcode");
     }
 
     @Test

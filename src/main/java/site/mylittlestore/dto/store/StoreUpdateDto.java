@@ -1,50 +1,39 @@
 package site.mylittlestore.dto.store;
 
-import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import site.mylittlestore.domain.Address;
-import site.mylittlestore.domain.Order;
-import site.mylittlestore.domain.item.Item;
-import site.mylittlestore.enumstorage.status.StoreStatus;
 
-import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StoreUpdateDto {
-
+    @NotNull
     private Long id;
-
+    @NotNull
     private Long memberId;
-
-    private String originalName;
-
-    private String newName;
-
-    private Address originalAddress;
-
-    private Address newAddress;
-
-    private StoreStatus storeStatus;
-
-    private List<Order> orders;
-
-    private List<Item> items;
+    @NotBlank
+    private String name;
+    @NotBlank
+    private String city;
+    @NotBlank
+    private String street;
+    @NotBlank
+    private String zipcode;
+    @NotBlank
+    private String storeStatus;
 
     @Builder
-    @QueryProjection
-    public StoreUpdateDto(Long id, Long memberId, String originalName, String newName, Address address, Address newAddress, StoreStatus storeStatus, List<Order> orders, List<Item> items) {
+    protected StoreUpdateDto(Long id, Long memberId, String name, String city, String street, String zipcode, String storeStatus) {
         this.id = id;
         this.memberId = memberId;
-        this.originalName = originalName;
-        this.newName = newName;
-        this.originalAddress = address;
-        this.newAddress = newAddress;
+        this.name = name;
+        this.city = city;
+        this.street = street;
+        this.zipcode = zipcode;
         this.storeStatus = storeStatus;
-        this.orders = orders;
-        this.items = items;
     }
 }

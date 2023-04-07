@@ -69,9 +69,9 @@ public class StoreTableService {
     }
 
     @Transactional
-    public Long createStoreTable(Long storeId) throws NoSuchStoreException {
-        //db에 가게가 없으면, 예외 발생
-         Store findStore = findById(storeId);
+    public Long createStoreTable(Long storeId) {
+        //가게가 없으면, 예외 발생
+        Store findStore = findById(storeId);
 
         //테이블 생성
         StoreTable createdStoreTable = findStore.createStoreTable();
@@ -107,7 +107,10 @@ public class StoreTableService {
         storeTable.delete();
     }
 
-    private Store findById(Long id) throws NoSuchStoreException {
-        return storeRepository.findById(id).orElseThrow(() -> new NoSuchStoreException(StoreErrorMessage.NO_SUCH_STORE.getMessage()));
+    private Store findById(Long id) {
+        Store store = storeRepository.findById(id)
+                .orElseThrow(() -> new NoSuchStoreException(StoreErrorMessage.NO_SUCH_STORE.getMessage()));
+
+        return store;
     }
 }
