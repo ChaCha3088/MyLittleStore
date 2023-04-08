@@ -3,11 +3,17 @@ package site.mylittlestore.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import site.mylittlestore.domain.Store;
 import site.mylittlestore.domain.item.Item;
+import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
+import site.mylittlestore.dto.item.ItemUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
+import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.exception.item.NoSuchItemException;
+import site.mylittlestore.exception.store.NoSuchStoreException;
 import site.mylittlestore.repository.item.ItemRepository;
+import site.mylittlestore.repository.store.StoreRepository;
 
 import java.util.List;
 
@@ -15,7 +21,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ItemService {
-
+    private final StoreRepository storeRepository;
     private final ItemRepository itemRepository;
 
     public ItemFindDto findItemDtoById(Long id) throws NoSuchItemException {
@@ -32,6 +38,46 @@ public class ItemService {
     }
 
     @Transactional
+    public Long createItem(ItemCreationDto itemCreationDto) throws NoSuchStoreException {
+        Store findStoreById = findStoreById(itemCreationDto.getStoreId());
+
+        //상품 생성
+        Item createdItem = Item.builder()
+                .store(findStoreById)
+                .name(itemCreationDto.getName())
+                .price(itemCreationDto.getPrice())
+                .stock(itemCreationDto.getStock())
+                .build();
+
+        Store updatedStore = findStoreById.createItem(createdItem);
+
+        //상품 저장
+        Item savedItem = itemRepository.save(createdItem);
+
+        //가게 저장
+        storeRepository.save(updatedStore);
+
+        return savedItem.getId();
+    }
+
+    @Transactional
+    public Long updateItem(ItemUpdateDto itemUpdateDto) throws NoSuchStoreException, NoSuchItemException {
+        //업데이트 하려는 상품이 가게에 있는지 검증
+        Item findItemByIdAndStoreId = itemRepository.findItemByIdAndStoreId(itemUpdateDto.getId(), itemUpdateDto.getStoreId())
+                .orElseThrow(() -> new NoSuchItemException(ItemErrorMessage.NO_SUCH_ITEM.getMessage()));
+
+        //상품 정보 업데이트
+        findItemByIdAndStoreId.updateName(itemUpdateDto.getNewItemName());
+        findItemByIdAndStoreId.updatePrice(itemUpdateDto.getNewPrice());
+        findItemByIdAndStoreId.updateStock(itemUpdateDto.getNewStock());
+
+        //저장
+        Item savedItem = itemRepository.save(findItemByIdAndStoreId);
+
+        return savedItem.getId();
+    }
+
+    @Transactional
     public void deleteItemById(Long id) {
         Item item = itemRepository.findById(id).orElseThrow(() -> new NoSuchItemException(ItemErrorMessage.NO_SUCH_ITEM.getMessage()));
 
@@ -39,6 +85,10 @@ public class ItemService {
 
         //저장
         itemRepository.save(item);
+    }
+
+    private Store findStoreById(Long id) throws NoSuchStoreException {
+        return storeRepository.findById(id).orElseThrow(() -> new NoSuchStoreException(StoreErrorMessage.NO_SUCH_STORE.getMessage()));
     }
 
     //StoreService에서 이미 만듦

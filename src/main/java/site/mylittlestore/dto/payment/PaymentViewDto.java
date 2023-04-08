@@ -14,17 +14,13 @@ import java.util.List;
 public class PaymentViewDto {
     @NotNull
     private Long id;
-
     @NotNull
     private OrderDto orderDto;
-
     @NotEmpty
     private List<OrderItemFindDto> orderItemFindDtos;
-
     @NotNull
     @Min(value = 1, message = "가격은 0보다 커야합니다.")
     private Long initialPaymentAmount;
-
     @Builder
     protected PaymentViewDto(Long id, OrderDto orderDto, List<OrderItemFindDto> orderItemFindDtos, Long initialPaymentAmount) {
         this.id = id;

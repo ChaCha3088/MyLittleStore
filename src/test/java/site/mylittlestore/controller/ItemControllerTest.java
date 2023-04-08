@@ -13,6 +13,7 @@ import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
+import site.mylittlestore.dto.store.StoreToggleStatusDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
 import site.mylittlestore.enumstorage.status.ItemStatus;
@@ -80,7 +81,7 @@ public class ItemControllerTest {
         Long newOrderId = storeTableService.createStoreTable(storeTestId);
 
         //가게 열기
-        storeService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.toggleStoreStatus(StoreToggleStatusDto.builder()
                 .id(newStoreId)
                 .memberId(newMemberId)
                 .build());

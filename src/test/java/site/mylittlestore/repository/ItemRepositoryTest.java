@@ -15,6 +15,7 @@ import site.mylittlestore.dto.store.StoreCreationDto;
 import site.mylittlestore.repository.item.ItemRepository;
 import site.mylittlestore.repository.member.MemberRepository;
 import site.mylittlestore.repository.store.StoreRepository;
+import site.mylittlestore.service.ItemService;
 import site.mylittlestore.service.MemberService;
 import site.mylittlestore.service.StoreService;
 
@@ -41,6 +42,8 @@ class ItemRepositoryTest {
     private MemberService memberService;
     @Autowired
     private StoreService storeService;
+    @Autowired
+    private ItemService itemService;
 
     @PersistenceContext
     private EntityManager em;
@@ -68,7 +71,7 @@ class ItemRepositoryTest {
                 .zipcode("zipcode")
                 .build());
 
-        Long newItemId = storeService.createItem(ItemCreationDto.builder()
+        Long newItemId = itemService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest")
                 .price(10000L)
@@ -92,7 +95,7 @@ class ItemRepositoryTest {
     @Test
     void findAllItemDtoByStoreId() {
         //given
-        Long newItemId = storeService.createItem(ItemCreationDto.builder()
+        Long newItemId = itemService.createItem(ItemCreationDto.builder()
                 .storeId(storeTestId)
                 .name("newitemTest")
                 .price(9999L)

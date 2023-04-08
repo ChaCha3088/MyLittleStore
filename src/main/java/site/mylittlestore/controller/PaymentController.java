@@ -71,21 +71,4 @@ public class PaymentController {
             return "message/message";
         }
     }
-
-    @PostMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/payments/new")
-    public String confirmPayment(@PathVariable("orderId") Long orderId, @PathVariable("paymentId") Long paymentId, @RequestBody @Valid PaymentCreationForm paymentCreationForm, BindingResult result) {
-        try {
-            //결제를 확정한다.
-            Long confirmedPaymentId = paymentService.confirmPayment(paymentId, orderId, paymentCreationForm.getDesiredPaymentAmount());
-
-            //결제가 확정되면
-            //결제 상세 페이지로 redirect
-            return "redirect:/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/payments/{confirmedPaymentId}";
-        } catch (PaymentAmountException e) {
-            //원하는 결제 금액에 문제가 있으면
-            //결제 생성 폼으로 redirect
-            result.rejectValue("desiredPaymentAmount", "wrong.value", e.getMessage());
-            return "payment/paymentCreationForm";
-        }
-    }
 }

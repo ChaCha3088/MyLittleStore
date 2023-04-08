@@ -5,12 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import site.mylittlestore.domain.OrderItem;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.orderitem.*;
 import site.mylittlestore.dto.store.StoreCreationDto;
+import site.mylittlestore.dto.store.StoreToggleStatusDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.status.OrderItemStatus;
 import site.mylittlestore.exception.item.NotEnoughStockException;
@@ -19,7 +19,6 @@ import site.mylittlestore.exception.store.StoreClosedException;
 import site.mylittlestore.repository.orderitem.OrderItemRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
@@ -70,7 +69,7 @@ public class OrderItemServiceTest {
                 .zipcode("zipcode")
                 .build());
 
-        Long newItemId = storeService.createItem(ItemCreationDto.builder()
+        Long newItemId = itemService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest")
                 .price(10000L)
@@ -78,7 +77,7 @@ public class OrderItemServiceTest {
                 .build());
 
         //가게 열기
-        storeService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.toggleStoreStatus(StoreToggleStatusDto.builder()
                 .id(newStoreId)
                 .memberId(newMemberId)
                 .build());
@@ -145,7 +144,7 @@ public class OrderItemServiceTest {
     void findAllOrderItemFindDtosByOrderId() {
         //given
         //상품 생성
-        Long itemTest2 = storeService.createItem(ItemCreationDto.builder()
+        Long itemTest2 = itemService.createItem(ItemCreationDto.builder()
                 .storeId(storeTestId)
                 .name("itemTest2")
                 .price(20000L)
@@ -217,7 +216,7 @@ public class OrderItemServiceTest {
     void findAllOrderItemFindDtosWithItemByOrderId() {
         //given
         //상품 생성
-        Long itemTest2 = storeService.createItem(ItemCreationDto.builder()
+        Long itemTest2 = itemService.createItem(ItemCreationDto.builder()
                 .storeId(storeTestId)
                 .name("itemTest2")
                 .price(20000L)
@@ -256,7 +255,7 @@ public class OrderItemServiceTest {
     void createOrderItem() {
         //given
         //상품 추가
-        Long newItemId = storeService.createItem(ItemCreationDto.builder()
+        Long newItemId = itemService.createItem(ItemCreationDto.builder()
                 .storeId(storeTestId)
                 .name("itemTest2")
                 .price(9999L)
@@ -445,7 +444,7 @@ public class OrderItemServiceTest {
     void createOrderItemStoreIsClosedException() {
         //when
         //가게 닫기
-        storeService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.toggleStoreStatus(StoreToggleStatusDto.builder()
                 .id(storeTestId)
                 .memberId(memberTestId)
                 .build());

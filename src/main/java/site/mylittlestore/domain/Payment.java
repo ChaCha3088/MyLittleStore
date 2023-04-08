@@ -35,10 +35,10 @@ public class Payment {
     @Min(value = 1, message = "가격은 0보다 커야합니다.")
     private Long initialPaymentAmount;
 
-    @Min(value = 1, message = "가격은 0보다 커야합니다.")
+//    @Min(value = 1, message = "가격은 0보다 커야합니다.")
     private Long desiredPaymentAmount;
 
-    @Min(value = 1, message = "가격은 0보다 커야합니다.")
+//    @Min(value = 1, message = "가격은 0보다 커야합니다.")
     private Long paidPaymentAmount;
 
     private LocalDateTime completeDateTime;
@@ -50,7 +50,7 @@ public class Payment {
     @Builder
     protected Payment(Order order, Long initialPaymentAmount) {
         this.initialPaymentAmount = initialPaymentAmount;
-        this.paymentStatus = PaymentStatus.INIT;
+        this.paymentStatus = PaymentStatus.IN_PROGRESS;
         this.order = order;
         order.createPayment(this);
     }

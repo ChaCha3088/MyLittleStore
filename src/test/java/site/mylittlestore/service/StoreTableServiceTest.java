@@ -8,6 +8,7 @@ import org.springframework.test.context.jdbc.Sql;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
+import site.mylittlestore.dto.store.StoreToggleStatusDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.dto.storetable.StoreTableFindDto;
 import site.mylittlestore.dto.storetable.StoreTableFindDtoWithOrderFindDto;
@@ -32,6 +33,8 @@ public class StoreTableServiceTest {
     private StoreTableService storeTableService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private ItemService itemService;
 
     @Autowired
     private EntityManager em;
@@ -61,7 +64,7 @@ public class StoreTableServiceTest {
                 .zipcode("zipcode")
                 .build());
 
-        Long newItemId = storeService.createItem(ItemCreationDto.builder()
+        Long newItemId = itemService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest")
                 .price(10000L)
@@ -69,7 +72,7 @@ public class StoreTableServiceTest {
                 .build());
 
         //가게 열기
-        storeService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.toggleStoreStatus(StoreToggleStatusDto.builder()
                 .id(newStoreId)
                 .memberId(newMemberId)
                 .build());

@@ -8,10 +8,7 @@ import site.mylittlestore.domain.Store;
 import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemUpdateDto;
-import site.mylittlestore.dto.store.StoreCreationDto;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTablesAndItems;
-import site.mylittlestore.dto.store.StoreDto;
-import site.mylittlestore.dto.store.StoreUpdateDto;
+import site.mylittlestore.dto.store.*;
 import site.mylittlestore.enumstorage.errormessage.ItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.MemberErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
@@ -93,7 +90,7 @@ public class StoreService {
     @Transactional
     public Long updateStore(StoreUpdateDto storeUpdateDto) {
         //업데이트 하려는 가게가 회원의 가게인지 검증
-        Store findStore = validateStoreIsMembersStore(storeUpdateDto);
+        Store findStore = validateStoreIsMembersStore(storeUpdateDto.getId(), storeUpdateDto.getMemberId());
 
         //가게 정보 업데이트
         findStore.updateStoreName(storeUpdateDto.getName());
@@ -109,9 +106,9 @@ public class StoreService {
      * 가게 열기 / 닫기 토글
      */
     @Transactional
-    public Long changeStoreStatus(StoreUpdateDto storeUpdateDto) {
+    public Long toggleStoreStatus(StoreToggleStatusDto storeToggleStatusDto) {
         //업데이트 하려는 가게가 회원의 가게인지 검증
-        Store findStore = validateStoreIsMembersStore(storeUpdateDto);
+        Store findStore = validateStoreIsMembersStore(storeToggleStatusDto.getId(), storeToggleStatusDto.getMemberId());
 
         //가게 상태 변경
         if (findStore.getStoreStatus() == StoreStatus.OPEN) {
@@ -122,46 +119,6 @@ public class StoreService {
 
         //저장
         return storeRepository.save(findStore).getId();
-    }
-
-    @Transactional
-    public Long createItem(ItemCreationDto itemCreationDto) throws NoSuchStoreException {
-        Store findStoreById = findStoreById(itemCreationDto.getStoreId());
-
-        //상품 생성
-        Item createdItem = Item.builder()
-                .store(findStoreById)
-                .name(itemCreationDto.getName())
-                .price(itemCreationDto.getPrice())
-                .stock(itemCreationDto.getStock())
-                .build();
-
-        Store updatedStore = findStoreById.createItem(createdItem);
-
-        //상품 저장
-        Item savedItem = itemRepository.save(createdItem);
-
-        //가게 저장
-        storeRepository.save(updatedStore);
-
-        return savedItem.getId();
-    }
-
-    @Transactional
-    public Long updateItem(ItemUpdateDto itemUpdateDto) throws NoSuchStoreException, NoSuchItemException {
-        //업데이트 하려는 상품이 가게에 있는지 검증
-        Item findItemByIdAndStoreId = itemRepository.findItemByIdAndStoreId(itemUpdateDto.getId(), itemUpdateDto.getStoreId())
-                .orElseThrow(() -> new NoSuchItemException(ItemErrorMessage.NO_SUCH_ITEM.getMessage()));
-
-        //상품 정보 업데이트
-        findItemByIdAndStoreId.updateName(itemUpdateDto.getNewItemName());
-        findItemByIdAndStoreId.updatePrice(itemUpdateDto.getNewPrice());
-        findItemByIdAndStoreId.updateStock(itemUpdateDto.getNewStock());
-
-        //저장
-        Item savedItem = itemRepository.save(findItemByIdAndStoreId);
-
-        return savedItem.getId();
     }
 
     private Member findMemberById(Long memberId) throws NoSuchMemberException {
@@ -175,17 +132,13 @@ public class StoreService {
 
         //같은 이름의 상품이 있으면, 예외 발생
         findItemByItemName.ifPresent(m -> {
-            throw new DuplicateItemException("이미 존재하는 상품입니다.");
+            throw new DuplicateItemException(ItemErrorMessage.DUPLICATE_ITEM.getMessage());
         });
     }
 
-    private Store findStoreById(Long id) throws NoSuchStoreException {
-        return storeRepository.findById(id).orElseThrow(() -> new NoSuchStoreException(StoreErrorMessage.NO_SUCH_STORE.getMessage()));
-    }
-
     //업데이트 하려는 가게가 회원의 가게인지 검증
-    private Store validateStoreIsMembersStore(StoreUpdateDto storeUpdateDto) {
-        return storeRepository.findStoreByIdAndMemberId(storeUpdateDto.getId(), storeUpdateDto.getMemberId())
+    private Store validateStoreIsMembersStore(Long storeId, Long memberId) {
+        return storeRepository.findStoreByIdAndMemberId(storeId, memberId)
                 //storeId와 memberId에 맞는 가게가 없으면, 예외 발생
                 .orElseThrow(() -> new NoSuchStoreException(StoreErrorMessage.IS_NOT_MEMBERS_STORE.getMessage()));
     }

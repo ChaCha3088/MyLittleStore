@@ -8,10 +8,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
-import site.mylittlestore.dto.store.StoreCreationDto;
-import site.mylittlestore.dto.store.StoreDto;
-import site.mylittlestore.dto.store.StoreDtoWithStoreTablesAndItems;
-import site.mylittlestore.dto.store.StoreUpdateDto;
+import site.mylittlestore.dto.store.*;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.store.NoSuchStoreException;
@@ -76,7 +73,7 @@ class StoreServiceTest {
                 .build());
 
         //상품 생성
-        Long newItemId = storeService.createItem(ItemCreationDto.builder()
+        Long newItemId = itemService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest")
                 .price(10000L)
@@ -192,7 +189,7 @@ class StoreServiceTest {
     public void changeStoreStatusCloseToOpen() {
         //given
         //가게 열기
-        storeService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.toggleStoreStatus(StoreToggleStatusDto.builder()
                 .id(storeTestId)
                 .memberId(memberTestId)
                 .build());
@@ -209,7 +206,7 @@ class StoreServiceTest {
     public void changeStoreStatusOpenToClose() {
         //given
         //가게 열기
-        storeService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.toggleStoreStatus(StoreToggleStatusDto.builder()
                 .id(storeTestId)
                 .memberId(memberTestId)
                 .build());
@@ -222,7 +219,7 @@ class StoreServiceTest {
 
         //given
         //가게 닫기
-        storeService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.toggleStoreStatus(StoreToggleStatusDto.builder()
                 .id(storeTestId)
                 .memberId(memberTestId)
                 .build());
@@ -251,7 +248,7 @@ class StoreServiceTest {
         //회원이 가지고 있지 않은 가게의 상태를 변경하려고 할 때
 
         //then
-        Assertions.assertThatThrownBy(() -> storeService.changeStoreStatus(StoreUpdateDto.builder()
+        Assertions.assertThatThrownBy(() -> storeService.toggleStoreStatus(StoreToggleStatusDto.builder()
                         .id(storeTestId)
                         .memberId(newMemberId)
                         .build())).isInstanceOf(NoSuchStoreException.class)

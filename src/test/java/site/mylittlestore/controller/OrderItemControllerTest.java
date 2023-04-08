@@ -14,6 +14,7 @@ import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.orderitem.OrderItemFindDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
+import site.mylittlestore.dto.store.StoreToggleStatusDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.exception.orderitem.OrderItemException;
@@ -81,14 +82,14 @@ public class OrderItemControllerTest {
         Long newOrderId = storeTableService.createStoreTable(storeTestId);
 
         //상품 추가
-        Long newItemId1 = storeService.createItem(ItemCreationDto.builder()
+        Long newItemId1 = itemService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest1")
                 .price(10000L)
                 .stock(100L)
                 .build());
 
-        Long newItemId2 = storeService.createItem(ItemCreationDto.builder()
+        Long newItemId2 = itemService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest2")
                 .price(5000L)
@@ -96,7 +97,7 @@ public class OrderItemControllerTest {
                 .build());
 
         //가게 열기
-        storeService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.toggleStoreStatus(StoreToggleStatusDto.builder()
                 .id(newStoreId)
                 .memberId(newMemberId)
                 .build());

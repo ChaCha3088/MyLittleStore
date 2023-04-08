@@ -57,7 +57,7 @@ public class OrderRepositoryImpl implements OrderRepositoryQueryDsl {
                 .select(order)
                 .from(order)
                 .join(order.store, store).fetchJoin()
-                .join(order.orderItems, orderItem).fetchJoin()
+                .leftJoin(order.orderItems, orderItem).fetchJoin()
                 .where(order.id.eq(orderId)
                         .and(order.orderStatus.ne(OrderStatus.DELETED))
                         .and(order.orderStatus.ne(OrderStatus.PAID)))

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import site.mylittlestore.dto.store.StoreCreationDto;
+import site.mylittlestore.dto.store.StoreToggleStatusDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.form.StoreCreationForm;
 import site.mylittlestore.form.StoreUpdateForm;
@@ -95,7 +96,7 @@ public class StoreController {
     
     @GetMapping("/members/{memberId}/stores/{storeId}/changeStoreStatus")
     public String changeStoreStatus(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId) {
-        storeService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.toggleStoreStatus(StoreToggleStatusDto.builder()
                 .id(storeId)
                 .memberId(memberId)
                 .build());

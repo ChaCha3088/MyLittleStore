@@ -59,7 +59,7 @@ public class ItemController {
             return "item/itemCreationForm";
         }
 
-        Long createdItemId = storeService.createItem(ItemCreationDto.builder()
+        Long createdItemId = itemService.createItem(ItemCreationDto.builder()
                 .storeId(storeId)
                 .name(itemCreationForm.getName())
                 .price(itemCreationForm.getPrice())
@@ -86,7 +86,7 @@ public class ItemController {
             return "item/itemUpdateForm";
         }
 
-        Long updatedItemId = storeService.updateItem(ItemUpdateDto.builder()
+        Long updatedItemId = itemService.updateItem(ItemUpdateDto.builder()
                 .id(itemId) //나중에 itemId 검증할 것
                 .storeId(storeId) //나중에 storeId 검증할 것
                 .newItemName(itemUpdateForm.getName())

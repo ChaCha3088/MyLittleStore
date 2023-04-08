@@ -24,8 +24,7 @@ public class MemberCreationDto {
     private String zipcode;
 
     @Builder
-    @QueryProjection
-    public MemberCreationDto(String name, String email, String password, String city, String street, String zipcode) {
+    protected MemberCreationDto(String name, String email, String password, String city, String street, String zipcode) {
         this.name = name;
         this.email = email;
         this.password = password;

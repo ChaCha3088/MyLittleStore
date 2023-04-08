@@ -69,7 +69,7 @@ class ItemServiceTest {
                 .zipcode("zipcode")
                 .build());
 
-        Long newItemId = storeService.createItem(ItemCreationDto.builder()
+        Long newItemId = itemService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest")
                 .price(10000L)
@@ -108,7 +108,7 @@ class ItemServiceTest {
     @Test
     void findAllByStoreId() {
         //given
-        Long newItemId = storeService.createItem(ItemCreationDto.builder()
+        Long newItemId = itemService.createItem(ItemCreationDto.builder()
                 .storeId(storeTestId)
                 .name("newItemTest")
                 .price(9999L)
@@ -128,7 +128,7 @@ class ItemServiceTest {
     @Test
     public void createItem() {
         //given
-        Long newItemTestId = storeService.createItem(ItemCreationDto.builder()
+        Long newItemTestId = itemService.createItem(ItemCreationDto.builder()
                 .storeId(storeTestId)
                 .name("newItemTest")
                 .price(9999L)
@@ -150,7 +150,7 @@ class ItemServiceTest {
     @Test
     public void updateItem() {
         //when
-        storeService.updateItem(ItemUpdateDto.builder()
+        itemService.updateItem(ItemUpdateDto.builder()
                 .id(itemTestId)
                 .storeId(storeTestId)
                 .newItemName("newItemTest")
@@ -175,7 +175,7 @@ class ItemServiceTest {
     @Test
     public void updateItemPartially(){
         //when
-        storeService.updateItem(ItemUpdateDto.builder()
+        itemService.updateItem(ItemUpdateDto.builder()
                 .id(itemTestId)
                 .storeId(storeTestId)
                 .newItemName("itemTest")

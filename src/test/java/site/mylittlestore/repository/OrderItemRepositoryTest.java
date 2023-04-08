@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import site.mylittlestore.domain.Address;
 import site.mylittlestore.domain.OrderItem;
 import site.mylittlestore.dto.item.ItemCreationDto;
 import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.orderitem.OrderItemCreationDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
+import site.mylittlestore.dto.store.StoreToggleStatusDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
@@ -85,14 +85,14 @@ public class OrderItemRepositoryTest {
                 .build());
 
         //상품 만들기
-        Long newItemId1 = storeService.createItem(ItemCreationDto.builder()
+        Long newItemId1 = itemService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest")
                 .price(10000L)
                 .stock(100L)
                 .build());
 
-        Long newItemId2 = storeService.createItem(ItemCreationDto.builder()
+        Long newItemId2 = itemService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest2")
                 .price(20000L)
@@ -100,7 +100,7 @@ public class OrderItemRepositoryTest {
                 .build());
 
         //가게 열기
-        storeService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.toggleStoreStatus(StoreToggleStatusDto.builder()
                 .id(newStoreId)
                 .memberId(newMemberId)
                 .build());

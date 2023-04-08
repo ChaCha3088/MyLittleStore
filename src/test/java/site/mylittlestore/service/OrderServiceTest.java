@@ -11,6 +11,7 @@ import site.mylittlestore.dto.order.OrderDto;
 import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.orderitem.OrderItemCreationDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
+import site.mylittlestore.dto.store.StoreToggleStatusDto;
 import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.dto.storetable.StoreTableFindDtoWithOrderFindDto;
 import site.mylittlestore.enumstorage.errormessage.StoreTableErrorMessage;
@@ -18,13 +19,10 @@ import site.mylittlestore.enumstorage.status.OrderStatus;
 import site.mylittlestore.exception.store.NoSuchOrderException;
 import site.mylittlestore.exception.store.StoreClosedException;
 import site.mylittlestore.exception.storetable.NoSuchStoreTableException;
-import site.mylittlestore.exception.storetable.OrderAlreadyExistException;
 import site.mylittlestore.repository.storetable.StoreTableRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -79,7 +77,7 @@ class OrderServiceTest {
                 .zipcode("zipcode")
                 .build());
 
-        Long newItemId = storeService.createItem(ItemCreationDto.builder()
+        Long newItemId = itemService.createItem(ItemCreationDto.builder()
                 .storeId(newStoreId)
                 .name("itemTest")
                 .price(10000L)
@@ -87,7 +85,7 @@ class OrderServiceTest {
                 .build());
 
         //가게 열기
-        storeService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.toggleStoreStatus(StoreToggleStatusDto.builder()
                 .id(newStoreId)
                 .memberId(newMemberId)
                 .build());
@@ -211,7 +209,7 @@ class OrderServiceTest {
 
         //when
         //가게 닫기
-        storeService.changeStoreStatus(StoreUpdateDto.builder()
+        storeService.toggleStoreStatus(StoreToggleStatusDto.builder()
                 .id(storeTestId)
                 .memberId(memberTestId)
                 .build());

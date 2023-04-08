@@ -97,8 +97,11 @@ public class OrderItemService {
         Store store = order.getStore();
 
         //가게가 열려있는지 확인
+        isStoreOpen(store);
+
         //결제 중인지 확인
-        validateOrderItemChangeAbility(order, store);
+        //결제 중이면 예외 발생
+        isPaymentAlreadyExists(order);
 
         try {
             //주문에 상품 Id와 상품 가격이 같은 주문 상품이 존재하는지 확인
@@ -156,8 +159,11 @@ public class OrderItemService {
         Store store = order.getStore();
 
         //가게가 열려있는지 확인
+        isStoreOpen(store);
+
         //결제 중인지 확인
-        validateOrderItemChangeAbility(order, store);
+        //결제 중이면 예외 발생
+        isPaymentAlreadyExists(order);
 
         //주문에 상품 Id와 가격이 같은 주문 상품이 존재하는지 확인
         OrderItem orderItem = validateOrderItemExistenceWithOrderIdAndOrderItemIdAndItemIdAndPrice(orderItemDto.getOrderId(), orderItemDto.getId(), orderItemDto.getItemId(), orderItemDto.getPrice());
@@ -185,8 +191,11 @@ public class OrderItemService {
         Store store = order.getStore();
 
         //가게가 열려있는지 확인
+        isStoreOpen(store);
+
         //결제 중인지 확인
-        validateOrderItemChangeAbility(order, store);
+        //결제 중이면 예외 발생
+        isPaymentAlreadyExists(order);
 
         //주문에 상품 Id, 상품 가격이 같은 주문 상품이 존재하는지 확인하고 삭제
         OrderItem orderItem = validateOrderItemExistenceWithOrderIdAndOrderItemIdAndItemIdAndPrice(order.getId(), orderItemDeleteDto.getId(), orderItemDeleteDto.getItemId(), orderItemDeleteDto.getPrice());
@@ -205,20 +214,13 @@ public class OrderItemService {
         }
     }
 
-    /**
-     * 가게가 열려있는지 확인
-     * 결제 중인지 확인
-     * @param order
-     * @param store
-     */
-    private static void validateOrderItemChangeAbility(Order order, Store store) {
-        //가게가 열려있는지 확인
+    private static void isStoreOpen(Store store) {
         if (store.getStoreStatus().equals(StoreStatus.CLOSE)) {
             throw new StoreClosedException(StoreErrorMessage.STORE_CLOSED.getMessage(), store.getId());
         }
+    }
 
-        //결제 중인지 확인
-        //결제 중이면 예외 발생
+    private static void isPaymentAlreadyExists(Order order) {
         if (order.getPayment() != null) {
             throw new PaymentAlreadyExistException(PaymentErrorMessage.PAYMENT_ALREADY_EXIST.getMessage(), order.getPayment().getId(), order.getStoreTable().getId(), order.getId());
         }
