@@ -9,8 +9,10 @@ import site.mylittlestore.domain.item.Item;
 import site.mylittlestore.dto.orderitem.OrderItemFindDtoWithItem;
 import site.mylittlestore.dto.orderitem.OrderItemFindDto;
 import site.mylittlestore.entity.BaseEntity;
+import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.enumstorage.status.OrderItemStatus;
 import site.mylittlestore.exception.item.NotEnoughStockException;
+import site.mylittlestore.exception.orderitem.OrderItemException;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -84,6 +86,18 @@ public class OrderItem extends BaseEntity {
 
         //OrderItem과 Order 연관관계 설정
         order.getOrderItems().add(this);
+    }
+
+    //-- 비즈니스 로직 --//
+    public void changeOrderItemStatusPaid() {
+        //주문 상품이 이미 삭제된 상태라면 예외 발생
+        if (this.orderItemStatus == OrderItemStatus.DELETED)
+            throw new OrderItemException(OrderItemErrorMessage.ORDER_ITEM_ALREADY_DELETED.getMessage());
+        //주문 상품이 이미 결제된 상태라면 예외 발생
+        if (this.orderItemStatus == OrderItemStatus.PAID)
+            throw new OrderItemException(OrderItemErrorMessage.ORDER_ITEM_ALREADY_PAID.getMessage());
+        //문제가 없다면 주문 상품의 상태를 결제로 변경
+        this.orderItemStatus = OrderItemStatus.PAID;
     }
 
     public Item addCount(Long count) throws NotEnoughStockException {

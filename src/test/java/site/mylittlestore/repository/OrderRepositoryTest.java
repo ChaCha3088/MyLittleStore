@@ -205,6 +205,20 @@ class OrderRepositoryTest {
                     .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
         }).isInstanceOf(NoSuchOrderException.class);
     }
+
+    @Test
+    @DisplayName("orderId와 paymentId로 DELETED, PAID가 아닌 주문을 테이블과 주문 상품과 함께 조회한다.")
+    void findNotDeletedAndPaidWithStoreTableAndOrderItemsByIdAndPaymentId() {
+        //given
+
+
+        //when
+        orderRepository.findNotDeletedAndPaidWithStoreTableAndOrderItemsByIdAndPaymentId();
+
+        //then
+
+        assertThat(1).isEqualTo(2);
+    }
     
     @Test
     @DisplayName("storeId로 DELETED, PAID가 아닌 모든 주문 조회")

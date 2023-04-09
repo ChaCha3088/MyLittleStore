@@ -9,5 +9,6 @@ public interface OrderRepositoryQueryDsl {
     Optional<Order> findNotDeletedAndPaidByIdAndStoreId(Long id, Long storeId);
     Optional<Order> findNotDeletedAndPaidWithStoreById(Long orderId);
     Optional<Order> findNotDeletedAndPaidWithStoreAndOrderItemsById(Long orderId);
+    Optional<Order> findNotDeletedAndPaidWithStoreTableAndOrderItemsByIdAndPaymentId(Long orderId, Long paymentId);
     List<Order> findAllNotDeletedAndPaidByStoreId(Long storeId);
 }

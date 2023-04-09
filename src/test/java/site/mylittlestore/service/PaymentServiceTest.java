@@ -172,4 +172,18 @@ public class PaymentServiceTest {
         assertThatThrownBy(() -> paymentService.startPayment(orderTestId))
                 .isInstanceOf(PaymentAlreadyExistException.class);
     }
+    
+    @Test
+    @DisplayName("값이 0이 아니고, initialPaymentAmount와 paidPaymentAmount의 값이 같으면 결제 완료")
+    void finishPayment() {
+        //given
+        
+        
+        //when
+        paymentService.finishPayment()
+        
+        //then
+        
+        assertThat(1).isEqualTo(2);
+    }
 }

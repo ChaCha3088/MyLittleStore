@@ -66,6 +66,12 @@ public class PaymentController {
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/payments/{paymentId}")
     public String paymentInfo(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("paymentId") Long paymentId, Model model) {
+        //들어 올 때마다 initialPaymentAmount와 paidPaymentAmount를 비교해서
+        if (paymentService.finishPayment(paymentId, orderId))
+            //같으면, 결제 완료 후 paymentResult로 redirect
+            return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/payments/" + paymentId + "/result";
+
+        //아니면 paymentInfo
         model.addAttribute("orderItemFindDtos", orderItemService.findAllOrderItemFindDtosByOrderIdAndStoreId(orderId, storeId));
         model.addAttribute("paymentFindDto", paymentService.findNotSuccessPaymentDtoById(paymentId));
         model.addAttribute("paymentMethodDtos", paymentMethodService.findAllPaymentMethodDtosByOrderIdAndPaymentId(orderId, paymentId));

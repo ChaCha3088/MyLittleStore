@@ -3,16 +3,14 @@ package site.mylittlestore.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import site.mylittlestore.domain.Order;
-import site.mylittlestore.domain.OrderItem;
-import site.mylittlestore.domain.Payment;
-import site.mylittlestore.domain.Store;
+import site.mylittlestore.domain.*;
 import site.mylittlestore.dto.payment.PaymentDto;
 import site.mylittlestore.enumstorage.PaymentMethodType;
 import site.mylittlestore.enumstorage.errormessage.OrderErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
+import site.mylittlestore.enumstorage.status.OrderStatus;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.exception.payment.PaymentAlreadyExistException;
@@ -21,6 +19,7 @@ import site.mylittlestore.exception.store.NoSuchOrderException;
 import site.mylittlestore.exception.store.StoreClosedException;
 import site.mylittlestore.repository.order.OrderRepository;
 import site.mylittlestore.repository.payment.PaymentRepository;
+import site.mylittlestore.repository.storetable.StoreTableRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +32,7 @@ import java.util.stream.Collectors;
 public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
+    private final StoreTableRepository storeTableRepository
 
     public List<String> findPaymentMethodTypes() {
         return Arrays.stream(PaymentMethodType.values())
@@ -76,8 +76,7 @@ public class PaymentService {
         AtomicLong initialPaymentAmount = new AtomicLong(0);
 
         orderItems.stream()
-                .map(orderItem -> initialPaymentAmount.addAndGet(orderItem.getPrice() * orderItem.getCount()))
-                .collect(Collectors.toList());
+                .forEach(orderItem -> initialPaymentAmount.addAndGet(orderItem.getPrice() * orderItem.getCount()));
 
         //Payment 생성
         Payment createdPayment = Payment.builder()
@@ -89,6 +88,54 @@ public class PaymentService {
         Payment payment = paymentRepository.save(createdPayment);
 
         return payment.getId();
+    }
+
+    /*
+    initialPaymentAmount와 paidPaymentAmount가 같으면 결제 완료
+     */
+    @Transactional
+    public boolean finishPayment(Long paymentId, Long orderId) {
+        //payment 찾기
+        Payment payment = paymentRepository.findNotSuccessById(paymentId)
+                //payment가 없으면 예외 발생
+                .orElseThrow(() -> new PaymentException(PaymentErrorMessage.NO_SUCH_PAYMENT.getMessage()));
+
+        //payment의 orderId와 파라미터 orderId가 같은지 확인
+        if (payment.getOrder().getId() != orderId) {
+            //같지 않으면 예외 발생
+            throw new PaymentException(PaymentErrorMessage.PAYMENT_IS_NOT_ORDERS_PAYMENT.getMessage());
+        }
+
+        //값이 0이 아니고, initialPaymentAmount와 paidPaymentAmount가 같으면
+        //결제 완료
+        if (payment.getInitialPaymentAmount() != 0 & payment.getInitialPaymentAmount() == payment.getPaidPaymentAmount()) {
+            //payment 상태 SUCCESS로 변경
+            payment.finishPayment();
+            paymentRepository.save(payment);
+
+            //storeTable, orderItems와 함께 order 찾기
+            Order order = orderRepository.findNotDeletedAndPaidWithStoreTableAndOrderItemsByIdAndPaymentId(orderId, paymentId)
+                    //order가 없으면 예외 발생
+                    .orElseThrow(() -> new NoSuchOrderException(OrderErrorMessage.NO_SUCH_ORDER.getMessage()));
+            StoreTable storeTable = order.getStoreTable();
+            List<OrderItem> orderItems = order.getOrderItems();
+
+            //order 상태 PAID로 변경
+            order.changeOrderStatusPaid();
+            orderRepository.save(order);
+
+            //storeTable 상태 EMPTY로 변경
+            storeTable.changeStoreTableStatusEmpty();
+            storeTableRepository.save(storeTable);
+
+            //orderItems 상태 PAID로 변경
+            orderItems.stream()
+                    .forEach(orderItem -> orderItem.changeOrderItemStatusPaid());
+
+            return true;
+        }
+        //같지 않으면
+        return false;
     }
 
     private static void validateOrderItemChangeAbility(Order order, Store store) {

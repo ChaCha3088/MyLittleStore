@@ -69,11 +69,9 @@ public class Payment {
         this.paymentStatus = paymentStatus;
     }
 
-    public void finishPayment(Long paidPaymentAmount) {
-        if (paidPaymentAmount < this.desiredPaymentAmount) {
-            throw new PaymentException(PaymentErrorMessage.PAID_PAYMENT_AMOUNT_CANNOT_BE_LESS_THAN_DESIRED_PAYMENT_AMOUNT.getMessage());
-        }
-        this.paidPaymentAmount = paidPaymentAmount;
+    public void finishPayment() {
+        this.completeDateTime = LocalDateTime.now();
+        this.paymentStatus = PaymentStatus.SUCCESS;
     }
 
     //-- 연관관계 메소드 --//

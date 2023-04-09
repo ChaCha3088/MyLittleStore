@@ -3,8 +3,10 @@ package site.mylittlestore.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import site.mylittlestore.dto.order.OrderDto;
+import site.mylittlestore.enumstorage.errormessage.OrderErrorMessage;
 import site.mylittlestore.enumstorage.status.OrderStatus;
 import site.mylittlestore.entity.BaseEntity;
+import site.mylittlestore.exception.order.OrderException;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -61,6 +63,18 @@ public class Order extends BaseEntity {
         storeTable.setOrder(this);
     }
 
+    //-- 비즈니스 로직 --//
+    public void changeOrderStatusPaid() {
+        //이미 삭제된 주문인지 확인
+        if (this.orderStatus == OrderStatus.DELETED)
+            throw new OrderException(OrderErrorMessage.ORDER_ALREADY_DELETED.getMessage());
+        //이미 결제된 주문인지 확인
+        if (this.orderStatus == OrderStatus.PAID)
+            throw new OrderException(OrderErrorMessage.ORDER_ALREADY_PAID.getMessage());
+        //문제 없으면 결제 완료로 변경
+        this.orderStatus = OrderStatus.PAID;
+    }
+
     //== 연관관계 메소드 ==//
     public void createPayment(Payment payment) {
         this.orderStatus = OrderStatus.IN_PROGRESS;
@@ -80,12 +94,7 @@ public class Order extends BaseEntity {
         this.orderStatus = OrderStatus.IN_PROGRESS;
     }
 
-    public void changeOrderStatusPaid() {
-        this.orderStatus = OrderStatus.PAID;
-    }
-
     //== DTO ==//
-
     public OrderDto toOrderDto() {
         return OrderDto.builder()
                 .id(id)

@@ -15,6 +15,7 @@ import static site.mylittlestore.domain.QOrder.order;
 import static site.mylittlestore.domain.QOrderItem.orderItem;
 import static site.mylittlestore.domain.QPayment.payment;
 import static site.mylittlestore.domain.QStore.store;
+import static site.mylittlestore.domain.QStoreTable.storeTable;
 import static site.mylittlestore.domain.item.QItem.item;
 
 @RequiredArgsConstructor
@@ -60,6 +61,21 @@ public class OrderRepositoryImpl implements OrderRepositoryQueryDsl {
                 .join(order.store, store).fetchJoin()
                 .leftJoin(order.orderItems, orderItem).fetchJoin()
                 .where(order.id.eq(orderId)
+                        .and(order.orderStatus.ne(OrderStatus.DELETED))
+                        .and(order.orderStatus.ne(OrderStatus.PAID)))
+                .fetchOne());
+    }
+
+    @Override
+    public Optional<Order> findNotDeletedAndPaidWithStoreTableAndOrderItemsByIdAndPaymentId(Long orderId, Long paymentId) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return Optional.ofNullable(queryFactory
+                .selectFrom(order)
+                .join(order.storeTable, storeTable).fetchJoin()
+                .join(order.orderItems, orderItem).fetchJoin()
+                .where(order.id.eq(orderId)
+                        .and(order.payment.id.eq(paymentId))
                         .and(order.orderStatus.ne(OrderStatus.DELETED))
                         .and(order.orderStatus.ne(OrderStatus.PAID)))
                 .fetchOne());

@@ -5,7 +5,9 @@ import lombok.Getter;
 @Getter
 public enum OrderErrorMessage {
 
-    NO_SUCH_ORDER("해당하는 주문이 없습니다.");
+    NO_SUCH_ORDER("해당하는 주문이 없습니다."),
+    ORDER_ALREADY_DELETED("이미 삭제된 주문입니다."),
+    ORDER_ALREADY_PAID("이미 결제된 주문입니다.");
 
     private String message;
 
