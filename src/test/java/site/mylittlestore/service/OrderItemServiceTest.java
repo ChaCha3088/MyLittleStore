@@ -11,7 +11,6 @@ import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.orderitem.*;
 import site.mylittlestore.dto.store.StoreCreationDto;
 import site.mylittlestore.dto.store.StoreToggleStatusDto;
-import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.status.OrderItemStatus;
 import site.mylittlestore.exception.item.NotEnoughStockException;
 import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
@@ -200,7 +199,7 @@ public class OrderItemServiceTest {
 
         //when
         //주문 안에 있는 ORDERED 주문 상품만 모두 조회
-        List<OrderItemFindDto> allOrderItemFindDtosByOrderId = orderItemService.findAllOrderItemFindDtosByOrderId(createdOrderId2);
+        List<OrderItemFindDto> allOrderItemFindDtosByOrderId = orderItemService.findAllOrderItemFindDtosByOrderIdAndStoreId(createdOrderId2, storeTestId);
 
         //then
         //정확히 ORDERED만 잘 찾는지 확인
@@ -292,7 +291,7 @@ public class OrderItemServiceTest {
         assertThat(findOrderItemById2.getCount()).isEqualTo(10L);
 
         //주문 상품 개수 확인
-        List<OrderItemFindDto> allOrderItemFindDtosByOrderId = orderItemService.findAllOrderItemFindDtosByOrderId(orderTestId);
+        List<OrderItemFindDto> allOrderItemFindDtosByOrderId = orderItemService.findAllOrderItemFindDtosByOrderIdAndStoreId(orderTestId, storeTestId);
         assertThat(allOrderItemFindDtosByOrderId.size()).isEqualTo(2);
 
         //재고 변동이 정상인지 확인
@@ -333,7 +332,7 @@ public class OrderItemServiceTest {
         assertThat(findOrderItemById1.getCount()).isEqualTo(100);
 
         //주문 상품 개수 확인
-        List<OrderItemFindDto> findAllOrderItemByOrderId = orderItemService.findAllOrderItemFindDtosByOrderId(orderTestId);
+        List<OrderItemFindDto> findAllOrderItemByOrderId = orderItemService.findAllOrderItemFindDtosByOrderIdAndStoreId(orderTestId, storeTestId);
         assertThat(findAllOrderItemByOrderId.size()).isEqualTo(1);
         assertThat(createdOrderItemId1).isEqualTo(createdOrderItemId2);
 
@@ -377,7 +376,7 @@ public class OrderItemServiceTest {
         assertThat(findOrderItemById2.getCount()).isEqualTo(1L);
 
         //주문 상품 개수 확인
-        List<OrderItemFindDto> findAllOrderItemByOrderId = orderItemService.findAllOrderItemFindDtosByOrderId(orderTestId);
+        List<OrderItemFindDto> findAllOrderItemByOrderId = orderItemService.findAllOrderItemFindDtosByOrderIdAndStoreId(orderTestId, storeTestId);
         assertThat(findAllOrderItemByOrderId.size()).isEqualTo(2);
         assertThat(createdOrderItemId1).isNotEqualTo(createdOrderItemId2);
 
@@ -420,7 +419,7 @@ public class OrderItemServiceTest {
         assertThat(findOrderItemById2.getCount()).isEqualTo(50L);
 
         //주문 상품 개수 확인
-        List<OrderItemFindDto> findAllOrderItemByOrderId = orderItemService.findAllOrderItemFindDtosByOrderId(orderTestId);
+        List<OrderItemFindDto> findAllOrderItemByOrderId = orderItemService.findAllOrderItemFindDtosByOrderIdAndStoreId(orderTestId, storeTestId);
         assertThat(findAllOrderItemByOrderId.size()).isEqualTo(2);
         assertThat(createdOrderItemId1).isNotEqualTo(createdOrderItemId2);
 
@@ -473,7 +472,7 @@ public class OrderItemServiceTest {
                 .build());
 
         //주문 수정(수량 줄이기)
-        Long savedOrderItemId1 = orderItemService.updateOrderItemCount(OrderItemDto.builder()
+        Long savedOrderItemId1 = orderItemService.updateOrderItemCount(OrderItemUpdateDto.builder()
                 .id(createdOrderItemId)
                 .orderId(orderTestId)
                 .itemId(itemTestId)
@@ -491,7 +490,7 @@ public class OrderItemServiceTest {
         assertThat(findItemDtoById1.getStock()).isEqualTo(51L);
 
         //주문 수정(수량 늘리기)
-        Long savedOrderItemId2 = orderItemService.updateOrderItemCount(OrderItemDto.builder()
+        Long savedOrderItemId2 = orderItemService.updateOrderItemCount(OrderItemUpdateDto.builder()
                 .id(createdOrderItemId)
                 .orderId(orderTestId)
                 .itemId(itemTestId)

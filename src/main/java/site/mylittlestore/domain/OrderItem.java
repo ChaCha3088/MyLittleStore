@@ -54,7 +54,7 @@ public class OrderItem extends BaseEntity {
     private Long price;
 
     @NotNull
-    @Min(value = 1, message = "수량은 0보다 커야합니다.")
+    @Min(value = 1, message = "수량은 1개 이상이어야 합니다.")
     private Long count;
 
     @NotNull

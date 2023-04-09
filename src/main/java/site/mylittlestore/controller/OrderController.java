@@ -37,7 +37,7 @@ public class OrderController {
 
             model.addAttribute("memberId", memberId);
             model.addAttribute("orderDto", orderDto);
-            model.addAttribute("orderItemFindDtos", orderItemService.findAllOrderItemFindDtosByOrderId(orderId));
+            model.addAttribute("orderItemFindDtos", orderItemService.findAllOrderItemFindDtosByOrderIdAndStoreId(orderId, storeId));
 
             return "order/orderInfo";
         } catch (NoSuchOrderException e) {
@@ -59,11 +59,12 @@ public class OrderController {
             return "message/message";
         }
 
-        //테이블에 주문이 이미 존재하면, 해당 주문으로 redirect
+        //테이블에 주문이 없으면, 주문 생성
         try {
             Long createdOrderId = orderService.createOrder(storeId, storeTableId);
 
             return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + createdOrderId;
+        //테이블에 주문이 이미 존재하면, 해당 주문으로 redirect
         } catch (OrderAlreadyExistException e) {
             return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + e.getOrderId();
         }

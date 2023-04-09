@@ -46,7 +46,7 @@
                 </tr>
             </thead>
 
-            <tbody th:each="storeDtoWithStoreTablesAndItems : ${storeDtos}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}(memberId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.memberId}, storeId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.id})}'|">
+            <tbody th:each="storeDtoWithStoreTablesAndItems : ${storeDtos}" th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}(memberId = ${storeDtoWithStoreTablesAndItems.memberId}, storeId = ${storeDtoWithStoreTablesAndItems.id})}'|">
                 <td th:text="${storeDtoWithStoreTablesAndItems.name}"></td>
                 <td th:text="${storeDtoWithStoreTablesAndItems.storeStatus}"></td>
                 <td th:text="${storeDtoWithStoreTablesAndItems.getAddressDto.city}"></td>

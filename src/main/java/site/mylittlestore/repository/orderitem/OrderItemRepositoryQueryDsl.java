@@ -10,7 +10,7 @@ public interface OrderItemRepositoryQueryDsl {
     Optional<OrderItem> findWithItemById(Long id);
     Optional<OrderItem> findOrderItemByOrderIdAndItemId(Long orderId, Long itemId);
     Optional<OrderItem> findOrderItemByOrderIdAndItemIdAndPrice(Long orderId, Long itemId, Long price);
-    List<OrderItem> findAllByOrderId(Long orderId);
+    List<OrderItem> findAllByOrderIdAndStoreId(Long orderId, Long storeId);
 
     List<OrderItem> findAllWithItemByOrderId(Long orderId);
     List<OrderItem> findAllOrderItemIdByOrderId(Long orderId);

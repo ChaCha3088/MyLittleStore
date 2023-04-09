@@ -24,10 +24,10 @@
             <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}">부적절한 가격입니다.</p>
         </div>
         <div class="form-group">
-            <label th:for="stock">수량</label>
-            <input type="number" th:field="*{stock}" class="form-control" placeholder="수량을 입력하세요."
+            <label th:for="stock">재고</label>
+            <input type="number" th:field="*{stock}" class="form-control" placeholder="재고를 입력하세요."
                    th:class="${#fields.hasErrors('stock')}? 'form-control fieldError' : 'form-control'">
-            <p th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}">부적절한 수량입니다.</p>
+            <p th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}">부적절한 재고입니다.</p>
         </div>
 
         <button type="submit" class="btn btn-success">완료</button>

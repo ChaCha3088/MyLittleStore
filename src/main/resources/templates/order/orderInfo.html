@@ -28,14 +28,6 @@
             </table>
     </div>
 
-    <!--정산 버튼-->
-    <div class="jumbotron">
-        <button class="w-75 btn btn-primary btn-lg"
-                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/payments/new(memberId = ${memberId}, storeId = ${orderDto.storeId}, storeTableId = ${orderDto.storeId}, orderId = ${orderDto.id})}'|"
-                type="button">정산하기
-        </button>
-    </div>
-
     <div>
         <div class="py-5 text-center">
             <h2>주문 상품 목록</h2>
@@ -63,6 +55,14 @@
         <button class="w-75 btn btn-primary btn-lg"
                 th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new(memberId = ${memberId}, storeId = ${orderDto.storeId}, storeTableId = ${orderDto.storeId}, orderId = ${orderDto.id})}'|"
                 type="button">상품 주문하기
+        </button>
+    </div>
+
+    <!--정산 버튼-->
+    <div class="jumbotron">
+        <button class="w-75 btn btn-primary btn-lg"
+                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/payments/new(memberId = ${memberId}, storeId = ${orderDto.storeId}, storeTableId = ${orderDto.storeId}, orderId = ${orderDto.id})}'|"
+                type="button">정산하기
         </button>
     </div>
 

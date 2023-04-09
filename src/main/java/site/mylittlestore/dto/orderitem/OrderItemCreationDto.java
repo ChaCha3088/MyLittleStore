@@ -21,8 +21,7 @@ public class OrderItemCreationDto {
     private Long count;
 
     @Builder
-    @QueryProjection
-    public OrderItemCreationDto(Long orderId, Long itemId, Long price, Long count) {
+    protected OrderItemCreationDto(Long orderId, Long itemId, Long price, Long count) {
         this.orderId = orderId;
         this.itemId = itemId;
         this.price = price;

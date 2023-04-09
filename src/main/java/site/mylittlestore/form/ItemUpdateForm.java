@@ -8,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
+@Setter
 public class ItemUpdateForm {
 
     @NotBlank(message = "이름은 필수입니다.")
@@ -17,7 +18,7 @@ public class ItemUpdateForm {
     @Min(value = 1, message = "가격은 0보다 커야합니다.")
     private Long price;
 
-    @NotNull(message = "수량은 필수입니다.")
-    @Min(value = 1, message = "수량은 0보다 커야합니다.")
+    @NotNull(message = "재고는 필수입니다.")
+    @Min(value = 1, message = "재고는 1개 이상이어야 합니다.")
     private Long stock;
 }

@@ -48,7 +48,7 @@ public class StoreController {
     }
 
     @PostMapping("/members/{memberId}/stores/new")
-    public String createStore(@PathVariable("memberId") Long memberId, @RequestBody @Valid StoreCreationForm storeCreationForm, BindingResult result) {
+    public String createStore(@PathVariable("memberId") Long memberId, @Valid StoreCreationForm storeCreationForm, BindingResult result) {
 
         if (result.hasErrors()) {
             return "store/storeCreationForm";
@@ -74,7 +74,7 @@ public class StoreController {
     }
 
     @PostMapping("/members/{memberId}/stores/{storeId}/update")
-    public String updateStore(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @RequestBody @Valid StoreUpdateForm storeUpdateForm, BindingResult result, Model model) {
+    public String updateStore(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @Valid StoreUpdateForm storeUpdateForm, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             model.addAttribute("storeFindDto", storeService.findStoreDtoWithStoreTablesAndItemsById(storeId));

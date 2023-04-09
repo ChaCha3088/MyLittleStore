@@ -3,45 +3,37 @@ package site.mylittlestore.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import site.mylittlestore.dto.payment.PaymentViewDto;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
-import site.mylittlestore.exception.PaymentAmountException;
 import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
-import site.mylittlestore.exception.orderitem.OrderItemException;
 import site.mylittlestore.exception.payment.PaymentAlreadyExistException;
 import site.mylittlestore.exception.store.StoreClosedException;
-import site.mylittlestore.form.PaymentCreationForm;
 import site.mylittlestore.message.Message;
+import site.mylittlestore.service.OrderItemService;
+import site.mylittlestore.service.PaymentMethodService;
 import site.mylittlestore.service.PaymentService;
-
-import javax.validation.Valid;
 
 @Controller
 @RequiredArgsConstructor
 public class PaymentController {
+    private final OrderItemService orderItemService;
     private final PaymentService paymentService;
+    private final PaymentMethodService paymentMethodService;
 
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/payments/new")
-    public String paymentCreationForm(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, Model model) {
+    public String startPayment(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, Model model) {
         try {
-            PaymentViewDto paymentViewDto = paymentService.startPayment(orderId);
+            Long paymentId = paymentService.startPayment(orderId);
 
-            model.addAttribute("paymentViewDto", paymentViewDto);
             model.addAttribute("memberId", memberId);
             model.addAttribute("storeId", storeId);
             model.addAttribute("storeTableId", storeTableId);
             model.addAttribute("orderId", orderId);
 
-            model.addAttribute("paymentCreationForm", new PaymentCreationForm());
-
-            return "payment/paymentCreationForm";
+            return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/payments/" + paymentId;
         } catch (PaymentAlreadyExistException e) {
             //이미 결제가 진행중인 경우
             //해당 결제 페이지로 redirect
@@ -70,5 +62,14 @@ public class PaymentController {
                     .build());
             return "message/message";
         }
+    }
+
+    @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/payments/{paymentId}")
+    public String paymentInfo(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("paymentId") Long paymentId, Model model) {
+        model.addAttribute("orderItemFindDtos", orderItemService.findAllOrderItemFindDtosByOrderIdAndStoreId(orderId, storeId));
+        model.addAttribute("paymentFindDto", paymentService.findNotSuccessPaymentDtoById(paymentId));
+        model.addAttribute("paymentMethodDtos", paymentMethodService.findAllPaymentMethodDtosByOrderIdAndPaymentId(orderId, paymentId));
+
+        return "payment/paymentInfo";
     }
 }

@@ -38,7 +38,8 @@ public class Payment {
 //    @Min(value = 1, message = "가격은 0보다 커야합니다.")
     private Long desiredPaymentAmount;
 
-//    @Min(value = 1, message = "가격은 0보다 커야합니다.")
+    @NotNull
+    @Min(value = 0, message = "가격은 0 이상이여야 합니다.")
     private Long paidPaymentAmount;
 
     private LocalDateTime completeDateTime;
@@ -50,6 +51,7 @@ public class Payment {
     @Builder
     protected Payment(Order order, Long initialPaymentAmount) {
         this.initialPaymentAmount = initialPaymentAmount;
+        this.paidPaymentAmount = 0L;
         this.paymentStatus = PaymentStatus.IN_PROGRESS;
         this.order = order;
         order.createPayment(this);
@@ -75,6 +77,9 @@ public class Payment {
     }
 
     //-- 연관관계 메소드 --//
+    public void addPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethods.add(paymentMethod);
+    }
 
     //-- Dto --//
     public PaymentDto toPaymentDto() {

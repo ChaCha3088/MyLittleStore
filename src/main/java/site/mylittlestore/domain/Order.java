@@ -33,13 +33,13 @@ public class Order extends BaseEntity {
     private Store store;
 
     @OneToOne(mappedBy = "order")
-    private Payment payment;
-
-    @OneToOne(mappedBy = "order")
     private StoreTable storeTable;
 
     @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems;
+
+    @OneToOne(mappedBy = "order")
+    private Payment payment;
 
     @NotNull
     private LocalDateTime startTime;

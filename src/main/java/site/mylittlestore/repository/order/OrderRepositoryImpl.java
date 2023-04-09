@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import static site.mylittlestore.domain.QOrder.order;
 import static site.mylittlestore.domain.QOrderItem.orderItem;
+import static site.mylittlestore.domain.QPayment.payment;
 import static site.mylittlestore.domain.QStore.store;
 import static site.mylittlestore.domain.item.QItem.item;
 
@@ -63,7 +64,6 @@ public class OrderRepositoryImpl implements OrderRepositoryQueryDsl {
                         .and(order.orderStatus.ne(OrderStatus.PAID)))
                 .fetchOne());
     }
-
 
     @Override
     public List<Order> findAllNotDeletedAndPaidByStoreId(Long storeId) {

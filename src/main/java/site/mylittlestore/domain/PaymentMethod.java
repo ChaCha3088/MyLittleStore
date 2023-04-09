@@ -1,8 +1,10 @@
 package site.mylittlestore.domain;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import site.mylittlestore.dto.paymentmethod.PaymentMethodDto;
 import site.mylittlestore.enumstorage.PaymentMethodType;
 import site.mylittlestore.enumstorage.status.PaymentMethodStatus;
 
@@ -24,6 +26,7 @@ public class PaymentMethod {
     private Payment payment;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private PaymentMethodType paymentMethodType;
 
     @NotNull
@@ -36,5 +39,25 @@ public class PaymentMethod {
     @Enumerated(EnumType.STRING)
     private PaymentMethodStatus paymentMethodStatus;
 
+    @Builder
+    protected PaymentMethod(Payment payment, PaymentMethodType paymentMethodType, Long paymentMethodAmount) {
+        this.payment = payment;
+        this.paymentMethodType = paymentMethodType;
+        this.paymentMethodAmount = paymentMethodAmount;
+        this.paymentMethodStatus = PaymentMethodStatus.IN_PROGRESS;
 
+        payment.addPaymentMethod(this);
+    }
+
+    //-- Dto --//
+    public PaymentMethodDto toPaymentMethodDto() {
+        return PaymentMethodDto.builder()
+                .id(id)
+                .paymentId(payment.getId())
+                .paymentMethodType(paymentMethodType)
+                .paymentMethodAmount(paymentMethodAmount)
+                .paymentMethodCompleteDateTime(paymentMethodCompleteDateTime)
+                .paymentMethodStatus(paymentMethodStatus)
+                .build();
+    }
 }

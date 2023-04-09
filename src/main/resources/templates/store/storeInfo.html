@@ -23,20 +23,20 @@
             </tr>
             </thead>
             <tbody>
-                <td th:text="${storeDtoWithStoreTableFindDtosAndItemFindDtos.name}"></td>
-                <td th:text="${storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto.city}"></td>
-                <td th:text="${storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto.street}"></td>
-                <td th:text="${storeDtoWithStoreTableFindDtosAndItemFindDtos.getAddressDto.zipcode}"></td>
+                <td th:text="${storeDto.name}"></td>
+                <td th:text="${storeDto.getCity}"></td>
+                <td th:text="${storeDto.getStreet}"></td>
+                <td th:text="${storeDto.getZipcode}"></td>
                 <td>
                     <button class="w-75 btn btn-primary btn-sm"
-                            th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/changeStoreStatus(memberId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.memberId}, storeId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.id})}'|"
+                            th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/changeStoreStatus(memberId = ${storeDto.memberId}, storeId = ${storeDto.id})}'|"
                             type="button"
-                            th:text="${storeDtoWithStoreTableFindDtosAndItemFindDtos.storeStatus}">테이블 상태
+                            th:text="${storeDto.storeStatus}">테이블 상태
                     </button>
                 </td>
                 <td>
                     <button class="w-75 btn btn-primary btn-sm"
-                            th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/update(memberId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.memberId}, storeId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.id})}'|"
+                            th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/update(memberId = ${storeDto.memberId}, storeId = ${storeDto.id})}'|"
                             type="button">수정
                     </button>
                 </td>
@@ -47,11 +47,11 @@
     </div>
     <div class="jumbotron">
         <button class="w-75 btn btn-primary btn-lg"
-                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables(memberId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.memberId}, storeId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.id})}'|"
+                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/storeTables(memberId = ${storeDto.memberId}, storeId = ${storeDto.id})}'|"
                 type="button">테이블 목록
         </button>
         <button class="w-75 btn btn-primary btn-lg"
-                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/items(memberId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.memberId}, storeId = ${storeDtoWithStoreTableFindDtosAndItemFindDtos.id})}'|"
+                th:onclick="|location.href='@{/members/{memberId}/stores/{storeId}/items(memberId = ${storeDto.memberId}, storeId = ${storeDto.id})}'|"
                 type="button">상품 목록
         </button>
     </div>

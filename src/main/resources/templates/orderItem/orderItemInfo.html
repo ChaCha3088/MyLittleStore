@@ -19,6 +19,11 @@
         </div>
 
         <div style="display:none">
+            <label th:for="orderId">주문 Id</label>
+            <input type="text" id="orderId" name="orderId" class="form-control" value="주문 Id" th:value="${orderItemDtoWithItemFindDto.orderId}" readonly>
+        </div>
+
+        <div style="display:none">
             <label th:for="itemId">상품 Id</label>
             <input type="text" id="itemId" name="itemId" class="form-control" value="상품 Id" th:value="${orderItemDtoWithItemFindDto.itemFindDto.id}" readonly>
         </div>

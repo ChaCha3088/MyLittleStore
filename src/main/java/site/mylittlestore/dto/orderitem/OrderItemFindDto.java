@@ -16,33 +16,24 @@ import java.time.LocalDateTime;
 public class OrderItemFindDto {
     @NotNull
     private Long id;
-
     @NotNull
     private Long storeId;
-
     @NotNull
     private Long orderId;
-
     @NotNull
     private Long itemId;
-
     @NotBlank
     private String itemName;
-
     @NotNull
     @Min(value = 1, message = "가격은 0보다 커야합니다.")
     private Long price;
-
     @NotNull
-    @Min(value = 1, message = "수량은 0보다 커야합니다.")
+    @Min(value = 1, message = "수량은 1개 이상이어야 합니다.")
     private Long count;
-
     @NotNull
     private LocalDateTime orderedTime;
-
     @NotNull
     private LocalDateTime updatedTime;
-
     @NotBlank
     private String orderItemStatus;
 

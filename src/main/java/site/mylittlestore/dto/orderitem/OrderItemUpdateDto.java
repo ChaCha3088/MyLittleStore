@@ -11,15 +11,13 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderItemDto {
+public class OrderItemUpdateDto {
     @NotNull
     private Long id;
     @NotNull
     private Long orderId;
     @NotNull
     private Long itemId;
-    @NotNull
-    private String itemName;
     @NotNull
     private Long price;
     @NotNull
@@ -28,11 +26,10 @@ public class OrderItemDto {
 
     @Builder
     @QueryProjection
-    public OrderItemDto(Long id, Long orderId, Long itemId, String itemName, Long price, Long count) {
+    public OrderItemUpdateDto(Long id, Long orderId, Long itemId, Long price, Long count) {
         this.id = id;
         this.orderId = orderId;
         this.itemId = itemId;
-        this.itemName = itemName;
         this.price = price;
         this.count = count;
     }

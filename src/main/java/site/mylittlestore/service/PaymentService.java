@@ -8,7 +8,6 @@ import site.mylittlestore.domain.OrderItem;
 import site.mylittlestore.domain.Payment;
 import site.mylittlestore.domain.Store;
 import site.mylittlestore.dto.payment.PaymentDto;
-import site.mylittlestore.dto.payment.PaymentViewDto;
 import site.mylittlestore.enumstorage.PaymentMethodType;
 import site.mylittlestore.enumstorage.errormessage.OrderErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
@@ -21,14 +20,12 @@ import site.mylittlestore.exception.payment.PaymentException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
 import site.mylittlestore.exception.store.StoreClosedException;
 import site.mylittlestore.repository.order.OrderRepository;
-import site.mylittlestore.repository.orderitem.OrderItemRepository;
 import site.mylittlestore.repository.payment.PaymentRepository;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,9 +33,8 @@ import java.util.stream.Stream;
 public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
 
-    public List<String> getPaymentMethodTypes() {
+    public List<String> findPaymentMethodTypes() {
         return Arrays.stream(PaymentMethodType.values())
                 .map(PaymentMethodType::name)
                 .collect(Collectors.toList());
@@ -60,7 +56,7 @@ public class PaymentService {
     payment 테이블 생성
      */
     @Transactional
-    public PaymentViewDto startPayment(Long orderId) {
+    public Long startPayment(Long orderId) {
         Order order = findOrderWithStoreAndOrderItemsById(orderId);
         Store store = order.getStore();
         List<OrderItem> orderItems = order.getOrderItems();
@@ -92,12 +88,7 @@ public class PaymentService {
         //저장
         Payment payment = paymentRepository.save(createdPayment);
 
-        return PaymentViewDto.builder()
-                .id(payment.getId())
-                .orderDto(order.toOrderDto())
-                .orderItemFindDtos(orderItems.stream().map(orderItem -> orderItem.toOrderItemFindDto()).collect(Collectors.toList()))
-                .initialPaymentAmount(initialPaymentAmount.get())
-                .build();
+        return payment.getId();
     }
 
     private static void validateOrderItemChangeAbility(Order order, Store store) {

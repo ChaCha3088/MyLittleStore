@@ -2,6 +2,8 @@ package site.mylittlestore.dto.order;
 
 import lombok.Builder;
 import lombok.Getter;
+import site.mylittlestore.dto.orderitem.OrderItemFindDto;
+import site.mylittlestore.dto.payment.PaymentDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -9,17 +11,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-public class OrderFindDto {
+public class OrderFindDtoWithOrderItemAndPayment {
     @NotNull
     private Long id;
     @NotNull
     private Long storeId;
 
-    private Long paymentId;
+    private PaymentDto paymentDto;
     @NotNull
     private Long storeTableId;
 
-    private List<Long> orderItemIds;
+    private List<OrderItemFindDto> orderItemFindDtos;
     @NotNull
     private LocalDateTime startTime;
 
@@ -28,12 +30,12 @@ public class OrderFindDto {
     private String orderStatus;
 
     @Builder
-    protected OrderFindDto(Long id, Long storeId, Long paymentId, Long storeTableId, List<Long> orderItemIds, LocalDateTime startTime, LocalDateTime endTime, String orderStatus) {
+    protected OrderFindDtoWithOrderItemAndPayment(Long id, Long storeId, PaymentDto paymentDto, Long storeTableId, List<OrderItemFindDto> orderItemFindDtos, LocalDateTime startTime, LocalDateTime endTime, String orderStatus) {
         this.id = id;
         this.storeId = storeId;
-        this.paymentId = paymentId;
+        this.paymentDto = paymentDto;
         this.storeTableId = storeTableId;
-        this.orderItemIds = orderItemIds;
+        this.orderItemFindDtos = orderItemFindDtos;
         this.startTime = startTime;
         this.endTime = endTime;
         this.orderStatus = orderStatus;

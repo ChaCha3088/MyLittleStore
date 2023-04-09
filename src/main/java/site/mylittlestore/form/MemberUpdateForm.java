@@ -6,7 +6,9 @@ import lombok.Setter;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-@Getter public class MemberUpdateForm {
+@Getter
+@Setter
+public class MemberUpdateForm {
     @NotBlank(message = "이름은 필수입니다.")
     private String name;
 

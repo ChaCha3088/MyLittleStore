@@ -24,7 +24,6 @@ import site.mylittlestore.repository.order.OrderRepository;
 import site.mylittlestore.repository.orderitem.OrderItemRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,8 +59,8 @@ public class OrderItemService {
      * @param orderId
      * @return
      */
-    public List<OrderItemFindDto> findAllOrderItemFindDtosByOrderId(Long orderId) {
-        return orderItemRepository.findAllByOrderId(orderId).stream()
+    public List<OrderItemFindDto> findAllOrderItemFindDtosByOrderIdAndStoreId(Long orderId, Long storeId) {
+        return orderItemRepository.findAllByOrderIdAndStoreId(orderId, storeId).stream()
                 //Dto로 변환
                 .map(orderItem -> orderItem.toOrderItemFindDto())
                 .collect(Collectors.toList());
@@ -145,16 +144,16 @@ public class OrderItemService {
     /**
      * 주문 상품을 수정하기 위해서는 상품 Id, 상품 가격이 같아야 한다.
      * 따라서 가격이 한번 정해지면, 수량만 변경 가능하다.
-     * @param orderItemDto
+     * @param orderItemUpdateDto
      * @return
      * @throws NoSuchStoreException
      * @throws StoreClosedException
      * @throws OrderItemException
      */
     @Transactional
-    public Long updateOrderItemCount(OrderItemDto orderItemDto) throws NoSuchStoreException, StoreClosedException, OrderItemException {
+    public Long updateOrderItemCount(OrderItemUpdateDto orderItemUpdateDto) throws NoSuchStoreException, StoreClosedException, OrderItemException {
         //주문 Id로 주문을 찾는다.
-        Order order = findOrderWithStoreById(orderItemDto.getOrderId());
+        Order order = findOrderWithStoreById(orderItemUpdateDto.getOrderId());
 
         Store store = order.getStore();
 
@@ -166,13 +165,10 @@ public class OrderItemService {
         isPaymentAlreadyExists(order);
 
         //주문에 상품 Id와 가격이 같은 주문 상품이 존재하는지 확인
-        OrderItem orderItem = validateOrderItemExistenceWithOrderIdAndOrderItemIdAndItemIdAndPrice(orderItemDto.getOrderId(), orderItemDto.getId(), orderItemDto.getItemId(), orderItemDto.getPrice());
+        OrderItem orderItem = validateOrderItemExistenceWithOrderIdAndOrderItemIdAndItemIdAndPrice(orderItemUpdateDto.getOrderId(), orderItemUpdateDto.getId(), orderItemUpdateDto.getItemId(), orderItemUpdateDto.getPrice());
 
-        Optional<Long> price = Optional.ofNullable(orderItemDto.getPrice());
-        Optional<Long> count = Optional.ofNullable(orderItemDto.getCount());
-
-        price.ifPresent(orderItem::updatePrice);
-        count.ifPresent(orderItem::updateCount);
+        orderItem.updatePrice(orderItemUpdateDto.getPrice());
+        orderItem.updateCount(orderItemUpdateDto.getCount());
 
         //저장
         OrderItem savedOrderItem = orderItemRepository.save(orderItem);

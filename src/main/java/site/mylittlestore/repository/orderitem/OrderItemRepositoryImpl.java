@@ -72,13 +72,14 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryQueryDsl {
     }
 
     @Override
-    public List<OrderItem> findAllByOrderId(Long orderId) {
+    public List<OrderItem> findAllByOrderIdAndStoreId(Long orderId, Long storeId) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         return queryFactory
                 .select(orderItem)
                 .from(orderItem)
                 .where(orderItem.order.id.eq(orderId)
+                        .and(orderItem.store.id.eq(storeId))
                         .and(orderItem.orderItemStatus.eq(OrderItemStatus.ORDERED)))
                 .orderBy(orderItem.orderedDateTime.asc())
                 .fetch();

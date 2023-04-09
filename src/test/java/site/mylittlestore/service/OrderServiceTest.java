@@ -115,7 +115,7 @@ class OrderServiceTest {
     }
 
     @Test
-    @DisplayName("orderId와 storeId로 DELETED와 PAID가 아닌 OrderDto을 조회한다.")
+    @DisplayName("orderId와 storeId로 DELETED와 PAID가 아닌 OrderDto를 조회한다.")
     void findOrderDtoByIdAndStoreId() {
         //when
         OrderDto findOrderWithOrderItemIdById = orderService.findOrderDtoByIdAndStoreId(orderTestId, storeTestId);
@@ -126,7 +126,7 @@ class OrderServiceTest {
 
     @Test
     @DisplayName("해당하는 주문이 없을 경우, 예외 발생")
-    void findOrderByIdNoSuchOrderException() {
+    void findOrderDtoByIdAndStoreIdException() {
         //then
         assertThatThrownBy(() -> orderService.findOrderDtoByIdAndStoreId(100L, storeTestId))
                 .isInstanceOf(NoSuchOrderException.class);

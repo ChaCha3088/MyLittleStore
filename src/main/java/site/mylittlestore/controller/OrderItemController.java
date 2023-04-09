@@ -12,6 +12,7 @@ import site.mylittlestore.dto.item.ItemFindDto;
 import site.mylittlestore.dto.orderitem.OrderItemCreationDto;
 import site.mylittlestore.dto.orderitem.OrderItemDeleteDto;
 import site.mylittlestore.dto.orderitem.OrderItemDto;
+import site.mylittlestore.dto.orderitem.OrderItemUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
@@ -81,7 +82,7 @@ public class OrderItemController {
     }
 
     @PostMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/new")
-    public String createOrderItem(@PathVariable("memberId") Long memberId, @PathVariable Long storeId, @PathVariable Long storeTableId, @PathVariable Long orderId, @RequestBody @Valid OrderItemCreationForm orderItemCreationForm, BindingResult result, Model model) {
+    public String createOrderItem(@PathVariable("memberId") Long memberId, @PathVariable Long storeId, @PathVariable Long storeTableId, @PathVariable Long orderId, @Valid OrderItemCreationForm orderItemCreationForm, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             return "orderItem/orderItemCreationForm";
@@ -126,22 +127,22 @@ public class OrderItemController {
 
 
     @PostMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/update")
-    public String updateOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @RequestBody @Valid OrderItemForm orderItemForm, BindingResult result, Model model) {
+    public String updateOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @Valid OrderItemForm orderItemForm, BindingResult result, Model model) {
         try {
             if (result.hasErrors()) {
                 model.addAttribute("orderItemFindDto", orderItemService.findOrderItemFindDtoByIdAndOrderId(orderItemId, orderId));
                 return "orderItem/orderItemUpdateForm";
             }
 
-            Long updatedOrderItemId = orderItemService.updateOrderItemCount(OrderItemDto.builder()
+            Long updatedOrderItemId = orderItemService.updateOrderItemCount(OrderItemUpdateDto.builder()
                     .id(orderItemId)
-                    .orderId(orderItemForm.getId()) //나중에 orderId 검증할 것
+                    .orderId(orderItemForm.getOrderId()) //나중에 orderId 검증할 것
                     .itemId(orderItemForm.getItemId()) //나중에 itemId 검증할 것
                     .price(orderItemForm.getPrice()) //나중에 price 검증할 것
                     .count(orderItemForm.getCount()) //나중에 count 검증할 것
                     .build());
 
-            return "redirect:/members/"+memberId+"/stores/"+storeId+"/storeTables/"+storeTableId+"/orders/"+orderId+"/orderItems/"+updatedOrderItemId;
+            return "redirect:/members/"+memberId+"/stores/"+storeId+"/storeTables/"+storeTableId+"/orders/"+orderId;
         } catch (PaymentAlreadyExistException e) {  //진행중인 결제가 존재하면, 결제가 시작되어 변경이 불가능합니다.
             //팝업 알림창
             model.addAttribute("messages", Message.builder()
@@ -184,7 +185,7 @@ public class OrderItemController {
     }
 
     @PostMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/orderItems/{orderItemId}/delete")
-    public String deleteOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @RequestBody @Valid OrderItemForm orderItemForm, BindingResult result, Model model) {
+    public String deleteOrderItem(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("orderItemId") Long orderItemId, @Valid OrderItemForm orderItemForm, BindingResult result, Model model) {
 
         try {
             orderItemService.deleteOrderItem(OrderItemDeleteDto.builder()

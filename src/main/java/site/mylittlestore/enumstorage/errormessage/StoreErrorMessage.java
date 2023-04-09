@@ -10,8 +10,6 @@ public enum StoreErrorMessage {
     DUPLICATE_ITEM_NAME("가게에 이미 같은 이름의 상품이 있습니다."),
     STORE_CLOSED("가게가 닫혀있습니다.");
 
-
-
     private String message;
 
     StoreErrorMessage(String message) {

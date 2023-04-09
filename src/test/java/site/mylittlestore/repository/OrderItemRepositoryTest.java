@@ -15,7 +15,6 @@ import site.mylittlestore.dto.member.MemberCreationDto;
 import site.mylittlestore.dto.orderitem.OrderItemCreationDto;
 import site.mylittlestore.dto.store.StoreCreationDto;
 import site.mylittlestore.dto.store.StoreToggleStatusDto;
-import site.mylittlestore.dto.store.StoreUpdateDto;
 import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
 import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.repository.orderitem.OrderItemRepository;
@@ -241,10 +240,10 @@ public class OrderItemRepositoryTest {
     }
 
     @Test
-    @DisplayName("해당 주문 Id을 가진 모든 주문 상품을 찾는다.")
+    @DisplayName("해당 orderId와 storeId를 가진 모든 주문 상품을 찾는다.")
     void findAllByOrderId() {
         //when
-        List<OrderItem> allByOrderId = orderItemRepository.findAllByOrderId(orderTestId2);
+        List<OrderItem> allByOrderId = orderItemRepository.findAllByOrderIdAndStoreId(orderTestId2, storeTestId);
 
         //then
         assertThat(allByOrderId.size()).isEqualTo(3);
