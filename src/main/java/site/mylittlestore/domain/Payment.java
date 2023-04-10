@@ -54,6 +54,8 @@ public class Payment {
         this.paidPaymentAmount = 0L;
         this.paymentStatus = PaymentStatus.IN_PROGRESS;
         this.order = order;
+
+        //연관관계 설정, 주문 상태 IN_PROGRESS로 변경
         order.createPayment(this);
     }
 

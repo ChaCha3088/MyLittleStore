@@ -6,5 +6,6 @@ import site.mylittlestore.domain.Payment;
 import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long>, PaymentRepositoryQueryDsl {
-    Optional<Payment> findNotSuccessById(Long id);
+    Optional<Payment> findNotSuccessByIdAndOrderId(Long id, Long orderId);
+    Optional<Payment> findNotSuccessWithPaymentMethodsAndOrderByIdAndOrderId(Long id, Long orderId);
 }

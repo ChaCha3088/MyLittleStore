@@ -6,11 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import site.mylittlestore.domain.*;
 import site.mylittlestore.dto.payment.PaymentDto;
 import site.mylittlestore.enumstorage.PaymentMethodType;
-import site.mylittlestore.enumstorage.errormessage.OrderErrorMessage;
-import site.mylittlestore.enumstorage.errormessage.OrderItemErrorMessage;
-import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
-import site.mylittlestore.enumstorage.errormessage.StoreErrorMessage;
-import site.mylittlestore.enumstorage.status.OrderStatus;
+import site.mylittlestore.enumstorage.errormessage.*;
 import site.mylittlestore.enumstorage.status.StoreStatus;
 import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.exception.payment.PaymentAlreadyExistException;
@@ -43,9 +39,9 @@ public class PaymentService {
     /*
     SUCCESS를 제외한 payment 찾기
      */
-    public PaymentDto findNotSuccessPaymentDtoById(Long id) {
+    public PaymentDto findNotSuccessPaymentDtoById(Long id, Long orderId) {
         //SUCCESS를 제외한 payment 찾기
-        return paymentRepository.findNotSuccessById(id)
+        return paymentRepository.findNotSuccessByIdAndOrderId(id, orderId)
                 //없으면 예외 발생
                 .orElseThrow(() -> new PaymentException(PaymentErrorMessage.NO_SUCH_PAYMENT.getMessage()))
                 //Dto 변환
@@ -91,20 +87,38 @@ public class PaymentService {
     }
 
     /*
+    결제 중간에 취소
+     */
+    @Transactional
+    public boolean abortPayment(Long paymentId, Long orderId) {
+        //paymentMethods와 함께 payment 찾기
+        Payment payment = paymentRepository.findNotSuccessWithPaymentMethodsAndOrderByIdAndOrderId(paymentId, orderId)
+                //payment가 없으면 예외 발생
+                .orElseThrow(() -> new PaymentException(PaymentErrorMessage.NO_SUCH_PAYMENT.getMessage()));
+
+        //paymentMethods가 비어있으면
+        //payment 삭제 가능
+        if (payment.getPaymentMethods().isEmpty()) {
+            paymentRepository.delete(payment);
+            payment.getOrder().changeOrderStatusUsing();
+            return true;
+        } else {
+            //paymentMethods가 비어있지 않으면
+            //payment 삭제 불가능
+            //예외 발생
+            throw new PaymentException(PaymentMethodErrorMessage.PAYMENT_METHODS_EXIST.getMessage());
+        }
+    }
+
+    /*
     initialPaymentAmount와 paidPaymentAmount가 같으면 결제 완료
      */
     @Transactional
     public boolean finishPayment(Long paymentId, Long orderId) {
         //payment 찾기
-        Payment payment = paymentRepository.findNotSuccessById(paymentId)
+        Payment payment = paymentRepository.findNotSuccessByIdAndOrderId(paymentId, orderId)
                 //payment가 없으면 예외 발생
                 .orElseThrow(() -> new PaymentException(PaymentErrorMessage.NO_SUCH_PAYMENT.getMessage()));
-
-        //payment의 orderId와 파라미터 orderId가 같은지 확인
-        if (payment.getOrder().getId() != orderId) {
-            //같지 않으면 예외 발생
-            throw new PaymentException(PaymentErrorMessage.PAYMENT_IS_NOT_ORDERS_PAYMENT.getMessage());
-        }
 
         //값이 0이 아니고, initialPaymentAmount와 paidPaymentAmount가 같으면
         //결제 완료

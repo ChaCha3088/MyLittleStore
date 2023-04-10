@@ -75,6 +75,17 @@ public class Order extends BaseEntity {
         this.orderStatus = OrderStatus.PAID;
     }
 
+    /*
+    결제 취소 시, 주문 상태를 사용 중으로 변경
+     */
+    public void changeOrderStatusUsing() {
+        if (this.orderStatus != OrderStatus.IN_PROGRESS)
+            throw new OrderException(OrderErrorMessage.ORDER_NOT_IN_PROGRESS.getMessage());
+
+        //문제 없으면 다시 사용 중으로 변경
+        this.orderStatus = OrderStatus.USING;
+    }
+
     //== 연관관계 메소드 ==//
     public void createPayment(Payment payment) {
         this.orderStatus = OrderStatus.IN_PROGRESS;
@@ -84,10 +95,6 @@ public class Order extends BaseEntity {
     //== 테스트 로직 ==//
     public void changeOrderStatusDeleted() {
         this.orderStatus = OrderStatus.DELETED;
-    }
-
-    public void changeOrderStatusUsing() {
-        this.orderStatus = OrderStatus.USING;
     }
 
     public void changeOrderStatusInProgress() {
