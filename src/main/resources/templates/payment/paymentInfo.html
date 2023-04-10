@@ -6,6 +6,11 @@
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
 
+<!--결제 중단 버튼-->
+    <div>
+        <button class="w-75 btn btn-primary btn-lg" th:href="@{/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/payments/{paymentId}/cancel(memberId = ${memberId}, storeId = ${storeId}, storeTableId = ${storeTableId}, orderId = ${orderId}, paymentId = ${paymentFindDto.id})}">결제 중단</button>
+    </div>
+
     <div>
         <div class="py-5 text-center">
             <h2>결제</h2>
