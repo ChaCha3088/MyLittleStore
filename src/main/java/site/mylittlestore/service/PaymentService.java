@@ -8,11 +8,8 @@ import site.mylittlestore.dto.payment.PaymentDto;
 import site.mylittlestore.enumstorage.PaymentMethodType;
 import site.mylittlestore.enumstorage.errormessage.*;
 import site.mylittlestore.enumstorage.status.StoreStatus;
-import site.mylittlestore.exception.NoSuchPaymentException;
-import site.mylittlestore.exception.WrongPaymentException;
+import site.mylittlestore.exception.payment.*;
 import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
-import site.mylittlestore.exception.payment.PaymentAlreadyExistException;
-import site.mylittlestore.exception.payment.PaymentException;
 import site.mylittlestore.exception.store.NoSuchOrderException;
 import site.mylittlestore.exception.store.StoreClosedException;
 import site.mylittlestore.repository.order.OrderRepository;
@@ -21,6 +18,7 @@ import site.mylittlestore.repository.storetable.StoreTableRepository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -104,7 +102,7 @@ public class PaymentService {
             return true;
         } else {
             //paymentMethods가 비어있지 않으면
-            //payment 삭제 불가능
+            //payment 취소 불가능
             //예외 발생
             throw new PaymentException(PaymentMethodErrorMessage.PAYMENT_METHODS_EXIST.getMessage());
         }
@@ -115,24 +113,23 @@ public class PaymentService {
      */
     @Transactional
     public boolean finishPayment(Long paymentId, Long orderId) {
-        //payment 찾기
-        Payment payment = paymentRepository.findNotSuccessByIdAndOrderId(paymentId, orderId)
-                //payment가 없으면 예외 발생
-                .orElseThrow(() -> new NoSuchPaymentException(PaymentErrorMessage.NO_SUCH_PAYMENT.getMessage()));
+        //SUCCESS인 payment 찾기
+        Optional<Payment> paymentOptional = paymentRepository.findSuccessByIdAndOrderId(paymentId, orderId);
 
-        //initialPaymentAmount보다 paidPaymentAmount가 크면
-        //예외 발생
+        //없으면 false 반환
+        if (!paymentOptional.isPresent())
+            return false;
+
+        Payment payment = paymentOptional.get();
+
+        //initialPaymentAmount보다 paidPaymentAmount가 크면, 예외 발생
         if (payment.getInitialPaymentAmount() < payment.getPaidPaymentAmount()) {
-            throw new WrongPaymentException(PaymentErrorMessage.PAID_PAYMENT_AMOUNT_IS_GREATER_THAN_INITIAL_PAYMENT_AMOUNT.getMessage());
+            throw new PaidPaymentAmountExceeedException(PaymentErrorMessage.PAID_PAYMENT_AMOUNT_IS_GREATER_THAN_INITIAL_PAYMENT_AMOUNT.getMessage());
         }
 
         //값이 0이 아니고, initialPaymentAmount와 paidPaymentAmount가 같으면
         //결제 완료
         if (payment.getInitialPaymentAmount() != 0 & payment.getInitialPaymentAmount() == payment.getPaidPaymentAmount()) {
-            //payment 상태 SUCCESS로 변경
-            payment.finishPayment();
-            paymentRepository.save(payment);
-
             //storeTable, orderItems와 함께 order 찾기
             Order order = orderRepository.findNotDeletedAndPaidWithStoreTableAndOrderItemsByIdAndPaymentId(orderId, paymentId)
                     //order가 없으면 예외 발생

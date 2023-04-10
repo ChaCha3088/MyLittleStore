@@ -11,7 +11,7 @@ import site.mylittlestore.enumstorage.PaymentMethodType;
 import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.PaymentMethodErrorMessage;
 import site.mylittlestore.enumstorage.status.PaymentMethodStatus;
-import site.mylittlestore.exception.PaymentMethodException;
+import site.mylittlestore.exception.paymentmethod.PaymentMethodException;
 import site.mylittlestore.exception.payment.PaymentException;
 import site.mylittlestore.repository.payment.PaymentRepository;
 import site.mylittlestore.repository.paymentmethod.PaymentMethodRepository;
@@ -26,6 +26,12 @@ import java.util.stream.Collectors;
 public class PaymentMethodService {
     private final PaymentRepository paymentRepository;
     private final PaymentMethodRepository paymentMethodRepository;
+
+    public PaymentMethodDto findNotPaidPaymentMethodDtoByIdAndPaymentId(Long id, Long paymentId) {
+        return paymentMethodRepository.findNotPaidByIdAndPaymentId(id, paymentId)
+                .orElseThrow(() -> new PaymentMethodException(PaymentMethodErrorMessage.NO_SUCH_PAYMENT_METHOD.getMessage()))
+                .toPaymentMethodDto();
+    }
 
     public List<PaymentMethodDto> findAllPaymentMethodDtosByOrderIdAndPaymentId(Long orderId, Long paymentId) {
         return paymentMethodRepository.findAllByPaymentId(paymentId)

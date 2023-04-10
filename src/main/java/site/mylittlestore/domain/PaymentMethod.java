@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.mylittlestore.dto.paymentmethod.PaymentMethodDto;
 import site.mylittlestore.enumstorage.PaymentMethodType;
+import site.mylittlestore.enumstorage.errormessage.PaymentMethodErrorMessage;
 import site.mylittlestore.enumstorage.status.PaymentMethodStatus;
+import site.mylittlestore.exception.paymentmethod.PaymentMethodException;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -47,6 +49,21 @@ public class PaymentMethod {
         this.paymentMethodStatus = PaymentMethodStatus.IN_PROGRESS;
 
         payment.addPaymentMethod(this);
+    }
+
+    //-- 비즈니스 로직 --//
+    public void paymentMethodSuccess() {
+        //결제 수단 상태가 이미 PAID거나 paymentMethodCompleteDateTime가 존재하면 예외 발생
+        if (paymentMethodStatus == PaymentMethodStatus.PAID | paymentMethodCompleteDateTime != null)
+            throw new PaymentMethodException(PaymentMethodErrorMessage.ALREADY_PAID.getMessage());
+
+        //결제 수단 상태를 PAID로 변경
+        paymentMethodStatus = PaymentMethodStatus.PAID;
+        //결제 수단 완료 시간을 현재 시간으로 반영
+        paymentMethodCompleteDateTime = LocalDateTime.now();
+
+        //결제 수단의 결제 금액을 결제에 반영
+        this.payment.paymentMethodPays(paymentMethodAmount);
     }
 
     //-- Dto --//

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import site.mylittlestore.dto.paymentmethod.PaymentMethodCreationDto;
-import site.mylittlestore.exception.PaymentMethodException;
+import site.mylittlestore.exception.paymentmethod.PaymentMethodException;
 import site.mylittlestore.form.PaymentMethodCreationForm;
 import site.mylittlestore.service.PaymentMethodService;
 

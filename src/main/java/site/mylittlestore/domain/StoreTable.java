@@ -49,18 +49,16 @@ public class StoreTable extends BaseEntity {
 
     //-- 비즈니스 로직 --//
     public void delete() {
+        //테이블이 사용중이면 삭제할 수 없음
+        if (this.storeTableStatus == StoreTableStatus.USING)
+            throw new StoreTableException(StoreTableErrorMessage.STORE_TABLE_USING.getMessage());
         this.storeTableStatus = StoreTableStatus.DELETED;
     }
 
     public void changeStoreTableStatusEmpty() {
-        //테이블이 이미 비어있는 상태라면 예외 발생
-        if (this.storeTableStatus == StoreTableStatus.EMPTY)
-            throw new StoreTableException(StoreTableErrorMessage.STORE_TABLE_ALREADY_EMPTY.getMessage());
-        //테이블이 이미 삭제된 상태라면 예외 발생
-        if (this.storeTableStatus == StoreTableStatus.DELETED)
-            throw new StoreTableException(StoreTableErrorMessage.STORE_TABLE_ALREADY_DELETED.getMessage());
-        //문제가 없다면 테이블 상태를 비어있는 상태로 변경
-        this.storeTableStatus = StoreTableStatus.EMPTY;
+        //테이블이 사용 중이었을 때만 빈 테이블로 변경 가능
+        if (this.storeTableStatus == StoreTableStatus.USING)
+            this.storeTableStatus = StoreTableStatus.EMPTY;
     }
 
     //-- 연관 관계 메소드 --//

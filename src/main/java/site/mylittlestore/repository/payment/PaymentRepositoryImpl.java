@@ -16,6 +16,20 @@ import static site.mylittlestore.domain.QPaymentMethod.paymentMethod;
 @RequiredArgsConstructor
 public class PaymentRepositoryImpl implements PaymentRepositoryQueryDsl {
     private final EntityManager em;
+
+    @Override
+    public Optional<Payment> findSuccessByIdAndOrderId(Long id, Long orderId) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        return Optional.ofNullable(queryFactory
+                    .selectFrom(payment)
+                    .where(payment.id.eq(id)
+                            .and(payment.order.id.eq(orderId))
+                            .and(payment.paymentStatus.eq(PaymentStatus.SUCCESS)))
+                    .fetchOne());
+    }
+
+
     @Override
     public Optional<Payment> findNotSuccessByIdAndOrderId(Long id, Long orderId) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);

@@ -4,8 +4,9 @@ import lombok.*;
 import site.mylittlestore.dto.payment.PaymentDto;
 import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.status.PaymentStatus;
-import site.mylittlestore.exception.PaymentAmountException;
+import site.mylittlestore.exception.payment.PaidPaymentAmountExceeedException;
 import site.mylittlestore.exception.payment.PaymentException;
+import site.mylittlestore.exception.payment.PaymentFatalException;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -60,14 +61,32 @@ public class Payment {
     }
 
     //-- 비즈니스 로직 --//
+    public void paymentMethodPays(Long paymentMethodAmount) {
+        //결제 상태가 이미 SUCCESS이면 예외 발생
+        if (this.paymentStatus == PaymentStatus.SUCCESS) {
+            throw new PaymentFatalException(PaymentErrorMessage.PAYMENT_ALREADY_SUCCESS.getMessage());
+        }
 
-    public void changePaymentStatus(PaymentStatus paymentStatus) {
-        this.paymentStatus = paymentStatus;
+        //결제 금액이 지불 금액보다 크면 예외 발생
+        if (this.paidPaymentAmount + paymentMethodAmount > this.initialPaymentAmount) {
+            throw new PaidPaymentAmountExceeedException(PaymentErrorMessage.PAID_PAYMENT_AMOUNT_IS_GREATER_THAN_INITIAL_PAYMENT_AMOUNT.getMessage());
+        }
+
+        //지불 금액 반영
+        this.paidPaymentAmount += paymentMethodAmount;
+
+        //지불 금액이 결제 금액과 같으면 결제 상태 SUCCESS로 변경, 결제 완료 시간 반영
+        if (this.paidPaymentAmount > 0 & this.paidPaymentAmount == this.initialPaymentAmount) {
+            paymentSuccess();
+        }
     }
 
-    public void finishPayment() {
-        this.completeDateTime = LocalDateTime.now();
+    public void paymentSuccess() {
         this.paymentStatus = PaymentStatus.SUCCESS;
+        this.completeDateTime = LocalDateTime.now();
+
+        //주문 상태 변경
+        this.order.paymentSuccess();
     }
 
     //-- 연관관계 메소드 --//
