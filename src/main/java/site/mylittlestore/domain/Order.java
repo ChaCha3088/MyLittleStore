@@ -76,7 +76,7 @@ public class Order extends BaseEntity {
     }
 
     /*
-    결제 취소 시, 주문 상태를 사용 중으로 변경
+    결제 중단 시, 주문 상태를 사용 중으로 변경
      */
     public void changeOrderStatusUsing() {
         if (this.orderStatus != OrderStatus.IN_PROGRESS)

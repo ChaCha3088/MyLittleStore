@@ -64,6 +64,22 @@ public class PaymentController {
         }
     }
 
+    @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/payments/{paymentId}/cancel")
+    public String abortPayment(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("paymentId") Long paymentId, Model model) {
+        if (paymentService.abortPayment(paymentId, orderId))
+            //결제 중단시 order 페이지로 redirect
+            return "redirect:/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId;
+
+        //결제 중단 불가시
+        //메시지 출력 후
+        //payment 페이지로 redirect
+        model.addAttribute("messages", Message.builder()
+                .message(PaymentErrorMessage.PAYMENT_ABORT_NOT_AVAILABLE.getMessage())
+                .href("/members/" + memberId + "/stores/" + storeId + "/storeTables/" + storeTableId + "/orders/" + orderId + "/payments/" + paymentId)
+                .build());
+        return "message/message";
+    }
+
     @GetMapping("/members/{memberId}/stores/{storeId}/storeTables/{storeTableId}/orders/{orderId}/payments/{paymentId}")
     public String paymentInfo(@PathVariable("memberId") Long memberId, @PathVariable("storeId") Long storeId, @PathVariable("storeTableId") Long storeTableId, @PathVariable("orderId") Long orderId, @PathVariable("paymentId") Long paymentId, Model model) {
         //들어 올 때마다 initialPaymentAmount와 paidPaymentAmount를 비교해서

@@ -87,7 +87,7 @@ public class PaymentService {
     }
 
     /*
-    결제 중간에 취소
+    결제 중간에 중단
      */
     @Transactional
     public boolean abortPayment(Long paymentId, Long orderId) {
