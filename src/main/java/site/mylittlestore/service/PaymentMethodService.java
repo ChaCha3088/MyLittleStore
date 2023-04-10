@@ -11,6 +11,7 @@ import site.mylittlestore.enumstorage.PaymentMethodType;
 import site.mylittlestore.enumstorage.errormessage.PaymentErrorMessage;
 import site.mylittlestore.enumstorage.errormessage.PaymentMethodErrorMessage;
 import site.mylittlestore.enumstorage.status.PaymentMethodStatus;
+import site.mylittlestore.exception.PaymentMethodException;
 import site.mylittlestore.exception.payment.PaymentException;
 import site.mylittlestore.repository.payment.PaymentRepository;
 import site.mylittlestore.repository.paymentmethod.PaymentMethodRepository;
@@ -48,7 +49,7 @@ public class PaymentMethodService {
         long leftToPay = payment.getInitialPaymentAmount() - paymentMethodAmountSum.get();
         //결제 수단 금액이 남은 결제 금액보다 크면 예외 발생
         if (leftToPay < paymentMethodCreationDto.getPaymentMethodAmount()) {
-            throw new PaymentException(PaymentMethodErrorMessage.PAYMENT_METHOD_AMOUNT_EXCEEDS_LEFT_TO_PAY.getMessage());
+            throw new PaymentMethodException(PaymentMethodErrorMessage.PAYMENT_METHOD_AMOUNT_EXCEEDS_LEFT_TO_PAY.getMessage());
         }
 
         //문제 없으면

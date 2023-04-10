@@ -8,6 +8,8 @@ import site.mylittlestore.dto.payment.PaymentDto;
 import site.mylittlestore.enumstorage.PaymentMethodType;
 import site.mylittlestore.enumstorage.errormessage.*;
 import site.mylittlestore.enumstorage.status.StoreStatus;
+import site.mylittlestore.exception.NoSuchPaymentException;
+import site.mylittlestore.exception.WrongPaymentException;
 import site.mylittlestore.exception.orderitem.NoSuchOrderItemException;
 import site.mylittlestore.exception.payment.PaymentAlreadyExistException;
 import site.mylittlestore.exception.payment.PaymentException;
@@ -116,12 +118,12 @@ public class PaymentService {
         //payment 찾기
         Payment payment = paymentRepository.findNotSuccessByIdAndOrderId(paymentId, orderId)
                 //payment가 없으면 예외 발생
-                .orElseThrow(() -> new PaymentException(PaymentErrorMessage.NO_SUCH_PAYMENT.getMessage()));
+                .orElseThrow(() -> new NoSuchPaymentException(PaymentErrorMessage.NO_SUCH_PAYMENT.getMessage()));
 
         //initialPaymentAmount보다 paidPaymentAmount가 크면
         //예외 발생
         if (payment.getInitialPaymentAmount() < payment.getPaidPaymentAmount()) {
-            throw new PaymentException(PaymentErrorMessage.PAID_PAYMENT_AMOUNT_IS_GREATER_THAN_INITIAL_PAYMENT_AMOUNT.getMessage());
+            throw new WrongPaymentException(PaymentErrorMessage.PAID_PAYMENT_AMOUNT_IS_GREATER_THAN_INITIAL_PAYMENT_AMOUNT.getMessage());
         }
 
         //값이 0이 아니고, initialPaymentAmount와 paidPaymentAmount가 같으면
