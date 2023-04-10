@@ -39,7 +39,7 @@ public class PaymentService {
     /*
     SUCCESS를 제외한 payment 찾기
      */
-    public PaymentDto findNotSuccessPaymentDtoById(Long id, Long orderId) {
+    public PaymentDto findNotSuccessPaymentDtoByIdAndOrderId(Long id, Long orderId) {
         //SUCCESS를 제외한 payment 찾기
         return paymentRepository.findNotSuccessByIdAndOrderId(id, orderId)
                 //없으면 예외 발생
@@ -67,10 +67,8 @@ public class PaymentService {
         validateOrderItemChangeAbility(order, store);
 
         //Payment가 비어있으면
-        //Payment 생성
-        //합계 계산
+        //합계 계산하고
         AtomicLong initialPaymentAmount = new AtomicLong(0);
-
         orderItems.stream()
                 .forEach(orderItem -> initialPaymentAmount.addAndGet(orderItem.getPrice() * orderItem.getCount()));
 
@@ -119,6 +117,12 @@ public class PaymentService {
         Payment payment = paymentRepository.findNotSuccessByIdAndOrderId(paymentId, orderId)
                 //payment가 없으면 예외 발생
                 .orElseThrow(() -> new PaymentException(PaymentErrorMessage.NO_SUCH_PAYMENT.getMessage()));
+
+        //initialPaymentAmount보다 paidPaymentAmount가 크면
+        //예외 발생
+        if (payment.getInitialPaymentAmount() < payment.getPaidPaymentAmount()) {
+            throw new PaymentException(PaymentErrorMessage.PAID_PAYMENT_AMOUNT_IS_GREATER_THAN_INITIAL_PAYMENT_AMOUNT.getMessage());
+        }
 
         //값이 0이 아니고, initialPaymentAmount와 paidPaymentAmount가 같으면
         //결제 완료

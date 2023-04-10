@@ -60,12 +60,6 @@ public class Payment {
     }
 
     //-- 비즈니스 로직 --//
-    public void setDesiredPaymentAmount(Long desiredPaymentAmount) {
-        if (desiredPaymentAmount > this.initialPaymentAmount) {
-            throw new PaymentAmountException(PaymentErrorMessage.DESIRED_PAYMENT_AMOUNT_CANNOT_BE_GREATER_THAN_INITIAL_PAYMENT_AMOUNT.getMessage());
-        }
-        this.desiredPaymentAmount = desiredPaymentAmount;
-    }
 
     public void changePaymentStatus(PaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;

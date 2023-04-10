@@ -114,7 +114,7 @@ public class PaymentServiceTest {
         PaymentViewDto paymentViewDto = paymentService.startPayment(orderTestId);
 
         //then
-        PaymentDto paymentDto = paymentService.findNotSuccessPaymentDtoById(paymentViewDto.getId());
+        PaymentDto paymentDto = paymentService.findNotSuccessPaymentDtoByIdAndOrderId(paymentViewDto.getId());
 
         //결제가 정상적으로 생성되었는지 확인
         //paymentMethodIds가 new ArrayList<>()인지 확인

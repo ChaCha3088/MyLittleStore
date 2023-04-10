@@ -37,4 +37,18 @@ class PaymentMethodServiceTest {
 
         assertThat(1).isEqualTo(2);
     }
+
+    @Test
+    @DisplayName("결제 수단을 생성한다.")
+    void createPaymentMethod() {
+        //given
+
+
+        //when
+        paymentMethodService.createPaymentMethod()
+
+        //then
+
+        assertThat(1).isEqualTo(2);
+    }
 }
